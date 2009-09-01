@@ -1,0 +1,8 @@
+~$
+autom4te\.cache
+dist/
+\.buildinfo$
+config\.status$
+config\.log$
+C2HS\.hs$
+^\+\+xhg-log-edit$
