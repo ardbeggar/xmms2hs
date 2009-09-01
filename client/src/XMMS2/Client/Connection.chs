@@ -36,9 +36,12 @@ import Prelude hiding (init)
  } -> `Maybe Connection' maybeConnection #}
 
 {# fun xmmsc_connect as connect
- { id           `Connection' ,
-   withCString* `String'
+ { id                `Connection'   ,
+   withMaybeCString* `Maybe String'
  } -> `Bool' #}
 
 maybeConnection (Connection p) = nothingIf (== nullPtr) Connection p
+
+withMaybeCString (Just s) f = withCString s f
+withMaybeCString Nothing f  = f nullPtr
                   
