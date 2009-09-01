@@ -9,3 +9,4 @@ C2HS\.hs$
 \.hi$
 \.o$
 ^client/tests/Test1$
+(^|/)#.*#$
