@@ -6,11 +6,14 @@ license-file:     COPYING
 author:           Oleg Belozeorov
 synopsis:         XMMS2 client development library
 build-type:       Simple
-extra-tmp-files:  config.status, config.log, xmms2-client.buildinfo, C2HS.hs
+extra-tmp-files:  config.status, config.log,
+                  xmms2-client.buildinfo, C2HS.hs
   
 library
-  exposed-modules:		XMMS2.Client
-  other-modules:		XMMS2.Client.Bindings, C2HS
+  exposed-modules:		XMMS2.Client.Value, XMMS2.Client.Result,
+                        XMMS2.Client.Connection, XMMS2.Client.Playback
+  other-modules:		C2HS
   build-depends:		base, haskell98
   build-tools:			c2hs
   hs-source-dirs:       ., src
+  extensions:           ForeignFunctionInterface
