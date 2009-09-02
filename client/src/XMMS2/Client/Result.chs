@@ -23,6 +23,8 @@ module XMMS2.Client.Result
   , peekResult
   , getValue
   , wait
+  , Notifier
+  , notifierSet
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -48,3 +50,22 @@ foreign import ccall unsafe "&xmmsc_result_unref"
 {# fun xmmsc_result_wait as wait
  { withResult* `Result'
  } -> `()' #}
+
+
+type Notifier = Value -> IO Bool
+
+notifierSet :: Result -> Notifier -> IO ()
+notifierSet r f = do
+  n <- mkNotifierPtr $ \p _ -> peekValue p >>= liftM fromBool . f
+  xmms2hs_result_notifier_set r n
+
+type NotifierW = Ptr Value -> Ptr () -> IO CInt
+  
+{# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
+ { withResult* `Result'           ,
+   id          `FunPtr NotifierW'
+ } -> `()' #}
+
+foreign import ccall "wrapper"
+  mkNotifierPtr :: NotifierW -> IO (FunPtr NotifierW)
+                                                   
