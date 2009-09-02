@@ -1,0 +1,3 @@
+buildable:   @BUILD_PACKAGE_BOOL@
+cc-options:  @XMMS2_CLIENT_GLIB_CFLAGS@ @GLIB_CFLAGS@
+ld-options:  @XMMS2_CLIENT_GLIB_LIBS@ @GLIB_LIBS@
