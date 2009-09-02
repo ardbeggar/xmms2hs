@@ -19,6 +19,8 @@
 
 module XMMS2.Client.Result
   ( Result
+  , withResult
+  , peekResult
   , getValue
   , wait
   ) where
@@ -26,16 +28,21 @@ module XMMS2.Client.Result
 #include <xmmsclient/xmmsclient.h>
 
 import C2HS
+import Control.Monad
 
 {# import XMMS2.Client.Value #}
 
 
-{# pointer *xmmsc_result_t as Result newtype #}
+{# pointer *xmmsc_result_t as Result foreign newtype #}
+
+peekResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
+foreign import ccall unsafe "&xmmsc_result_unref"
+  xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
 
 {# fun xmmsc_result_get_value as getValue
- { id `Result'
+ { withResult* `Result'
  } -> `Value' id #}
 
 {# fun xmmsc_result_wait as wait
- { id `Result'
+ { withResult* `Result'
  } -> `()' #}

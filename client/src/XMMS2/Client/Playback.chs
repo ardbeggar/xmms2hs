@@ -32,8 +32,8 @@ import C2HS
 
 {# fun xmmsc_playback_start as start
  { id `Connection'
- } -> `Result' id #}
+ } -> `Result' peekResult* #}
 
 {# fun xmmsc_playback_stop as stop
  { id `Connection'
- } -> `Result' id #}
+ } -> `Result' peekResult* #}
