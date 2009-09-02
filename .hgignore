@@ -11,3 +11,4 @@ C2HS\.hs$
 ^client/tests/Test1$
 \.orig$
 
+^client-glib/tests/Test1$
