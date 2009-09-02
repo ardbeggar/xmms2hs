@@ -22,12 +22,14 @@ module XMMS2.Client.Value
   , withValue
   , peekValue
   , getInt
+  , Int32
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 
 import C2HS         
 import Control.Monad
+import Data.Int (Int32)
   
 
 {# pointer *xmmsv_t as Value foreign newtype #}
@@ -37,12 +39,12 @@ foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (Ptr Value -> IO ())
 
 
-getInt v = xmmsv_get_int v >>= toMaybe
-
-toMaybe (True, r) = return $ Just r
-toMaybe _         = return Nothing
+getInt = toMaybe . xmmsv_get_int
 
 {# fun xmmsv_get_int as xmmsv_get_int
- { withValue* `Value'              ,
-   alloca-    `Int'   peekIntConv*
+ { withValue* `Value'                ,
+   alloca-    `Int32'   peekIntConv*
  } -> `Bool' #}
+
+
+toMaybe = liftM $ \(r, v) -> if r then Just v else Nothing
