@@ -68,9 +68,3 @@ type NotifierW = Ptr Value -> Ptr () -> IO CInt
 
 foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierW -> IO (FunPtr NotifierW)
-
-peekValueRef p = do
-  v <- peekValue p
-  valueRef v
-  return v
-                                                   
