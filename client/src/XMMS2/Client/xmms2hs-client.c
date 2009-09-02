@@ -1,7 +1,7 @@
 /* XMMS2 client library.
 
    Author:  Oleg Belozeorov
-   Created: 1 Sep. 2009
+   Created: 2 Sep. 2009
 
    Copyright (C) 2009 Oleg Belozeorov
 
