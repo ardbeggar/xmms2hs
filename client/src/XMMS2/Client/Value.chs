@@ -21,6 +21,7 @@ module XMMS2.Client.Value
   ( Value
   , withValue
   , peekValue
+  , valueRef
   , getInt
   , Int32
   ) where
@@ -38,6 +39,9 @@ peekValue p = liftM Value $ newForeignPtr xmmsv_unref p
 foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (Ptr Value -> IO ())
 
+{# fun xmmsv_ref as valueRef
+ { withValue* `Value'
+ } -> `()' #}
 
 getInt = toMaybe . xmmsv_get_int
 

@@ -45,7 +45,7 @@ foreign import ccall unsafe "&xmmsc_result_unref"
 
 {# fun xmmsc_result_get_value as getValue
  { withResult* `Result'
- } -> `Value' peekValue* #}
+ } -> `Value' peekValueRef* #}
 
 {# fun xmmsc_result_wait as wait
  { withResult* `Result'
@@ -56,7 +56,7 @@ type Notifier = Value -> IO Bool
 
 notifierSet :: Result -> Notifier -> IO ()
 notifierSet r f = do
-  n <- mkNotifierPtr $ \p _ -> peekValue p >>= liftM fromBool . f
+  n <- mkNotifierPtr $ \p _ -> peekValueRef p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
 
 type NotifierW = Ptr Value -> Ptr () -> IO CInt
@@ -68,4 +68,9 @@ type NotifierW = Ptr Value -> Ptr () -> IO CInt
 
 foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierW -> IO (FunPtr NotifierW)
+
+peekValueRef p = do
+  v <- peekValue p
+  valueRef v
+  return v
                                                    
