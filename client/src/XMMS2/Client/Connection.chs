@@ -48,6 +48,7 @@ foreign import ccall unsafe "&xmmsc_unref"
    withMaybeCString* `Maybe String'
  } -> `Bool' #}
 
+
 maybeConnection p
   | p == nullPtr = return Nothing
   | otherwise    = liftM Just $ peekConnection p
