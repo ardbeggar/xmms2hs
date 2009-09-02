@@ -20,6 +20,7 @@
 module XMMS2.Client.Playback
   ( start
   , stop
+  , signalPlaybackPlaytime
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -35,5 +36,9 @@ import C2HS
  } -> `Result' peekResult* #}
 
 {# fun xmmsc_playback_stop as stop
+ { withConnection* `Connection'
+ } -> `Result' peekResult* #}
+
+{# fun xmmsc_signal_playback_playtime as signalPlaybackPlaytime
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
