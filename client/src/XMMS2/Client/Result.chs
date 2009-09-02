@@ -26,6 +26,7 @@ module XMMS2.Client.Result
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+#include <xmms2hs-client.h>
 
 import C2HS
 import Control.Monad
