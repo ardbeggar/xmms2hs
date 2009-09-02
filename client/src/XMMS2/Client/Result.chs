@@ -38,10 +38,11 @@ import Control.Monad
 peekResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
 foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
+                        
 
 {# fun xmmsc_result_get_value as getValue
  { withResult* `Result'
- } -> `Value' id #}
+ } -> `Value' peekValue* #}
 
 {# fun xmmsc_result_wait as wait
  { withResult* `Result'
