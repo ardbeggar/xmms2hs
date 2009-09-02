@@ -12,8 +12,8 @@ main = do
   ml <- mainLoopNew Nothing False
   (Just c) <- X.init "test1"
   True     <- X.connect c Nothing
-  stop c
-  start c
+  stop c >>= wait
+  start c >>= wait
   r <- signalPlaybackPlaytime c
   notifierSet r $ myPlayTime ml
   mainLoopGMainInit c
