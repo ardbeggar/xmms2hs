@@ -10,3 +10,7 @@ main = do
   r <- X.connect c Nothing
   start c >>= wait
   print r
+
+-- local variables:
+-- compile-command: "ghc --make Test1.hs"
+-- end:
