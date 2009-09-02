@@ -19,6 +19,8 @@
 
 module XMMS2.Client.Connection
   ( Connection
+  , withConnection
+  , peekConnection
   , init
   , connect
   ) where
@@ -26,21 +28,29 @@ module XMMS2.Client.Connection
 #include <xmmsclient/xmmsclient.h>
 
 import C2HS         
+import Control.Monad
 import Prelude hiding (init)
 
 
-{# pointer *xmmsc_connection_t as Connection newtype #}
+{# pointer *xmmsc_connection_t as Connection foreign newtype #}
+
+peekConnection p = liftM Connection $ newForeignPtr xmmsc_unref p
+foreign import ccall unsafe "&xmmsc_unref"
+  xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
+
 
 {# fun xmmsc_init as init
  { withCString* `String'
- } -> `Maybe Connection' maybeConnection #}
+ } -> `Maybe Connection' maybeConnection* #}
 
 {# fun xmmsc_connect as connect
- { id                `Connection'   ,
+ { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
  } -> `Bool' #}
 
-maybeConnection (Connection p) = nothingIf (== nullPtr) Connection p
+maybeConnection p
+  | p == nullPtr = return Nothing
+  | otherwise    = liftM Just $ peekConnection p
 
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
