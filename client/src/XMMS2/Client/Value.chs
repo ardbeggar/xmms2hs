@@ -23,6 +23,8 @@ module XMMS2.Client.Value
   , withValue
   , takeValue
   , getInt
+  , listGetSize
+  , listGet
   , Int32
   ) where
 
@@ -48,6 +50,19 @@ getInt = toMaybe . xmmsv_get_int
 {# fun xmmsv_get_int as xmmsv_get_int
  { withValue* `Value'              ,
    alloca-    `Int32' peekIntConv*
+ } -> `Bool' #}
+
+{# fun xmmsv_list_get_size as listGetSize
+ { withValue* `Value'
+ } -> `Integer' cIntConv #}
+
+listGet l p = do
+  (r, v) <- xmmsv_list_get l p
+  if r then liftM Just (takeValue (Just l) v) else return Nothing
+{# fun xmmsv_list_get as xmmsv_list_get
+ { withValue* `Value'          ,
+   cIntConv   `Integer'        , 
+   alloca-    `ValuePtr' peek*
  } -> `Bool' #}
 
 toMaybe = liftM $ \(r, v) -> if r then Just v else Nothing
