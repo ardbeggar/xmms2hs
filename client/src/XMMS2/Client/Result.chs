@@ -65,12 +65,14 @@ callbackSet o f = do
   r <- o
   notifierSet r f
 
-type NotifierW = ValuePtr -> Ptr () -> IO CInt
+
+type NotifierFun = ValuePtr -> Ptr () -> IO CInt
+type NotifierPtr = FunPtr NotifierFun
   
 {# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
- { withResult* `Result'           ,
-   id          `FunPtr NotifierW'
+ { withResult* `Result'      ,
+   id          `NotifierPtr'
  } -> `()' #}
 
 foreign import ccall "wrapper"
-  mkNotifierPtr :: NotifierW -> IO (FunPtr NotifierW)
+  mkNotifierPtr :: NotifierFun -> IO NotifierPtr
