@@ -20,4 +20,5 @@ library
   build-depends:		base, haskell98
   build-tools:			c2hs
   hs-source-dirs:       ., src
-  extensions:           ForeignFunctionInterface
+  extensions:           ForeignFunctionInterface,
+                        ExistentialQuantification

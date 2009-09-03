@@ -18,10 +18,10 @@
 --
 
 module XMMS2.Client.Value
-  ( Value
+  ( ValuePtr
+  , Value
   , withValue
-  , peekValue
-  , peekValueRef
+  , takeValue
   , getInt
   , Int32
   ) where
@@ -32,23 +32,22 @@ import C2HS
 import Control.Monad
 import Data.Int (Int32)
   
+data Xmmsv_t = Xmmsv_t
+{# pointer *xmmsv_t as ValuePtr -> Xmmsv_t #}
+data Value = forall a. Value (Maybe a) (ForeignPtr Xmmsv_t)
 
-{# pointer *xmmsv_t as Value foreign newtype #}
+withValue (Value _ p) = withForeignPtr p
 
-peekValue p = liftM Value $ newForeignPtr xmmsv_unref p
+takeValue o p = do
+  f <- maybe (newForeignPtr xmmsv_unref p) (\_ -> newForeignPtr_ p) o
+  return $ Value o f
 foreign import ccall unsafe "&xmmsv_unref"
-  xmmsv_unref :: FunPtr (Ptr Value -> IO ())
-                 
-peekValueRef p = xmmsv_ref p >> peekValue p
-foreign import ccall unsafe "xmmsv_ref"
-  xmmsv_ref :: Ptr Value -> IO ()
-
+  xmmsv_unref :: FunPtr (ValuePtr -> IO ())
                
 getInt = toMaybe . xmmsv_get_int
 {# fun xmmsv_get_int as xmmsv_get_int
- { withValue* `Value'                ,
-   alloca-    `Int32'   peekIntConv*
+ { withValue* `Value'              ,
+   alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
-
 
 toMaybe = liftM $ \(r, v) -> if r then Just v else Nothing

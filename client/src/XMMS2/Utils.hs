@@ -27,3 +27,4 @@ import Foreign.Ptr
 
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
+        
