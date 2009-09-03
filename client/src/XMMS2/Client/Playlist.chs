@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 1 Sep. 2009
+--  Created: 3 Sep. 2009
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,39 +17,20 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Connection
-  ( Connection
-  , withConnection
-  , peekConnection
-  , init
-  , connect
+module XMMS2.Client.Playlist
+  ( listEntries
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 
 import C2HS         
-import Control.Monad
-import Prelude hiding (init)
-import XMMS2.Utils  
+import XMMS2.Utils
+
+{# import XMMS2.Client.Connection #}
+{# import XMMS2.Client.Result #}  
 
 
-{# pointer *xmmsc_connection_t as Connection foreign newtype #}
-
-peekConnection p = liftM Connection $ newForeignPtr xmmsc_unref p
-foreign import ccall unsafe "&xmmsc_unref"
-  xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
-
-
-{# fun xmmsc_init as init
- { withCString* `String'
- } -> `Maybe Connection' maybeConnection* #}
-
-{# fun xmmsc_connect as connect
+{# fun xmmsc_playlist_list_entries as listEntries
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
- } -> `Bool' #}
-
-
-maybeConnection p
-  | p == nullPtr = return Nothing
-  | otherwise    = liftM Just $ peekConnection p
+ } -> `Result' peekResult* #}
