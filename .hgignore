@@ -12,3 +12,7 @@ C2HS\.hs$
 \.orig$
 
 ^client-glib/tests/Test1$
+^client/src/XMMS2/Makefile$
+^client/src/XMMS2/Client/Makefile$
+^client/src/Makefile$
+^client/Makefile$
