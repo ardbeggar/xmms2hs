@@ -25,6 +25,7 @@ module XMMS2.Client.Result
   , wait
   , Notifier
   , notifierSet
+  , callbackSet
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -59,6 +60,10 @@ notifierSet :: Result -> Notifier -> IO ()
 notifierSet r f = do
   n <- mkNotifierPtr $ \p _ -> takeValue (Just r) p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
+
+callbackSet o f = do
+  r <- o
+  notifierSet r f
 
 type NotifierW = ValuePtr -> Ptr () -> IO CInt
   
