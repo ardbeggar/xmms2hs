@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Playlist
   ( listEntries
+  , broadcastPlaylistChanged
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -33,4 +34,8 @@ import XMMS2.Utils
 {# fun xmmsc_playlist_list_entries as listEntries
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
+ } -> `Result' peekResult* #}
+
+{# fun xmmsc_broadcast_playlist_changed as broadcastPlaylistChanged
+ { withConnection*   `Connection'
  } -> `Result' peekResult* #}
