@@ -18,11 +18,24 @@
 --
 
 module XMMS2.Client.Value
-  ( ValuePtr
+  ( ValueType
+    ( TypeNone
+    , TypeError
+    , TypeInt32
+    , TypeString
+    , TypeColl
+    , TypeBin
+    , TypeList
+    , TypeDict )
+  , ValueData (..)
+  , ValuePtr
   , Value
   , withValue
   , takeValue
+  , getType
   , getInt
+  , getString
+  , getData
   , listGetSize
   , listGet
   , Int32
@@ -35,6 +48,20 @@ module XMMS2.Client.Value
 import C2HS         
 import Control.Monad
 import Data.Int (Int32)
+import Data.Maybe
+
+
+{# enum xmmsv_type_t as ValueType
+ { underscoreToCase }
+ with prefix = "XMMSV_"
+ deriving (Show) #}
+
+data ValueData
+  = DataNone
+  | DataError String
+  | DataInt32 Int32
+  | DataString String
+    deriving Show
   
 data Xmmsv_t = Xmmsv_t
 {# pointer *xmmsv_t as ValuePtr -> Xmmsv_t #}
@@ -47,27 +74,46 @@ takeValue o p = do
   return $ Value o f
 foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (ValuePtr -> IO ())
+
+{# fun xmmsv_get_type as getType
+ { withValue* `Value'
+ } -> `ValueType' cToEnum #}
                
-getInt = toMaybe . xmmsv_get_int
+getInt v = xmmsv_get_int v >>= toMaybe_
 {# fun xmmsv_get_int as xmmsv_get_int
  { withValue* `Value'              ,
    alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
+getString v = xmmsv_get_string v >>= toMaybe peekCString
+{# fun xmmsv_get_string as xmmsv_get_string
+ { withValue* `Value'         ,
+   alloca-    `CString' peek*
+ } -> `Bool' #}
+
+getData v = do
+  t <- getType v
+  case t of
+    TypeInt32  -> mk DataInt32 getInt
+    TypeString -> mk DataString getString
+    _          -> return DataNone
+  where mk c g = liftM (c . fromJust) $ g v
+
 {# fun xmmsv_list_get_size as listGetSize
  { withValue* `Value'
  } -> `Integer' cIntConv #}
 
-listGet l p = do
-  (r, v) <- xmmsv_list_get l p
-  if r then liftM Just (takeValue (Just l) v) else return Nothing
+listGet l p = xmmsv_list_get l p >>= toMaybe (takeValue (Just l))
 {# fun xmmsv_list_get as xmmsv_list_get
  { withValue* `Value'          ,
    cIntConv   `Integer'        , 
    alloca-    `ValuePtr' peek*
  } -> `Bool' #}
 
-toMaybe = liftM $ \(r, v) -> if r then Just v else Nothing
+toMaybe _ (False, _) = return Nothing
+toMaybe f (True, v)  = liftM Just $ f v
+
+toMaybe_ = toMaybe return        
 
 
 
