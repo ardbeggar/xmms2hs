@@ -24,9 +24,7 @@ module XMMS2.Client.Playlist
 
 #include <xmmsclient/xmmsclient.h>
 
-import C2HS         
 import XMMS2.Utils
-
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}  
 

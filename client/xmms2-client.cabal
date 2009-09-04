@@ -17,7 +17,7 @@ library
   other-modules:		C2HS, XMMS2.Utils
   c-sources:			src/XMMS2/Client/xmms2hs-client.c
   include-dirs:			src/XMMS2/Client
-  build-depends:		base, haskell98
+  build-depends:		base, haskell98, utf8-string
   build-tools:			c2hs
   hs-source-dirs:       ., src
   extensions:           ForeignFunctionInterface,

@@ -27,7 +27,6 @@ module XMMS2.Client.Connection
 
 #include <xmmsclient/xmmsclient.h>
 
-import C2HS         
 import Control.Monad
 import Prelude hiding (init)
 import XMMS2.Utils  

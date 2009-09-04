@@ -31,9 +31,8 @@ module XMMS2.Client.Result
 #include <xmmsclient/xmmsclient.h>
 #include <xmms2hs-client.h>
 
-import C2HS
 import Control.Monad
-
+import XMMS2.Utils
 {# import XMMS2.Client.Value #}
 
 

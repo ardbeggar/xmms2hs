@@ -23,9 +23,8 @@ module XMMS2.Client.Medialib
 
 #include <xmmsclient/xmmsclient.h>
 
-import C2HS
 import Control.Monad
-
+import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
 

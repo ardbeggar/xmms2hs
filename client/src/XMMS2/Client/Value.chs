@@ -45,12 +45,12 @@ module XMMS2.Client.Value
 
 #include <xmmsclient/xmmsclient.h>
 
-import C2HS         
 import Control.Monad
 import Data.Int (Int32)
 import Data.Maybe
+import XMMS2.Utils
 
-
+  
 {# enum xmmsv_type_t as ValueType
  { underscoreToCase }
  with prefix = "XMMSV_"

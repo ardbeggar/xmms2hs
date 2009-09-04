@@ -18,13 +18,22 @@
 --
 
 module XMMS2.Utils
-  ( withMaybeCString
+  ( module C2HS
+  , withCString
+  , withMaybeCString
+  , peekCString
   ) where
 
-import Foreign.C.String
+import C2HS hiding (withCString, peekCString)
+import qualified Foreign.C.String as CS
 import Foreign.Ptr
+import Control.Monad
+import Codec.Binary.UTF8.String
   
 
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
         
+withCString = CS.withCString . encodeString
+
+peekCString = liftM decodeString . CS.peekCString
