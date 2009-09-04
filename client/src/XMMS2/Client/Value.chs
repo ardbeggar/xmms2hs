@@ -26,6 +26,8 @@ module XMMS2.Client.Value
   , listGetSize
   , listGet
   , Int32
+  , propdictToDict
+  , dictForeach
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -66,3 +68,33 @@ listGet l p = do
  } -> `Bool' #}
 
 toMaybe = liftM $ \(r, v) -> if r then Just v else Nothing
+
+
+
+propdictToDict v = xmmsv_propdict_to_dict v nullPtr >>= takeValue Nothing
+{# fun xmmsv_propdict_to_dict as xmmsv_propdict_to_dict
+ { withValue* `Value'       ,
+   id         `Ptr CString'
+ } -> `ValuePtr' id #}
+
+
+type DictForeachFun = CString -> ValuePtr -> Ptr () -> IO ()
+type DictForeachPtr = FunPtr (DictForeachFun)
+
+dictForeach d f = do
+  f' <- mkDictForeachPtr $
+        \s v _ -> do
+          s' <- peekCString s
+          v' <- takeValue (Just d) v
+          f s' v'
+  xmmsv_dict_foreach d f' nullPtr
+  freeHaskellFunPtr f'
+
+{# fun xmmsv_dict_foreach as xmmsv_dict_foreach
+ { withValue* `Value'          ,
+   id         `DictForeachPtr' ,
+   id         `Ptr ()'
+ } -> `()' #}
+  
+foreign import ccall "wrapper"
+  mkDictForeachPtr :: DictForeachFun -> IO DictForeachPtr
