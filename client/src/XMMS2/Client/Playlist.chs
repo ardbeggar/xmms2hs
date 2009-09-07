@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Playlist
   ( listEntries
+  , setNext
   , broadcastPlaylistChanged
   ) where
 
@@ -32,6 +33,11 @@ import XMMS2.Utils
 {# fun xmmsc_playlist_list_entries as listEntries
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
+ } -> `Result' peekResult* #}
+
+{# fun xmmsc_playlist_set_next as setNext
+ { withConnection* `Connection' ,
+   cIntConv        `Integer'
  } -> `Result' peekResult* #}
 
 {# fun xmmsc_broadcast_playlist_changed as broadcastPlaylistChanged
