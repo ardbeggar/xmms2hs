@@ -32,6 +32,7 @@ import XMMS2.Client.Monad.Value
 import qualified XMMS2.Client.Value as XV
 import qualified XMMS2.Client.Result as XR
 import Data.Int (Int32)
+import System.IO.Error  
 
 class ResultType t where
   valueToType :: Value -> IO (Maybe t)
@@ -73,7 +74,14 @@ handler :: ResultType a => XMMS (Result a) -> ResultM a Bool -> XMMS ()
 handler r f = do
   Result r' <- r
   xmmsc <- connection
-  liftIO $ XR.notifierSet r' $ \v -> runXMMS (runResultM f v) xmmsc
+  liftIO $ XR.notifierSet r' $ runHandler f xmmsc
+
+
+runHandler f xmmsc v = do
+  r <- runXMMS (runResultM f v) xmmsc
+  case r of
+    Right gr -> return gr
+    Left err -> ioError $ userError err
         
 
                                     

@@ -26,13 +26,14 @@ module XMMS2.Client.Monad.Monad
   ) where
 
 import Control.Monad.Reader
+import Control.Monad.Error  
 import XMMS2.Client.Connection (Connection)  
 
 
-type XMMS = ReaderT Connection IO
+type XMMS = ReaderT Connection (ErrorT String IO)
 
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
+runXMMS :: XMMS a -> Connection -> IO (Either String a)
+runXMMS f xmmsc = runErrorT (runReaderT f xmmsc)
 
 
 connection :: XMMS Connection
