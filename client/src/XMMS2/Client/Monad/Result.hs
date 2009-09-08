@@ -17,29 +17,24 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMS
-  , runXMMS
-  , connection
-  , liftIO
-  , liftXMMS
+module XMMS2.Client.Monad.Result
+  ( Result (..)
+  , handler
   ) where
 
-import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)  
+import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Value
+import qualified XMMS2.Client.Result as XR
 
 
-type XMMS a = ReaderT Connection IO a
+data Result a = Result XR.Result (a -> (Value -> XMMS Bool))
 
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
-
-connection :: XMMS Connection
-connection = ask
-
-
-liftXMMS f = do
+handler :: XMMS (Result a) -> a -> XMMS ()
+handler r f = do
+  Result r' c <- r
   xmmsc <- connection
-  liftIO $ f xmmsc
-         
+  liftIO $ XR.notifierSet r' $ \v -> runXMMS ((c f) v) xmmsc
+
+                                    
+
+    

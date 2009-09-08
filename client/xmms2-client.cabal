@@ -14,7 +14,14 @@ library
   exposed-modules:		XMMS2.Client.Value, XMMS2.Client.Result,
                         XMMS2.Client.Connection, XMMS2.Client.Playback,
                         XMMS2.Client.Playlist, XMMS2.Client.Medialib,
-                        XMMS2.Client.Monad.Monad
+                        XMMS2.Client.Monad, 
+                        XMMS2.Client.Monad.Monad,
+                        XMMS2.Client.Monad.Value,
+                        XMMS2.Client.Monad.Result,
+                        XMMS2.Client.Monad.Connection, 
+                        XMMS2.Client.Monad.Playlist,
+                        XMMS2.Client.Monad.Playback,
+                        XMMS2.Client.Monad.Medialib
   other-modules:		C2HS, XMMS2.Utils
   c-sources:			src/XMMS2/Client/xmms2hs-client.c
   include-dirs:			src/XMMS2/Client

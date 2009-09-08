@@ -17,29 +17,13 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMS
-  , runXMMS
-  , connection
-  , liftIO
-  , liftXMMS
+module XMMS2.Client.Monad.Connection
+  ( connect
   ) where
 
-import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)  
+import XMMS2.Client.Monad.Monad
+import qualified XMMS2.Client.Connection as XC
 
 
-type XMMS a = ReaderT Connection IO a
-
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
-
-connection :: XMMS Connection
-connection = ask
-
-
-liftXMMS f = do
-  xmmsc <- connection
-  liftIO $ f xmmsc
+connect path = liftXMMS $ \xmmsc -> XC.connect xmmsc path
          

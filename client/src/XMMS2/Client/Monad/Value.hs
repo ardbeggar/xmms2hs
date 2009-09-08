@@ -17,29 +17,18 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMS
-  , runXMMS
-  , connection
-  , liftIO
-  , liftXMMS
+module XMMS2.Client.Monad.Value
+  ( Value
+  , listGetSize
+  , listGet
+  , getInt
   ) where
 
-import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)  
+import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Value (Value)  
+import qualified XMMS2.Client.Value as XV
 
-
-type XMMS a = ReaderT Connection IO a
-
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
-
-connection :: XMMS Connection
-connection = ask
-
-
-liftXMMS f = do
-  xmmsc <- connection
-  liftIO $ f xmmsc
-         
+listGetSize val = liftIO $ XV.listGetSize val
+listGet val n = liftIO $ XV.listGet val n
+getInt val = liftIO $ XV.getInt val
+             

@@ -17,29 +17,19 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMS
-  , runXMMS
-  , connection
-  , liftIO
-  , liftXMMS
+module XMMS2.Client.Monad
+  ( module XMMS2.Client.Monad.Monad
+  , module XMMS2.Client.Monad.Result
+  , module XMMS2.Client.Monad.Connection
+  , module XMMS2.Client.Monad.Playlist
+  , module XMMS2.Client.Monad.Playback
+  , module XMMS2.Client.Monad.Medialib
   ) where
 
-import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)  
-
-
-type XMMS a = ReaderT Connection IO a
-
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
-
-connection :: XMMS Connection
-connection = ask
-
-
-liftXMMS f = do
-  xmmsc <- connection
-  liftIO $ f xmmsc
-         
+import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Result
+import XMMS2.Client.Monad.Connection
+import XMMS2.Client.Monad.Playlist
+import XMMS2.Client.Monad.Playback
+import XMMS2.Client.Monad.Medialib
+  

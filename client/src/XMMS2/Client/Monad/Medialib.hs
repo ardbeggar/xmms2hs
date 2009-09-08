@@ -17,29 +17,15 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMS
-  , runXMMS
-  , connection
-  , liftIO
-  , liftXMMS
+module XMMS2.Client.Monad.Medialib
+  ( getInfo
   ) where
 
-import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)  
+import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Result
+import qualified XMMS2.Client.Medialib as XM
 
-
-type XMMS a = ReaderT Connection IO a
-
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
-
-connection :: XMMS Connection
-connection = ask
-
-
-liftXMMS f = do
-  xmmsc <- connection
-  liftIO $ f xmmsc
-         
+getInfo id = do
+  r <- liftXMMS $ \xmmsc -> XM.getInfo xmmsc id
+  return $ Result r $ \f v -> f v
+  
