@@ -17,3 +17,4 @@ C2HS\.hs$
 ^client/src/Makefile$
 ^client/Makefile$
 ^client/tests/Test2$
+^client/src/XMMS2/Client/Monad/Makefile$
