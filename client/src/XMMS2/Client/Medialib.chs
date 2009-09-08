@@ -31,5 +31,5 @@ import XMMS2.Utils
 
 {# fun xmmsc_medialib_get_info as getInfo
  { withConnection* `Connection' ,
-   cIntConv        `Integer'
+   cIntConv        `Int32'
  } -> `Result' peekResult* #}

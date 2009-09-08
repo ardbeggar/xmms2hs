@@ -29,4 +29,5 @@ library
   build-tools:			c2hs
   hs-source-dirs:       ., src
   extensions:           ForeignFunctionInterface,
-                        ExistentialQuantification
+                        ExistentialQuantification,
+                        TypeSynonymInstances

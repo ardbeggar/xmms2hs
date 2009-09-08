@@ -26,24 +26,20 @@ module XMMS2.Client.Monad.Playlist
 import Control.Monad
 import Data.Maybe  
 import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Value
+import Data.Int (Int32)  
 import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Playlist as XP
 
 
+listEntries :: Maybe String -> XMMS (Result [Int32])
 listEntries name = do
   r <- liftXMMS $ \xmmsc -> XP.listEntries xmmsc name
-  return $ Result r c
-  where
-    c f v = do
-      size <- listGetSize v
-      ids  <- mapM (\n -> liftM (fromIntegral . fromJust) $ listGet v n >>= getInt . fromJust)
-              [0 .. (size - 1)]
-      f ids
+  return $ Result r
 
 setNext n = liftXMMS $ \xmmsc -> XP.setNext xmmsc n
          
+broadcastPlaylistChanged :: XMMS (Result ())
 broadcastPlaylistChanged = do
   r <- liftXMMS $ XP.broadcastPlaylistChanged
-  return $ Result r $ \f _ -> f
+  return $ Result r
               

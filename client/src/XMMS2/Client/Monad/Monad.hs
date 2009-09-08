@@ -29,7 +29,7 @@ import Control.Monad.Reader
 import XMMS2.Client.Connection (Connection)  
 
 
-type XMMS a = ReaderT Connection IO a
+type XMMS = ReaderT Connection IO
 
 runXMMS :: XMMS a -> Connection -> IO a
 runXMMS = runReaderT
