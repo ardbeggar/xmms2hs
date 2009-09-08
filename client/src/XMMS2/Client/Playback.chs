@@ -22,6 +22,7 @@ module XMMS2.Client.Playback
   , stop
   , tickle
   , signalPlaybackPlaytime
+  , broadcastPlaybackStatus
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -45,5 +46,10 @@ import XMMS2.Utils
 
 
 {# fun xmmsc_signal_playback_playtime as signalPlaybackPlaytime
+ { withConnection* `Connection'
+ } -> `Result' peekResult* #}
+
+
+{# fun xmmsc_broadcast_playback_status as broadcastPlaybackStatus
  { withConnection* `Connection'
  } -> `Result' peekResult* #}

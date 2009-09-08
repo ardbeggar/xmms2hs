@@ -12,5 +12,10 @@ else BUILD_PACKAGE_BOOL=True
 fi
 AC_SUBST(BUILD_PACKAGE_BOOL)
 
-AC_CONFIG_FILES(xmms2-client.buildinfo Makefile src/Makefile src/XMMS2/Makefile src/XMMS2/Client/Makefile)
+AC_CONFIG_FILES(xmms2-client.buildinfo
+                Makefile
+				src/Makefile
+				src/XMMS2/Makefile
+				src/XMMS2/Client/Makefile
+				src/XMMS2/Client/Monad/Makefile)
 AC_OUTPUT

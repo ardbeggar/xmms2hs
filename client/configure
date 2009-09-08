@@ -1861,7 +1861,7 @@ else BUILD_PACKAGE_BOOL=True
 fi
 
 
-ac_config_files="$ac_config_files xmms2-client.buildinfo Makefile src/Makefile src/XMMS2/Makefile src/XMMS2/Client/Makefile"
+ac_config_files="$ac_config_files xmms2-client.buildinfo Makefile src/Makefile src/XMMS2/Makefile src/XMMS2/Client/Makefile src/XMMS2/Client/Monad/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -2562,6 +2562,7 @@ do
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/XMMS2/Makefile") CONFIG_FILES="$CONFIG_FILES src/XMMS2/Makefile" ;;
     "src/XMMS2/Client/Makefile") CONFIG_FILES="$CONFIG_FILES src/XMMS2/Client/Makefile" ;;
+    "src/XMMS2/Client/Monad/Makefile") CONFIG_FILES="$CONFIG_FILES src/XMMS2/Client/Monad/Makefile" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
