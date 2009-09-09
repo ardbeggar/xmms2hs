@@ -38,6 +38,11 @@ module XMMS2.Client.Value
   , getData
   , listGetSize
   , listGet
+  , ListIter
+  , getListIter
+  , listIterValid
+  , listIterEntry
+  , listIterNext
   , Int32
   , propdictToDict
   , dictForeach
@@ -113,6 +118,32 @@ listGet l p = xmmsv_list_get l p >>= toMaybe (takeValue (Just l))
    cIntConv   `Integer'        , 
    alloca-    `ValuePtr' peek*
  } -> `Bool' #}
+
+{# pointer *xmmsv_list_iter_t as ListIterPtr #}
+
+data ListIter = ListIter Value ListIterPtr
+
+withListIter (ListIter _ p) f = f p
+
+getListIter v = get_list_iter v >>= toMaybe (return . ListIter v)
+{# fun xmmsv_get_list_iter as get_list_iter
+ { withValue* `Value'             ,
+   alloca-    `ListIterPtr' peek*
+ } -> `Bool' #}
+
+listIterEntry i@(ListIter v _) = list_iter_entry i >>= toMaybe (takeValue (Just v))
+{# fun xmmsv_list_iter_entry as list_iter_entry
+ { withListIter* `ListIter'      ,
+   alloca-       `ValuePtr' peek*
+ } -> `Bool' #}
+
+{# fun xmmsv_list_iter_valid as listIterValid
+ { withListIter* `ListIter'
+ } -> `Bool' #}
+
+{# fun xmmsv_list_iter_next as listIterNext
+ { withListIter* `ListIter'
+ } -> `()' #}
 
 
 type DictForeachFun = CString -> ValuePtr -> Ptr () -> IO ()
