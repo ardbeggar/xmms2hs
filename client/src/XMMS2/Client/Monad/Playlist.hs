@@ -41,7 +41,7 @@ playlistSetNext :: Int32 -> XMMS (Result ())
 playlistSetNext n =
   liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
 
-playlistCurrentPos :: Maybe String -> XMMS (Result Int32)
+playlistCurrentPos :: Maybe String -> XMMS (Result ()) -- FIXME: it's a Dict!
 playlistCurrentPos name =
   liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
 
