@@ -44,26 +44,26 @@ import XMMS2.Utils
 
 {# fun playback_start as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playback_stop as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playback_tickle as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playback_status as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
 
 {# fun signal_playback_playtime as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
 
 {# fun broadcast_playback_status as ^
  { withConnection* `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}

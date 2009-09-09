@@ -18,8 +18,8 @@
 --
 
 module XMMS2.Client.Monad.Playlist
-  ( listEntries
-  , setNext
+  ( playlistListEntries
+  , playlistSetNext
   , broadcastPlaylistChanged
   ) where
 
@@ -31,15 +31,15 @@ import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Playlist as XP
 
 
-listEntries :: Maybe String -> XMMS (Result [Int32])
-listEntries name = do
-  r <- liftXMMS $ \xmmsc -> XP.listEntries xmmsc name
-  return $ Result r
+playlistListEntries :: Maybe String -> XMMS (Result [Int32])
+playlistListEntries name =
+  liftXMMSResult $ \xmmsc -> XP.playlistListEntries xmmsc name
 
-setNext n = liftXMMS $ \xmmsc -> XP.setNext xmmsc n
-         
+playlistSetNext :: Int32 -> XMMS (Result ())
+playlistSetNext n =
+  liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
+
+                             
 broadcastPlaylistChanged :: XMMS (Result ())
-broadcastPlaylistChanged = do
-  r <- liftXMMS $ XP.broadcastPlaylistChanged
-  return $ Result r
+broadcastPlaylistChanged = liftXMMSResult XP.broadcastPlaylistChanged
               

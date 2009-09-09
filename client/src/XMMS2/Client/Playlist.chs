@@ -18,28 +18,30 @@
 --
 
 module XMMS2.Client.Playlist
-  ( listEntries
-  , setNext
+  ( playlistListEntries
+  , playlistSetNext
   , broadcastPlaylistChanged
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+
+{# context prefix = "xmmsc" #}         
 
 import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}  
 
 
-{# fun xmmsc_playlist_list_entries as listEntries
+{# fun playlist_list_entries as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
 
-{# fun xmmsc_playlist_set_next as setNext
+{# fun playlist_set_next as ^
  { withConnection* `Connection' ,
-   cIntConv        `Integer'
- } -> `Result' peekResult* #}
+   cIntConv        `Int32'
+ } -> `Result' takeResult* #}
 
-{# fun xmmsc_broadcast_playlist_changed as broadcastPlaylistChanged
+{# fun broadcast_playlist_changed as ^
  { withConnection*   `Connection'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}

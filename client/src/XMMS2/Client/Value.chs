@@ -51,18 +51,6 @@ import Data.Maybe
 import XMMS2.Utils
 
   
-{# enum xmmsv_type_t as ValueType
- { underscoreToCase }
- with prefix = "XMMSV_"
- deriving (Show) #}
-
-data ValueData
-  = DataNone
-  | DataError String
-  | DataInt32 Int32
-  | DataString String
-    deriving Show
-  
 data Xmmsv_t = Xmmsv_t
 {# pointer *xmmsv_t as ValuePtr -> Xmmsv_t #}
 data Value = forall a. Value (Maybe a) (ForeignPtr Xmmsv_t)
@@ -75,10 +63,17 @@ takeValue o p = do
 foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (ValuePtr -> IO ())
 
+
+{# enum xmmsv_type_t as ValueType
+ { underscoreToCase }
+ with prefix = "XMMSV_"
+ deriving (Show) #}
+
 {# fun xmmsv_get_type as getType
  { withValue* `Value'
  } -> `ValueType' cToEnum #}
                
+
 getInt v = xmmsv_get_int v >>= toMaybe_
 {# fun xmmsv_get_int as xmmsv_get_int
  { withValue* `Value'              ,
@@ -91,6 +86,14 @@ getString v = xmmsv_get_string v >>= toMaybe peekCString
    alloca-    `CString' peek*
  } -> `Bool' #}
 
+
+data ValueData
+  = DataNone
+  | DataError String
+  | DataInt32 Int32
+  | DataString String
+    deriving Show
+
 getData v = do
   t <- getType v
   case t of
@@ -98,6 +101,7 @@ getData v = do
     TypeString -> mk DataString getString
     _          -> return DataNone
   where mk c g = liftM (c . fromJust) $ g v
+
 
 {# fun xmmsv_list_get_size as listGetSize
  { withValue* `Value'
@@ -109,19 +113,6 @@ listGet l p = xmmsv_list_get l p >>= toMaybe (takeValue (Just l))
    cIntConv   `Integer'        , 
    alloca-    `ValuePtr' peek*
  } -> `Bool' #}
-
-toMaybe _ (False, _) = return Nothing
-toMaybe f (True, v)  = liftM Just $ f v
-
-toMaybe_ = toMaybe return        
-
-
-
-propdictToDict v = xmmsv_propdict_to_dict v nullPtr >>= takeValue Nothing
-{# fun xmmsv_propdict_to_dict as xmmsv_propdict_to_dict
- { withValue* `Value'       ,
-   id         `Ptr CString'
- } -> `ValuePtr' id #}
 
 
 type DictForeachFun = CString -> ValuePtr -> Ptr () -> IO ()
@@ -144,3 +135,15 @@ dictForeach d f = do
   
 foreign import ccall "wrapper"
   mkDictForeachPtr :: DictForeachFun -> IO DictForeachPtr
+
+propdictToDict v = xmmsv_propdict_to_dict v nullPtr >>= takeValue Nothing
+{# fun xmmsv_propdict_to_dict as xmmsv_propdict_to_dict
+ { withValue* `Value'       ,
+   id         `Ptr CString'
+ } -> `ValuePtr' id #}
+
+
+toMaybe _ (False, _) = return Nothing
+toMaybe f (True, v)  = liftM Just $ f v
+
+toMaybe_ = toMaybe return        

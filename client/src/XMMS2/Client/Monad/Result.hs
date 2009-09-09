@@ -84,7 +84,7 @@ handler :: ResultType a => XMMS (Result a) -> ResultM a Bool -> XMMS ()
 handler r f = do
   Result r' <- r
   xmmsc <- connection
-  liftIO $ XR.notifierSet r' $ runHandler f xmmsc
+  liftIO $ XR.resultNotifierSet r' $ runHandler f xmmsc
 
 runHandler f xmmsc v = do
   r <- runXMMS (runResultM f v) xmmsc

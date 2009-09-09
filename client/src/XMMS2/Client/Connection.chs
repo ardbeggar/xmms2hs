@@ -20,7 +20,7 @@
 module XMMS2.Client.Connection
   ( Connection
   , withConnection
-  , peekConnection
+  , takeConnection
   , init
   , connect
   ) where
@@ -34,7 +34,7 @@ import XMMS2.Utils
 
 {# pointer *xmmsc_connection_t as Connection foreign newtype #}
 
-peekConnection p = liftM Connection $ newForeignPtr xmmsc_unref p
+takeConnection p = liftM Connection $ newForeignPtr xmmsc_unref p
 foreign import ccall unsafe "&xmmsc_unref"
   xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
 
@@ -51,4 +51,4 @@ foreign import ccall unsafe "&xmmsc_unref"
 
 maybeConnection p
   | p == nullPtr = return Nothing
-  | otherwise    = liftM Just $ peekConnection p
+  | otherwise    = liftM Just $ takeConnection p

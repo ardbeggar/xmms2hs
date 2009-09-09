@@ -18,7 +18,7 @@
 --
 
 module XMMS2.Client.Monad.Medialib
-  ( getInfo
+  ( medialibGetInfo
   ) where
 
 import Data.Int (Int32)
@@ -27,8 +27,8 @@ import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
-getInfo :: Int32 -> XMMS (Result Value)
-getInfo id = do
-  r <- liftXMMS $ \xmmsc -> XM.getInfo xmmsc id
-  return $ Result r
+
+medialibGetInfo :: Int32 -> XMMS (Result Value)
+medialibGetInfo id =
+  liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
   

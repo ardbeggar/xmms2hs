@@ -20,16 +20,18 @@
 module XMMS2.Client.Result
   ( Result
   , withResult
-  , peekResult
-  , getValue
-  , wait
-  , Notifier
-  , notifierSet
-  , callbackSet
+  , takeResult
+  , resultGetValue
+  , resultWait
+  , ResultNotifier
+  , resultNotifierSet
+  , resultCallbackSet
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 #include <xmms2hs-client.h>
+
+{# context prefix = "xmmsc" #}
 
 import Control.Monad
 import XMMS2.Utils
@@ -38,31 +40,31 @@ import XMMS2.Utils
 
 {# pointer *xmmsc_result_t as Result foreign newtype #}
 
-peekResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
+takeResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
 foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
                         
 
-getValue r = xmmsc_result_get_value r >>= takeValue (Just r)
-{# fun xmmsc_result_get_value as xmmsc_result_get_value
+resultGetValue r = result_get_value r >>= takeValue (Just r)
+{# fun result_get_value as result_get_value
  { withResult* `Result'
  } -> `ValuePtr' id #}
 
-{# fun xmmsc_result_wait as wait
+{# fun result_wait as ^
  { withResult* `Result'
  } -> `()' #}
 
 
-type Notifier = Value -> IO Bool
+type ResultNotifier = Value -> IO Bool
 
-notifierSet :: Result -> Notifier -> IO ()
-notifierSet r f = do
+resultNotifierSet :: Result -> ResultNotifier -> IO ()
+resultNotifierSet r f = do
   n <- mkNotifierPtr $ \p _ -> takeValue (Just r) p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
 
-callbackSet o f = do
+resultCallbackSet o f = do
   r <- o
-  notifierSet r f
+  resultNotifierSet r f
 
 
 type NotifierFun = ValuePtr -> Ptr () -> IO CInt

@@ -18,10 +18,12 @@
 --
 
 module XMMS2.Client.Medialib
-  ( getInfo
+  ( medialibGetInfo
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+
+{# context prefix = "xmmsc" #}
 
 import Control.Monad
 import XMMS2.Utils
@@ -29,7 +31,7 @@ import XMMS2.Utils
 {# import XMMS2.Client.Result #}
 
 
-{# fun xmmsc_medialib_get_info as getInfo
+{# fun medialib_get_info as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
- } -> `Result' peekResult* #}
+ } -> `Result' takeResult* #}
