@@ -19,15 +19,17 @@
 
 module XMMS2.Client.Playback
   ( PlaybackStatus (..)
-  , start
-  , stop
-  , tickle
-  , status
+  , playbackStart
+  , playbackStop
+  , playbackTickle
+  , playbackStatus
   , signalPlaybackPlaytime
   , broadcastPlaybackStatus
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+
+{# context prefix = "xmmsc" #}
 
 import XMMS2.Utils         
 {# import XMMS2.Client.Connection #}  
@@ -40,28 +42,28 @@ import XMMS2.Utils
  deriving (Show) #}
 
 
-{# fun xmmsc_playback_start as start
+{# fun playback_start as ^
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
 
-{# fun xmmsc_playback_stop as stop
+{# fun playback_stop as ^
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
 
-{# fun xmmsc_playback_tickle as tickle
+{# fun playback_tickle as ^
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
 
-{# fun xmmsc_playback_status as status
- { withConnection* `Connection'
- } -> `Result' peekResult* #}
-
-
-{# fun xmmsc_signal_playback_playtime as signalPlaybackPlaytime
+{# fun playback_status as ^
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
 
 
-{# fun xmmsc_broadcast_playback_status as broadcastPlaybackStatus
+{# fun signal_playback_playtime as ^
+ { withConnection* `Connection'
+ } -> `Result' peekResult* #}
+
+
+{# fun broadcast_playback_status as ^
  { withConnection* `Connection'
  } -> `Result' peekResult* #}

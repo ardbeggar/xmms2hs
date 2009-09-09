@@ -38,12 +38,19 @@ instance ResultType PlaybackStatus where
   valueToType v = liftM (toEnum . fromIntegral) $ getInt v
 
 
-playbackStart  = liftXMMSResult XP.start
-playbackStop   = liftXMMSResult XP.stop
-playbackTickle = liftXMMSResult XP.tickle
+playbackStart :: XMMS (Result ())
+playbackStart = liftXMMSResult XP.playbackStart
+                 
+playbackStop :: XMMS (Result ())
+playbackStop = liftXMMSResult XP.playbackStop
+
+playbackTickle :: XMMS (Result ())               
+playbackTickle = liftXMMSResult XP.playbackTickle
 
 playbackStatus :: XMMS (Result PlaybackStatus)
-playbackStatus = liftXMMSResult XP.status
+playbackStatus = liftXMMSResult XP.playbackStatus
+
   
 broadcastPlaybackStatus :: XMMS (Result PlaybackStatus)
 broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus
+                          
