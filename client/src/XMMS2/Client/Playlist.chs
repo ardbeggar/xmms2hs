@@ -20,7 +20,9 @@
 module XMMS2.Client.Playlist
   ( playlistListEntries
   , playlistSetNext
+  , playlistCurrentPos
   , broadcastPlaylistChanged
+  , broadcastPlaylistCurrentPos
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -42,6 +44,16 @@ import XMMS2.Utils
    cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
+{# fun playlist_current_pos as ^
+ { withConnection*   `Connection' ,
+   withMaybeCString* `Maybe String'
+ } -> `Result' takeResult* #}
+
+
 {# fun broadcast_playlist_changed as ^
+ { withConnection*   `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun broadcast_playlist_current_pos as ^
  { withConnection*   `Connection'
  } -> `Result' takeResult* #}
