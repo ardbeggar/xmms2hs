@@ -22,13 +22,23 @@ module XMMS2.Client.Monad.Value
   , listGetSize
   , listGet
   , getInt
+  , getString
   ) where
 
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Value (Value)  
 import qualified XMMS2.Client.Value as XV
+import Control.Monad  
+import Data.Maybe
+  
+
+-- TODO: check for value type errors.
 
 listGetSize val = liftIO $ XV.listGetSize val
-listGet val n = liftIO $ XV.listGet val n
-getInt val = liftIO $ XV.getInt val
+
+listGet val n = liftM fromJust $ liftIO $ XV.listGet val n
+
+getInt val = liftM fromJust $ liftIO $ XV.getInt val
+
+getString val = liftM fromJust $ liftIO $ XV.getString val
              

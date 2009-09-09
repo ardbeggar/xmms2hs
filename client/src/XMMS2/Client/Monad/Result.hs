@@ -21,61 +21,70 @@ module XMMS2.Client.Monad.Result
   ( Result (..)
   , ResultType (..)
   , ResultM
+  , liftXMMSResult
   , result
+  , resultRawValue
   , handler
   ) where
 
-import Control.Monad.Reader  
+import Control.Monad.State
 import Data.Maybe
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
-import qualified XMMS2.Client.Value as XV
 import qualified XMMS2.Client.Result as XR
 import Data.Int (Int32)
 import System.IO.Error  
 
+
 class ResultType t where
-  valueToType :: Value -> IO (Maybe t)
+  valueToType :: Value -> XMMS t
+                 
 
 instance ResultType () where
-  valueToType _ = return Nothing
+  valueToType _ = return ()
 
-instance ResultType XV.Value where
-  valueToType = return . Just
+instance ResultType Value where
+  valueToType = return
 
 instance ResultType Int32 where
-  valueToType = XV.getInt
+  valueToType = getInt
 
 instance ResultType String where
-  valueToType = XV.getString
+  valueToType = getString
 
 instance ResultType a => ResultType [a] where
   valueToType v = do
-    s <- XV.listGetSize v
-    liftM Just $ mapM (\n -> do
-                         Just v' <- XV.listGet v n
-                         liftM fromJust $ valueToType v'
-                      ) [0 .. (s - 1)]
+    s <- listGetSize v
+    mapM (\n -> listGet v n >>= valueToType) [0 .. (s - 1)]
 
-data (ResultType a) => Result a = Result XR.Result
-                                
-type ResultM a b = ReaderT (IO (Maybe a)) XMMS b
 
-runResultM :: ResultType a => ResultM a b -> XV.Value -> XMMS b
-runResultM f v = runReaderT f (valueToType v)
+type ResultM a b = StateT (Maybe a, Value) XMMS b
+
+runResultM :: ResultType a => ResultM a b -> Value -> XMMS b
+runResultM f v = evalStateT f (Nothing, v)
 
 result :: ResultType a => ResultM a a
 result = do
-  f <- ask
-  Just d <- liftIO $ f
-  return d
+  (res, raw) <- get
+  case res of
+    Just val ->
+      return val
+    Nothing  ->
+      do val <- lift $ valueToType raw
+         put (Just val, raw)
+         return val
 
+resultRawValue :: ResultType a => ResultM a Value
+resultRawValue = gets snd
+
+
+data (ResultType a) => Result a = Result XR.Result
+                                
 handler :: ResultType a => XMMS (Result a) -> ResultM a Bool -> XMMS ()
 handler r f = do
   Result r' <- r
   xmmsc <- connection
   liftIO $ XR.notifierSet r' $ runHandler f xmmsc
-
 
 runHandler f xmmsc v = do
   r <- runXMMS (runResultM f v) xmmsc
@@ -84,5 +93,4 @@ runHandler f xmmsc v = do
     Left err -> ioError $ userError err
         
 
-                                    
-
+liftXMMSResult = liftM Result . liftXMMS                                    

@@ -18,12 +18,32 @@
 --
 
 module XMMS2.Client.Monad.Playback
-  ( tickle
+  ( PlaybackStatus (..)
+  , playbackStart
+  , playbackStop
+  , playbackTickle
+  , playbackStatus
+  , broadcastPlaybackStatus
   ) where
 
 import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Value
+import XMMS2.Client.Monad.Result
+import XMMS2.Client.Playback (PlaybackStatus)  
 import qualified XMMS2.Client.Playback as XP
+import Control.Monad
 
 
-tickle = liftXMMS XP.tickle
+instance ResultType PlaybackStatus where
+  valueToType v = liftM (toEnum . fromIntegral) $ getInt v
+
+
+playbackStart  = liftXMMSResult XP.start
+playbackStop   = liftXMMSResult XP.stop
+playbackTickle = liftXMMSResult XP.tickle
+
+playbackStatus :: XMMS (Result PlaybackStatus)
+playbackStatus = liftXMMSResult XP.status
   
+broadcastPlaybackStatus :: XMMS (Result PlaybackStatus)
+broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus

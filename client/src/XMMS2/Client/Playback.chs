@@ -18,9 +18,11 @@
 --
 
 module XMMS2.Client.Playback
-  ( start
+  ( PlaybackStatus (..)
+  , start
   , stop
   , tickle
+  , status
   , signalPlaybackPlaytime
   , broadcastPlaybackStatus
   ) where
@@ -29,7 +31,13 @@ module XMMS2.Client.Playback
 
 import XMMS2.Utils         
 {# import XMMS2.Client.Connection #}  
-{# import XMMS2.Client.Result #}  
+{# import XMMS2.Client.Result #}
+
+
+{# enum xmms_playback_status_t as PlaybackStatus
+ { underscoreToCase }
+ with prefix = "XMMS_PLAYBACK_"
+ deriving (Show) #}
 
 
 {# fun xmmsc_playback_start as start
@@ -41,6 +49,10 @@ import XMMS2.Utils
  } -> `Result' peekResult* #}
 
 {# fun xmmsc_playback_tickle as tickle
+ { withConnection* `Connection'
+ } -> `Result' peekResult* #}
+
+{# fun xmmsc_playback_status as status
  { withConnection* `Connection'
  } -> `Result' peekResult* #}
 
