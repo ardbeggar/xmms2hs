@@ -22,13 +22,13 @@ module XMMS2.Client.Monad.Medialib
   ) where
 
 import Data.Int (Int32)
-import XMMS2.Client.Value
+import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
 
-medialibGetInfo :: Int32 -> XMMS (Result Value)
+medialibGetInfo :: Int32 -> XMMS (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
   

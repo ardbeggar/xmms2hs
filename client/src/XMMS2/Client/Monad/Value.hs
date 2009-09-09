@@ -20,6 +20,7 @@
 module XMMS2.Client.Monad.Value
   ( Value
   , ValueType (..)
+  , ValueData (..)
   , Int32
   , ValueTypeClass (..)
   , listGetSize
@@ -27,13 +28,17 @@ module XMMS2.Client.Monad.Value
   , getInt
   , getString
   , getList
+  , Dict
+  , getDict
   ) where
 
 import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Value (Value, ValueType, Int32)  
+import XMMS2.Client.Value (Value, ValueType, ValueData, Int32)  
 import qualified XMMS2.Client.Value as XV
 import Control.Monad  
 import Data.Maybe
+import Data.Map (Map, fromList)  
+import Control.Monad.Error
   
 
 class ValueTypeClass t where
@@ -55,21 +60,24 @@ instance ValueTypeClass String where
 instance ValueTypeClass a => ValueTypeClass [a] where
   valueToType = getList
 
+instance ValueTypeClass ValueData where
+  valueToType v = liftIO $ XV.getData v
+
 -- TODO: check for value type errors.
 
 listGetSize val = liftIO $ XV.listGetSize val
 
-listGet val = liftGet $ XV.listGet val
+listGet val = liftGet "list" $ XV.listGet val
 
-getInt = liftGet XV.getInt
+getInt = liftGet "int32" XV.getInt
 
-getString = liftGet XV.getString
+getString = liftGet "string" XV.getString
 
-getListIter = liftGet XV.getListIter
+getListIter = liftGet "list" XV.getListIter
 
 listIterValid = liftIO . XV.listIterValid
 
-listIterEntry = liftGet XV.listIterEntry
+listIterEntry = liftGet "list iterator" XV.listIterEntry
 
 listIterNext = liftIO . XV.listIterNext
           
@@ -82,7 +90,38 @@ getList val = do
     listIterNext iter
     return item
 
-liftGet f x = liftM fromJust $ liftIO $ f x
+
+getDictIter = liftGet "dict" XV.getDictIter
+
+dictIterValid = liftIO . XV.dictIterValid
+
+dictIterPair = liftGet "dict iterator" XV.dictIterPair
+
+dictIterNext = liftIO . XV.dictIterNext
+
+liftGet name f x = checkGet ("the value does not hold " ++ name) $ liftIO $ f x
+
+checkGet :: String -> XMMS (Maybe a) -> XMMS a
+checkGet text a = do
+  a' <- a
+  case a' of
+    Just r  -> return r
+    Nothing -> throwError text
+
+type Dict a = Map String a
+
+getDict :: ValueTypeClass a => Value -> XMMS (Dict a)
+getDict val = liftM fromList $ do
+  iter <- getDictIter val
+  while (dictIterValid iter) $ do
+    (key, raw) <- dictIterPair iter
+    val        <- valueToType raw
+    dictIterNext iter
+    return (key, val)
+
+instance ValueTypeClass a => ValueTypeClass (Dict a) where
+  valueToType = getDict
+
 
 while c a = do
   continue <- c

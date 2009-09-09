@@ -46,6 +46,11 @@ module XMMS2.Client.Value
   , Int32
   , propdictToDict
   , dictForeach
+  , DictIter
+  , getDictIter
+  , dictIterValid
+  , dictIterPair
+  , dictIterNext
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -143,6 +148,43 @@ listIterEntry i@(ListIter v _) = list_iter_entry i >>= toMaybe (takeValue (Just 
 
 {# fun xmmsv_list_iter_next as listIterNext
  { withListIter* `ListIter'
+ } -> `()' #}
+
+
+
+{# pointer *xmmsv_dict_iter_t as DictIterPtr #}
+
+data DictIter = DictIter Value DictIterPtr
+
+withDictIter (DictIter _ p) f = f p
+
+getDictIter v = get_dict_iter v >>= toMaybe (return . DictIter v)
+{# fun xmmsv_get_dict_iter as get_dict_iter
+ { withValue* `Value'             ,
+   alloca-    `DictIterPtr' peek*
+ } -> `Bool' #}
+
+dictIterPair i@(DictIter v _) = do
+  (success, keyptr, valptr) <- dict_iter_pair i
+  if success
+    then do
+      key <- peekCString keyptr
+      val <- takeValue (Just v) valptr
+      return $ Just (key, val)
+    else
+      return Nothing
+{# fun xmmsv_dict_iter_pair as dict_iter_pair
+ { withDictIter* `DictIter'       ,
+   alloca-       `CString'  peek* ,
+   alloca-       `ValuePtr' peek*
+ } -> `Bool' #}
+
+{# fun xmmsv_dict_iter_valid as dictIterValid
+ { withDictIter* `DictIter'
+ } -> `Bool' #}
+
+{# fun xmmsv_dict_iter_next as dictIterNext
+ { withDictIter* `DictIter'
  } -> `()' #}
 
 

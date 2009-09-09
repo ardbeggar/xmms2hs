@@ -20,6 +20,7 @@
 module XMMS2.Client.Monad.Playlist
   ( playlistListEntries
   , playlistSetNext
+  , PlaylistPosition
   , playlistCurrentPos
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
@@ -28,9 +29,11 @@ module XMMS2.Client.Monad.Playlist
 import Control.Monad
 import Data.Maybe  
 import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Value
 import Data.Int (Int32)  
 import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Playlist as XP
+import qualified Data.Map as Map  
 
 
 playlistListEntries :: Maybe String -> XMMS (Result [Int32])
@@ -41,7 +44,17 @@ playlistSetNext :: Int32 -> XMMS (Result ())
 playlistSetNext n =
   liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
 
-playlistCurrentPos :: Maybe String -> XMMS (Result ()) -- FIXME: it's a Dict!
+
+type PlaylistPosition = (Int32, String)
+
+instance ValueTypeClass PlaylistPosition where
+  valueToType v = do
+    dict <- getDict v
+    let (Just (DataInt32  p)) = Map.lookup "position" dict
+        (Just (DataString n)) = Map.lookup "name" dict
+    return (p, n)
+
+playlistCurrentPos :: Maybe String -> XMMS (Result PlaylistPosition)
 playlistCurrentPos name =
   liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
 
