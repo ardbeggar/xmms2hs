@@ -19,9 +19,10 @@
 
 module XMMS2.Client.Monad.Playback
   ( PlaybackStatus (..)
-  , playbackStart
   , playbackStop
   , playbackTickle
+  , playbackStart
+  , playbackPause
   , playbackStatus
   , broadcastPlaybackStatus
   ) where
@@ -38,14 +39,17 @@ instance ResultType PlaybackStatus where
   valueToType v = liftM (toEnum . fromIntegral) $ getInt v
 
 
-playbackStart :: XMMS (Result ())
-playbackStart = liftXMMSResult XP.playbackStart
-                 
 playbackStop :: XMMS (Result ())
 playbackStop = liftXMMSResult XP.playbackStop
 
 playbackTickle :: XMMS (Result ())               
 playbackTickle = liftXMMSResult XP.playbackTickle
+
+playbackStart :: XMMS (Result ())
+playbackStart = liftXMMSResult XP.playbackStart
+                 
+playbackPause :: XMMS (Result ())
+playbackPause = liftXMMSResult XP.playbackPause
 
 playbackStatus :: XMMS (Result PlaybackStatus)
 playbackStatus = liftXMMSResult XP.playbackStatus

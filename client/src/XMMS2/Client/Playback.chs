@@ -19,9 +19,10 @@
 
 module XMMS2.Client.Playback
   ( PlaybackStatus (..)
-  , playbackStart
   , playbackStop
   , playbackTickle
+  , playbackStart
+  , playbackPause
   , playbackStatus
   , signalPlaybackPlaytime
   , broadcastPlaybackStatus
@@ -39,18 +40,22 @@ import XMMS2.Utils
 {# enum xmms_playback_status_t as PlaybackStatus
  { underscoreToCase }
  with prefix = "XMMS_PLAYBACK_"
- deriving (Show) #}
+ deriving (Show, Eq) #}
 
-
-{# fun playback_start as ^
- { withConnection* `Connection'
- } -> `Result' takeResult* #}
 
 {# fun playback_stop as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
 {# fun playback_tickle as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun playback_start as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun playback_pause as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
