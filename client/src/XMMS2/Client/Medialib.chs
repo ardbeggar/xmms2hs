@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Medialib
   ( medialibGetInfo
+  , broadcastMedialibEntryChanged
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -35,3 +36,9 @@ import XMMS2.Utils
  { withConnection* `Connection' ,
    cIntConv        `Int32'
  } -> `Result' takeResult* #}
+
+
+{# fun broadcast_medialib_entry_changed as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+

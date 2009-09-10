@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Monad.Medialib
   ( medialibGetInfo
+  , broadcastMedialibEntryChanged
   ) where
 
 import Data.Int (Int32)
@@ -32,3 +33,7 @@ medialibGetInfo :: Int32 -> XMMS (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
   
+
+broadcastMedialibEntryChanged :: XMMS (Result Int32)
+broadcastMedialibEntryChanged =
+  liftXMMSResult XM.broadcastMedialibEntryChanged
