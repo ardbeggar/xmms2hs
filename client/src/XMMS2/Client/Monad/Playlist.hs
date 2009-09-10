@@ -27,10 +27,10 @@ module XMMS2.Client.Monad.Playlist
   ) where
 
 import Control.Monad
+import Control.Monad.Error  
 import Data.Maybe  
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
-import Data.Int (Int32)  
 import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Playlist as XP
 import qualified Data.Map as Map  
@@ -50,9 +50,12 @@ type PlaylistPosition = (Int32, String)
 instance ValueTypeClass PlaylistPosition where
   valueToType v = do
     dict <- getDict v
-    let (Just (DataInt32  p)) = Map.lookup "position" dict
-        (Just (DataString n)) = Map.lookup "name" dict
-    return (p, n)
+    case (Map.lookup "position" dict,
+          Map.lookup "name"     dict) of
+      (Just (DataInt32 p), Just (DataString n)) ->
+        return (p, n)
+      _ ->
+        throwError "not a playlist position"
 
 playlistCurrentPos :: Maybe String -> XMMS (Result PlaylistPosition)
 playlistCurrentPos name =
