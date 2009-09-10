@@ -18,7 +18,8 @@
 --
 
 module XMMS2.Client.Playlist
-  ( playlistListEntries
+  ( playlistAddURL
+  , playlistListEntries
   , playlistSetNext
   , playlistSetNextRel
   , playlistCurrentPos
@@ -34,6 +35,12 @@ import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}  
 
+
+{# fun playlist_add_url as playlistAddURL
+ { withConnection*   `Connection'   ,
+   withMaybeCString* `Maybe String' ,
+   withCString*      `String'
+ } -> `Result' takeResult* #}
 
 {# fun playlist_list_entries as ^
  { withConnection*   `Connection'   ,
