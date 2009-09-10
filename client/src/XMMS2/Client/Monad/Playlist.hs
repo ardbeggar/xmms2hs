@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Monad.Playlist
   ( playlistAddURL
+  , playlistClear
   , playlistListEntries
   , playlistSetNext
   , playlistSetNextRel
@@ -41,6 +42,10 @@ import qualified Data.Map as Map
 playlistAddURL :: Maybe String -> String -> XMMS (Result ())
 playlistAddURL name url =
   liftXMMSResult $ \xmmsc -> XP.playlistAddURL xmmsc name url
+
+playlistClear :: Maybe String -> XMMS (Result ())
+playlistClear name =
+  liftXMMSResult $ \xmmsc -> XP.playlistClear xmmsc name
                              
 playlistListEntries :: Maybe String -> XMMS (Result [Int32])
 playlistListEntries name =
