@@ -20,6 +20,7 @@
 module XMMS2.Client.Monad.Playlist
   ( playlistListEntries
   , playlistSetNext
+  , playlistSetNextRel
   , PlaylistPosition
   , playlistCurrentPos
   , broadcastPlaylistChanged
@@ -43,6 +44,10 @@ playlistListEntries name =
 playlistSetNext :: Int32 -> XMMS (Result ())
 playlistSetNext n =
   liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
+
+playlistSetNextRel :: Int32 -> XMMS (Result ())
+playlistSetNextRel n =
+  liftXMMSResult $ \xmmsc -> XP.playlistSetNextRel xmmsc n
 
 
 type PlaylistPosition = (Int32, String)

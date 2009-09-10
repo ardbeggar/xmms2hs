@@ -20,6 +20,7 @@
 module XMMS2.Client.Playlist
   ( playlistListEntries
   , playlistSetNext
+  , playlistSetNextRel
   , playlistCurrentPos
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
@@ -40,6 +41,11 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun playlist_set_next as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_set_next_rel as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
  } -> `Result' takeResult* #}
