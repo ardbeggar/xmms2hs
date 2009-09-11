@@ -1,18 +1,27 @@
 name:               xmms2-client-glib
 version:            0.0.1.0
-cabal-version:      >= 1.2
+
+author:             Oleg Belozeorov
+maintainer:         Oleg Belozeorov <upwawet@gmail.com>
+copyright:          © 2009 Oleg Belozeorov
 license:            OtherLicense
 license-file:       COPYING
-author:             Oleg Belozeorov
-synopsis:           XMMS2 client development library - GLib integration
+
+category:           Sound
+synopsis:           An XMMS2 client library — GLib integration.
+description:
+  This package provides an interface to the X-platform Music Multiplexing
+  System 2 (http://xmms2.xmms.se) client GLib integration API.
+
+cabal-version:      >= 1.2
 build-type:         Simple
 extra-tmp-files:    config.status, config.log,
                     xmms2-client-glib.buildinfo, C2HS.hs
   
 library
-  exposed-modules:		XMMS2.Client.Glib
-  other-modules:		C2HS
-  build-depends:		base, haskell98, xmms2-client == 0.0.1.0
-  build-tools:			c2hs
-  hs-source-dirs:       ., src
-  extensions:           ForeignFunctionInterface
+  exposed-modules:  XMMS2.Client.Glib
+  other-modules:    C2HS
+  build-depends:    base, haskell98, xmms2-client == 0.0.1.0
+  build-tools:      c2hs
+  hs-source-dirs:   ., src
+  extensions:       ForeignFunctionInterface

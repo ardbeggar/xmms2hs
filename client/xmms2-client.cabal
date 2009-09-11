@@ -1,33 +1,44 @@
 name:               xmms2-client
 version:            0.0.1.0
-cabal-version:      >= 1.2
+
+author:             Oleg Belozeorov
+maintainer:         Oleg Belozeorov <upwawet@gmail.com>
+copyright:          © 2009 Oleg Belozeorov
 license:            OtherLicense
 license-file:       COPYING
-author:             Oleg Belozeorov
-synopsis:           XMMS2 client development library
+
+category:           Sound
+synopsis:           An XMMS2 client library.
+description:
+  This package provides an interface to the X-platform Music Multiplexing
+  System 2 (http://xmms2.xmms.se) client API, thus allowing to write XMMS2
+  clients in Haskell. It contains (nearly) 1-to-1 bindings to the XMMS2
+  client API and a higher level monadic interface.
+
+cabal-version:      >= 1.2  
 build-type:         Simple
 extra-source-files: src/XMMS2/Client/xmms2hs-client.h
 extra-tmp-files:    config.status, config.log,
                     xmms2-client.buildinfo, C2HS.hs
-  
+
 library
-  exposed-modules:		XMMS2.Client.Value, XMMS2.Client.Result,
-                        XMMS2.Client.Connection, XMMS2.Client.Playback,
-                        XMMS2.Client.Playlist, XMMS2.Client.Medialib,
-                        XMMS2.Client.Monad, 
-                        XMMS2.Client.Monad.Monad,
-                        XMMS2.Client.Monad.Value,
-                        XMMS2.Client.Monad.Result,
-                        XMMS2.Client.Monad.Connection, 
-                        XMMS2.Client.Monad.Playlist,
-                        XMMS2.Client.Monad.Playback,
-                        XMMS2.Client.Monad.Medialib
-  other-modules:		C2HS, XMMS2.Utils
-  c-sources:			src/XMMS2/Client/xmms2hs-client.c
-  include-dirs:			src/XMMS2/Client
-  build-depends:		base, haskell98, utf8-string, mtl, containers
-  build-tools:			c2hs
-  hs-source-dirs:       ., src
-  extensions:           ForeignFunctionInterface,
-                        ExistentialQuantification,
-                        TypeSynonymInstances
+  exposed-modules:	XMMS2.Client.Value, XMMS2.Client.Result,
+                    XMMS2.Client.Connection, XMMS2.Client.Playback,
+                    XMMS2.Client.Playlist, XMMS2.Client.Medialib,
+                    XMMS2.Client.Monad, 
+                    XMMS2.Client.Monad.Monad,
+                    XMMS2.Client.Monad.Value,
+                    XMMS2.Client.Monad.Result,
+                    XMMS2.Client.Monad.Connection, 
+                    XMMS2.Client.Monad.Playlist,
+                    XMMS2.Client.Monad.Playback,
+                    XMMS2.Client.Monad.Medialib
+  other-modules:    C2HS, XMMS2.Utils
+  c-sources:		src/XMMS2/Client/xmms2hs-client.c
+  include-dirs:		src/XMMS2/Client
+  build-depends:	base, haskell98, utf8-string, mtl, containers
+  build-tools:		c2hs
+  hs-source-dirs:   ., src
+  extensions:       ForeignFunctionInterface,
+                    ExistentialQuantification,
+                    TypeSynonymInstances
