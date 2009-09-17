@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 8 Sep. 2009
+--  Created: 17 Sep. 2009
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,21 +17,22 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad
-  ( module XMMS2.Client.Monad.Monad
-  , module XMMS2.Client.Monad.Result
-  , module XMMS2.Client.Monad.Connection
-  , module XMMS2.Client.Monad.Playlist
-  , module XMMS2.Client.Monad.Playback
-  , module XMMS2.Client.Monad.Medialib
-  , module XMMS2.Client.Monad.Coll
+module XMMS2.Client.Coll
+  ( module XMMS2.Client.CollBase
+  , collIdlistFromPlaylistFile
   ) where
 
-import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Connection
-import XMMS2.Client.Monad.Playlist
-import XMMS2.Client.Monad.Playback
-import XMMS2.Client.Monad.Medialib
-import XMMS2.Client.Monad.Coll
-  
+#include <xmmsclient/xmmsclient.h>
+
+{# context prefix = "xmmsc" #}         
+
+import XMMS2.Utils
+{# import XMMS2.Client.Connection #}
+{# import XMMS2.Client.Result #}  
+{# import XMMS2.Client.CollBase #}  
+
+
+{# fun coll_idlist_from_playlist_file as ^
+ { withConnection* `Connection' ,
+   withCString*    `String'
+ } -> `Result' takeResult* #}

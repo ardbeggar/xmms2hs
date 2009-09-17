@@ -33,7 +33,8 @@ module XMMS2.Client.Monad.Value
   ) where
 
 import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Value (Value, ValueType, ValueData, Int32)  
+import XMMS2.Client.Value (Value, ValueType, ValueData, Int32)
+import XMMS2.Client.Coll (Coll) -- FIXME: should be in Coll
 import qualified XMMS2.Client.Value as XV
 import Control.Monad  
 import Data.Maybe
@@ -57,6 +58,9 @@ instance ValueTypeClass Int32 where
 instance ValueTypeClass String where
   valueToType = getString
 
+instance ValueTypeClass Coll where -- FIXME: should be in Coll
+  valueToType = getColl
+
 instance ValueTypeClass a => ValueTypeClass [a] where
   valueToType = getList
 
@@ -72,6 +76,8 @@ listGet val = liftGet "list" $ XV.listGet val
 getInt = liftGet "int32" XV.getInt
 
 getString = liftGet "string" XV.getString
+
+getColl = liftGet "coll" XV.getColl -- FIXME: should be in Coll
 
 getListIter = liftGet "list" XV.getListIter
 

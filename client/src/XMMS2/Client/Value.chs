@@ -35,6 +35,7 @@ module XMMS2.Client.Value
   , getType
   , getInt
   , getString
+  , getColl
   , getData
   , listGetSize
   , listGet
@@ -59,6 +60,7 @@ import Control.Monad
 import Data.Int (Int32)
 import Data.Maybe
 import XMMS2.Utils
+{# import XMMS2.Client.CollBase #}
 
   
 data Xmmsv_t = Xmmsv_t
@@ -96,19 +98,26 @@ getString v = xmmsv_get_string v >>= toMaybe peekCString
    alloca-    `CString' peek*
  } -> `Bool' #}
 
+getColl v = xmmsv_get_coll v >>= toMaybe (takeColl (Just v))
+{# fun xmmsv_get_coll as xmmsv_get_coll
+ { withValue* `Value'         ,
+   alloca-    `CollPtr' peek*
+ } -> `Bool' #}
+
 
 data ValueData
   = DataNone
   | DataError String
   | DataInt32 Int32
   | DataString String
-    deriving Show
+  | DataColl Coll
 
 getData v = do
   t <- getType v
   case t of
     TypeInt32  -> mk DataInt32 getInt
     TypeString -> mk DataString getString
+    TypeColl   -> mk DataColl getColl
     _          -> return DataNone
   where mk c g = liftM (c . fromJust) $ g v
 

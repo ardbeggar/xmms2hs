@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 8 Sep. 2009
+--  Created: 17 Sep. 2009
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,21 +17,28 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad
-  ( module XMMS2.Client.Monad.Monad
-  , module XMMS2.Client.Monad.Result
-  , module XMMS2.Client.Monad.Connection
-  , module XMMS2.Client.Monad.Playlist
-  , module XMMS2.Client.Monad.Playback
-  , module XMMS2.Client.Monad.Medialib
-  , module XMMS2.Client.Monad.Coll
+module XMMS2.Client.CollBase
+  ( CollPtr
+  , Coll
+  , withColl
+  , takeColl
   ) where
 
-import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Connection
-import XMMS2.Client.Monad.Playlist
-import XMMS2.Client.Monad.Playback
-import XMMS2.Client.Monad.Medialib
-import XMMS2.Client.Monad.Coll
-  
+#include <xmmsclient/xmmsclient.h>
+
+{# context prefix = "xmmsc" #}         
+
+import XMMS2.Utils
+
+
+data Xmmsv_coll_t = Xmmsv_coll_t
+{# pointer *xmmsv_coll_t as CollPtr -> Xmmsv_coll_t #}
+data Coll = forall a. Coll (Maybe a) (ForeignPtr Xmmsv_coll_t)
+
+withColl (Coll _ p) = withForeignPtr p
+
+takeColl o p = do
+  f <- maybe (newForeignPtr xmmsv_coll_unref p) (\_ -> newForeignPtr_ p) o
+  return $ Coll o f
+foreign import ccall unsafe "&xmmsv_coll_unref"
+  xmmsv_coll_unref :: FunPtr (CollPtr -> IO ())
