@@ -23,7 +23,9 @@ module XMMS2.Client.Monad.Playback
   , playbackTickle
   , playbackStart
   , playbackPause
+  , playbackSeekMs
   , playbackStatus
+  , signalPlaybackPlaytime
   , broadcastPlaybackStatus
   ) where
 
@@ -51,10 +53,18 @@ playbackStart = liftXMMSResult XP.playbackStart
 playbackPause :: XMMS (Result ())
 playbackPause = liftXMMSResult XP.playbackPause
 
+playbackSeekMs :: Int32 -> XMMS (Result ())
+playbackSeekMs pos =
+  liftXMMSResult $ \xmmsc -> XP.playbackSeekMs xmmsc pos
+
 playbackStatus :: XMMS (Result PlaybackStatus)
 playbackStatus = liftXMMSResult XP.playbackStatus
 
-  
+
+signalPlaybackPlaytime :: XMMS (Result Int32)
+signalPlaybackPlaytime = liftXMMSResult XP.signalPlaybackPlaytime
+
+                         
 broadcastPlaybackStatus :: XMMS (Result PlaybackStatus)
 broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus
-                          
+                         
