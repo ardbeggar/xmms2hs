@@ -30,6 +30,7 @@ library
                     XMMS2.Client.Playlist,
                     XMMS2.Client.Medialib,
                     XMMS2.Client.Monad, 
+                    XMMS2.Client.Monad.Utils,
                     XMMS2.Client.Monad.Monad,
                     XMMS2.Client.Monad.Value,
                     XMMS2.Client.Monad.Result,

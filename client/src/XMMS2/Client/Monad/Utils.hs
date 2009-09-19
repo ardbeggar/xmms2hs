@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 17 Sep. 2009
+--  Created: 19 Sep. 2009
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,27 +17,28 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Coll
-  ( Coll
-  , getColl
-  , collIdlistFromPlaylistFile
+module XMMS2.Client.Monad.Utils
+  ( liftGet
+  , while
   ) where
 
 import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Utils
-import XMMS2.Client.Monad.Value
-import XMMS2.Client.Coll (Coll)  
-import qualified XMMS2.Client.Coll as XC
-import qualified XMMS2.Client.Value as XV
+import Control.Monad.Error
+  
 
+liftGet name f x =
+  checkGet ("the value does not hold " ++ name) $ liftIO $ f x
 
-instance ValueTypeClass Coll where
-  valueToType = getColl
+checkGet :: String -> XMMS (Maybe a) -> XMMS a
+checkGet text a = do
+  a' <- a
+  case a' of
+    Just r  -> return r
+    Nothing -> throwError text
+  
 
-getColl = liftGet "coll" XV.getColl
-
-
-collIdlistFromPlaylistFile :: String -> XMMS (Result Coll)
-collIdlistFromPlaylistFile name =
-  liftXMMSResult $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
+while c a = do
+  continue <- c
+  if continue
+    then liftM2 (:) a (while c a)
+    else return []
