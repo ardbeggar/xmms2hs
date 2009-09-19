@@ -32,8 +32,8 @@ import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Value as XV
 
 
-instance ValueTypeClass Coll where
-  valueToType = getColl
+instance ValueClass Coll where
+  valueGet = getColl
 
 getColl = liftGet "coll" XV.getColl
 

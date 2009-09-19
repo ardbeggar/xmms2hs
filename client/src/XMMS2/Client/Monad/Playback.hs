@@ -38,8 +38,8 @@ import qualified XMMS2.Client.Playback as XP
 import Control.Monad
 
 
-instance ValueTypeClass PlaybackStatus where
-  valueToType v = liftM (toEnum . fromIntegral) $ getInt v
+instance ValueClass PlaybackStatus where
+  valueGet v = liftM (toEnum . fromIntegral) $ getInt v
 
 
 playbackStop :: XMMS (Result ())

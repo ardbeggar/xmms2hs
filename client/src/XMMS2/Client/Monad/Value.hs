@@ -22,7 +22,7 @@ module XMMS2.Client.Monad.Value
   , ValueType (..)
   , ValueData (..)
   , Int32
-  , ValueTypeClass (..)
+  , ValueClass (..)
   , listGetSize
   , listGet
   , getInt
@@ -42,27 +42,27 @@ import Data.Map (Map, fromList)
 import Control.Monad.Error
   
 
-class ValueTypeClass t where
-  valueToType :: Value -> XMMS t
+class ValueClass t where
+  valueGet :: Value -> XMMS t
                  
 
-instance ValueTypeClass () where
-  valueToType _ = return ()
+instance ValueClass () where
+  valueGet _ = return ()
 
-instance ValueTypeClass Value where
-  valueToType = return
+instance ValueClass Value where
+  valueGet = return
 
-instance ValueTypeClass Int32 where
-  valueToType = getInt
+instance ValueClass Int32 where
+  valueGet = getInt
 
-instance ValueTypeClass String where
-  valueToType = getString
+instance ValueClass String where
+  valueGet = getString
 
-instance ValueTypeClass a => ValueTypeClass [a] where
-  valueToType = getList
+instance ValueClass a => ValueClass [a] where
+  valueGet = getList
 
-instance ValueTypeClass ValueData where
-  valueToType v = liftIO $ XV.getData v
+instance ValueClass ValueData where
+  valueGet v = liftIO $ XV.getData v
 
 
 -- TODO: check for value type errors.
@@ -83,12 +83,12 @@ listIterEntry = liftGet "list iterator" XV.listIterEntry
 
 listIterNext = liftIO . XV.listIterNext
           
-getList :: ValueTypeClass a => Value -> XMMS [a]
+getList :: ValueClass a => Value -> XMMS [a]
 getList val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
     entry <- listIterEntry iter
-    item  <- valueToType entry
+    item  <- valueGet entry
     listIterNext iter
     return item
 
@@ -103,14 +103,14 @@ dictIterNext = liftIO . XV.dictIterNext
 
 type Dict a = Map String a
 
-getDict :: ValueTypeClass a => Value -> XMMS (Dict a)
+getDict :: ValueClass a => Value -> XMMS (Dict a)
 getDict val = liftM fromList $ do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
     (key, raw) <- dictIterPair iter
-    val        <- valueToType raw
+    val        <- valueGet raw
     dictIterNext iter
     return (key, val)
 
-instance ValueTypeClass a => ValueTypeClass (Dict a) where
-  valueToType = getDict
+instance ValueClass a => ValueClass (Dict a) where
+  valueGet = getDict

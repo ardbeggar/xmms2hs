@@ -68,8 +68,8 @@ playlistSetNextRel n =
 
 type PlaylistPosition = (Int32, String)
 
-instance ValueTypeClass PlaylistPosition where
-  valueToType v = do
+instance ValueClass PlaylistPosition where
+  valueGet v = do
     dict <- getDict v
     case (Map.lookup "position" dict,
           Map.lookup "name"     dict) of

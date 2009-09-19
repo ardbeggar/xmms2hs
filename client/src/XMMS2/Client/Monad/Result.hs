@@ -38,34 +38,34 @@ import qualified XMMS2.Client.Result as XR
 type ResultM a b = StateT (Maybe a, Value) XMMS b
 
 runResultM ::
-  ValueTypeClass a =>
-  ResultM a b      ->
-  Value            ->
+  ValueClass a =>
+  ResultM a b  ->
+  Value        ->
   XMMS b
 runResultM f v = evalStateT f (Nothing, v)
 
-result :: ValueTypeClass a => ResultM a a
+result :: ValueClass a => ResultM a a
 result = do
   (res, raw) <- get
   case res of
     Just val ->
       return val
     Nothing  ->
-      do val <- lift $ valueToType raw
+      do val <- lift $ valueGet raw
          put (Just val, raw)
          return val
 
-resultRawValue :: ValueTypeClass a => ResultM a Value
+resultRawValue :: ValueClass a => ResultM a Value
 resultRawValue = gets snd
 
 
-data (ValueTypeClass a) =>
+data (ValueClass a) =>
   Result a = Result XR.Result
                                 
 handler ::
-  ValueTypeClass a =>
-  XMMS (Result a)  ->
-  ResultM a Bool   ->
+  ValueClass a    =>
+  XMMS (Result a) ->
+  ResultM a Bool  ->
   XMMS ()
 handler r f = do
   Result r' <- r
