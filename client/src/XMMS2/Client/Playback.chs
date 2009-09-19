@@ -24,9 +24,10 @@ module XMMS2.Client.Playback
   , playbackStart
   , playbackPause
   , playbackSeekMs
+  , playbackPlaytime
   , playbackStatus
-  , signalPlaybackPlaytime
   , broadcastPlaybackStatus
+  , signalPlaybackPlaytime
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -65,16 +66,20 @@ import XMMS2.Utils
  , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
+{# fun playback_playtime as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
 {# fun playback_status as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
 
-{# fun signal_playback_playtime as ^
+{# fun broadcast_playback_status as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
 
-{# fun broadcast_playback_status as ^
+{# fun signal_playback_playtime as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
