@@ -19,6 +19,12 @@
 
 module XMMS2.Client.Medialib
   ( medialibGetInfo
+  , medialibEntryPropertySetInt
+  , medialibEntryPropertySetIntWithSource
+  , medialibEntryPropertySetStr
+  , medialibEntryPropertySetStrWithSource
+  , medialibEntryPropertyRemove
+  , medialibEntryPropertyRemoveWithSource
   , broadcastMedialibEntryChanged
   ) where
 
@@ -36,6 +42,50 @@ import XMMS2.Utils
  { withConnection* `Connection' ,
    cIntConv        `Int32'
  } -> `Result' takeResult* #}
+
+
+{# fun medialib_entry_property_set_int as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'     ,
+   cIntConv        `Int32'
+ }  -> `Result' takeResult* #}
+
+{# fun medialib_entry_property_set_int_with_source as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'     ,
+   withCString*    `String'     ,
+   cIntConv        `Int32'
+ }  -> `Result' takeResult* #}
+
+{# fun medialib_entry_property_set_str as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'     ,
+   withCString*    `String'
+ }  -> `Result' takeResult* #}
+
+{# fun medialib_entry_property_set_str_with_source as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'     ,
+   withCString*    `String'     ,
+   withCString*    `String'
+ }  -> `Result' takeResult* #}
+
+{# fun medialib_entry_property_remove as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'
+ }  -> `Result' takeResult* #}
+
+{# fun medialib_entry_property_remove_with_source as ^
+ { withConnection* `Connection' ,
+   cIntConv        `Int32'      ,
+   withCString*    `String'     ,
+   withCString*    `String'
+ }  -> `Result' takeResult* #}
 
 
 {# fun broadcast_medialib_entry_changed as ^

@@ -19,6 +19,12 @@
 
 module XMMS2.Client.Monad.Medialib
   ( medialibGetInfo
+  , medialibEntryPropertySetInt
+  , medialibEntryPropertySetIntWithSource
+  , medialibEntryPropertySetStr
+  , medialibEntryPropertySetStrWithSource
+  , medialibEntryPropertyRemove
+  , medialibEntryPropertyRemoveWithSource
   , broadcastMedialibEntryChanged
   ) where
 
@@ -32,6 +38,31 @@ import qualified XMMS2.Client.Medialib as XM
 medialibGetInfo :: Int32 -> XMMS (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
+                             
+
+medialibEntryPropertySetInt :: Int32 -> String -> Int32 -> XMMS (Result ())
+medialibEntryPropertySetInt id key val = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetInt xmmsc id key val
+
+medialibEntryPropertySetIntWithSource :: Int32 -> String -> String -> Int32 -> XMMS (Result ())
+medialibEntryPropertySetIntWithSource id key src val = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetIntWithSource xmmsc id key src val
+
+medialibEntryPropertySetStr :: Int32 -> String -> String -> XMMS (Result ())
+medialibEntryPropertySetStr id key val = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStr xmmsc id key val
+
+medialibEntryPropertySetStrWithSource :: Int32 -> String -> String -> String -> XMMS (Result ())
+medialibEntryPropertySetStrWithSource id key src val = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStrWithSource xmmsc id key src val
+
+medialibEntryPropertyRemove :: Int32 -> String -> XMMS (Result ())
+medialibEntryPropertyRemove id key = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemove xmmsc id key
+
+medialibEntryPropertyRemoveWithSource :: Int32 -> String -> String -> XMMS (Result ())
+medialibEntryPropertyRemoveWithSource id key src = 
+  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
   
 
 broadcastMedialibEntryChanged :: XMMS (Result Int32)
