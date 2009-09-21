@@ -21,6 +21,7 @@ module XMMS2.Utils
   ( module C2HS
   , withCString
   , withMaybeCString
+  , withCStringArray0
   , peekCString
   ) where
 
@@ -36,4 +37,16 @@ withMaybeCString Nothing f  = f nullPtr
         
 withCString = CS.withCString . encodeString
 
+withCStringArray0 [] f =
+  f nullPtr
+withCStringArray0 sl f =
+  allocaArray0 (length sl) (\p -> doIt sl p (f p))
+  where
+    doIt [] p f =
+      poke p nullPtr >> f
+    doIt (x:xs) p f =
+      withCString x $ \s -> poke p s >> doIt xs (advancePtr p 1) f
+              
+
 peekCString = liftM decodeString . CS.peekCString
+

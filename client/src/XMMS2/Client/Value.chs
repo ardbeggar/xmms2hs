@@ -219,10 +219,10 @@ dictForeach d f = do
 foreign import ccall "wrapper"
   mkDictForeachPtr :: DictForeachFun -> IO DictForeachPtr
 
-propdictToDict v = propdict_to_dict v nullPtr >>= takeValue Nothing
+propdictToDict v p = propdict_to_dict v p >>= takeValue Nothing
 {# fun propdict_to_dict as propdict_to_dict
- { withValue* `Value'       ,
-   id         `Ptr CString'
+ { withValue*         `Value'    ,
+   withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
 
 
