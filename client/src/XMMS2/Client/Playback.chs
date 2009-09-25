@@ -23,10 +23,12 @@ module XMMS2.Client.Playback
   , playbackTickle
   , playbackStart
   , playbackPause
+  , playbackCurrentId
   , playbackSeekMs
   , playbackPlaytime
   , playbackStatus
   , broadcastPlaybackStatus
+  , broadcastPlaybackCurrentId
   , signalPlaybackPlaytime
   ) where
 
@@ -61,6 +63,10 @@ import XMMS2.Utils
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
+{# fun playback_current_id as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
 {# fun playback_seek_ms as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
@@ -76,6 +82,10 @@ import XMMS2.Utils
 
 
 {# fun broadcast_playback_status as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun broadcast_playback_current_id as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
