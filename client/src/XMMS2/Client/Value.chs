@@ -112,6 +112,7 @@ data ValueData
   | DataInt32 Int32
   | DataString String
   | DataColl Coll
+    deriving Show
 
 getData v = do
   t <- getType v

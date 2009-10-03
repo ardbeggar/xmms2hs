@@ -42,3 +42,7 @@ takeColl o p = do
   return $ Coll o f
 foreign import ccall unsafe "&xmmsv_coll_unref"
   xmmsv_coll_unref :: FunPtr (CollPtr -> IO ())
+
+
+instance Show Coll where
+  show _ = "<<Coll>>"
