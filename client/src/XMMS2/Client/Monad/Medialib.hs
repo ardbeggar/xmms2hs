@@ -25,6 +25,7 @@ module XMMS2.Client.Monad.Medialib
   , medialibEntryPropertySetStrWithSource
   , medialibEntryPropertyRemove
   , medialibEntryPropertyRemoveWithSource
+  , xformMediaBrowse
   , broadcastMedialibEntryChanged
   ) where
 
@@ -63,6 +64,10 @@ medialibEntryPropertyRemove id key =
 medialibEntryPropertyRemoveWithSource :: Int32 -> String -> String -> XMMS (Result ())
 medialibEntryPropertyRemoveWithSource id key src = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
+
+xformMediaBrowse :: String -> XMMS (Result [Dict ValueData])
+xformMediaBrowse url = 
+  liftXMMSResult $ \xmmsc -> XM.xformMediaBrowse xmmsc url
   
 
 broadcastMedialibEntryChanged :: XMMS (Result Int32)
