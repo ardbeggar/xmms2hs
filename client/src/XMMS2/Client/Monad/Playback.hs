@@ -25,10 +25,16 @@ module XMMS2.Client.Monad.Playback
   , playbackPause
   , playbackCurrentId
   , playbackSeekMs
+  , playbackSeekMsRel
+  , playbackSeekSamples
+  , playbackSeekSamplesRel
   , playbackPlaytime
   , playbackStatus
-  , broadcastPlaybackCurrentId
+  , playbackVolumeSet
+  , playbackVolumeGet
+  , broadcastPlaybackVolumeChanged
   , broadcastPlaybackStatus
+  , broadcastPlaybackCurrentId
   , signalPlaybackPlaytime
   ) where
 
@@ -63,12 +69,35 @@ playbackSeekMs :: Int32 -> XMMS (Result ())
 playbackSeekMs pos =
   liftXMMSResult $ \xmmsc -> XP.playbackSeekMs xmmsc pos
 
+playbackSeekMsRel :: Int32 -> XMMS (Result ())
+playbackSeekMsRel pos =
+  liftXMMSResult $ \xmmsc -> XP.playbackSeekMsRel xmmsc pos
+
+playbackSeekSamples :: Int32 -> XMMS (Result ())
+playbackSeekSamples pos =
+  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamples xmmsc pos
+
+playbackSeekSamplesRel :: Int32 -> XMMS (Result ())
+playbackSeekSamplesRel pos =
+  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamplesRel xmmsc pos
+
 playbackPlaytime :: XMMS (Result Int32)
 playbackPlaytime = liftXMMSResult XP.playbackPlaytime
 
 playbackStatus :: XMMS (Result PlaybackStatus)
 playbackStatus = liftXMMSResult XP.playbackStatus
 
+playbackVolumeSet :: String -> Int -> XMMS (Result ())
+playbackVolumeSet channel volume =
+  liftXMMSResult $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
+
+playbackVolumeGet :: XMMS (Result (Dict ValueData))
+playbackVolumeGet = liftXMMSResult XP.playbackVolumeGet
+
+
+broadcastPlaybackVolumeChanged :: XMMS (Result ())
+broadcastPlaybackVolumeChanged =
+  liftXMMSResult XP.broadcastPlaybackVolumeChanged
 
 broadcastPlaybackStatus :: XMMS (Result PlaybackStatus)
 broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus

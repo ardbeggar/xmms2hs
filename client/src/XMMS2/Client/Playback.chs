@@ -25,8 +25,14 @@ module XMMS2.Client.Playback
   , playbackPause
   , playbackCurrentId
   , playbackSeekMs
+  , playbackSeekMsRel
+  , playbackSeekSamples
+  , playbackSeekSamplesRel
   , playbackPlaytime
   , playbackStatus
+  , playbackVolumeSet
+  , playbackVolumeGet
+  , broadcastPlaybackVolumeChanged
   , broadcastPlaybackStatus
   , broadcastPlaybackCurrentId
   , signalPlaybackPlaytime
@@ -72,6 +78,21 @@ import XMMS2.Utils
  , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
+{# fun playback_seek_ms_rel as ^
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playback_seek_samples as ^
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playback_seek_samples_rel as ^
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ } -> `Result' takeResult* #}
+
 {# fun playback_playtime as ^
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
@@ -80,6 +101,20 @@ import XMMS2.Utils
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
+{# fun playback_volume_set as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ , cIntConv        `Int'
+ } -> `Result' takeResult* #}
+
+{# fun playback_volume_get as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
+
+{# fun broadcast_playback_volume_changed as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}
 
 {# fun broadcast_playback_status as ^
  { withConnection* `Connection'
