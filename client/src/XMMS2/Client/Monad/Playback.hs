@@ -91,11 +91,11 @@ playbackVolumeSet :: String -> Int -> XMMS (Result ())
 playbackVolumeSet channel volume =
   liftXMMSResult $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
 
-playbackVolumeGet :: XMMS (Result (Dict ValueData))
+playbackVolumeGet :: XMMS (Result (Dict Int32))
 playbackVolumeGet = liftXMMSResult XP.playbackVolumeGet
 
 
-broadcastPlaybackVolumeChanged :: XMMS (Result ())
+broadcastPlaybackVolumeChanged :: XMMS (Result (Dict Int32))
 broadcastPlaybackVolumeChanged =
   liftXMMSResult XP.broadcastPlaybackVolumeChanged
 
