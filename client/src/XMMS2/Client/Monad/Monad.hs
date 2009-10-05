@@ -28,29 +28,36 @@ module XMMS2.Client.Monad.Monad
   ) where
 
 import Control.Monad.Reader
+import Control.Monad.State
 import Control.Exception  
 import XMMS2.Client.Exception
 import XMMS2.Client.Connection (Connection)
 import Prelude hiding (catch)  
 
 
-class MonadException m where
+class MonadIO m => MonadException m where
   throwM :: Exception e => e -> m a
+  throwM e = liftIO $ throwIO e
   catchM :: Exception e => m a -> (e -> m a) -> m a
 
 tryM a = catchM (Right `liftM` a) (return . Left)
 
 instance MonadException IO where
-  throwM = throwIO
   catchM = catch
 
-instance MonadException (ReaderT r IO) where
-  throwM e = liftIO $ throwIO e
+instance MonadException m => MonadException (ReaderT r m) where
   catchM f h = ReaderT (\r -> do
-                          v <- try $ runReaderT f r
+                          v <- tryM $ runReaderT f r
                           case v of
                             Right v' -> return v'
                             Left exc -> runReaderT (h exc) r)
+
+instance MonadException m => MonadException (StateT s m) where
+  catchM f h = StateT (\s -> do
+                          v <- tryM $ runStateT f s
+                          case v of
+                            Right v' -> return v'
+                            Left exc -> runStateT (h exc) s)
 
 type XMMS = ReaderT Connection IO
 

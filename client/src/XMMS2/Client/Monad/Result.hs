@@ -38,15 +38,6 @@ import Control.Exception
 
 type ResultM a b = StateT (Maybe a, Value) XMMS b
 
-instance MonadException (StateT (Maybe a, Value) XMMS) where
-  throwM e = liftIO $ throwIO e
-  catchM f h = StateT (\s -> do
-                         r <- tryM $ runStateT f s
-                         case r of
-                           Right v -> return v
-                           Left ex -> runStateT (h ex) s)
-                         
-
 runResultM ::
   ValueClass a =>
   ResultM a b  ->
