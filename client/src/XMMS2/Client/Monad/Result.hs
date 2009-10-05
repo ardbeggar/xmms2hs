@@ -33,9 +33,19 @@ import Data.Maybe
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import qualified XMMS2.Client.Result as XR
+import Control.Exception  
 
 
 type ResultM a b = StateT (Maybe a, Value) XMMS b
+
+instance MonadException (StateT (Maybe a, Value) XMMS) where
+  throwM e = liftIO $ throwIO e
+  catchM f h = StateT (\s -> do
+                         r <- tryM $ runStateT f s
+                         case r of
+                           Right v -> return v
+                           Left ex -> runStateT (h ex) s)
+                         
 
 runResultM ::
   ValueClass a =>
@@ -72,11 +82,7 @@ handler r f = do
   xmmsc <- connection
   liftIO $ XR.resultNotifierSet r' $ runHandler f xmmsc
 
-runHandler f xmmsc v = do
-  r <- runXMMS (runResultM f v) xmmsc
-  case r of
-    Right gr -> return gr
-    Left err -> ioError $ userError err
+runHandler f xmmsc v = runXMMS (runResultM f v) xmmsc
         
 
 liftXMMSResult = liftM Result . liftXMMS                                    

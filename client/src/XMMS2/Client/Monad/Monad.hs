@@ -18,22 +18,44 @@
 --
 
 module XMMS2.Client.Monad.Monad
-  ( XMMS
+  ( MonadException (..)
+  , XMMS
   , runXMMS
   , connection
   , liftIO
   , liftXMMS
+  , tryM
   ) where
 
 import Control.Monad.Reader
-import Control.Monad.Error  
-import XMMS2.Client.Connection (Connection)  
+import Control.Exception  
+import XMMS2.Client.Exception
+import XMMS2.Client.Connection (Connection)
+import Prelude hiding (catch)  
 
 
-type XMMS = ReaderT Connection (ErrorT String IO)
+class MonadException m where
+  throwM :: Exception e => e -> m a
+  catchM :: Exception e => m a -> (e -> m a) -> m a
 
-runXMMS :: XMMS a -> Connection -> IO (Either String a)
-runXMMS f xmmsc = runErrorT (runReaderT f xmmsc)
+tryM a = catchM (Right `liftM` a) (return . Left)
+
+instance MonadException IO where
+  throwM = throwIO
+  catchM = catch
+
+instance MonadException (ReaderT r IO) where
+  throwM e = liftIO $ throwIO e
+  catchM f h = ReaderT (\r -> do
+                          v <- try $ runReaderT f r
+                          case v of
+                            Right v' -> return v'
+                            Left exc -> runReaderT (h exc) r)
+
+type XMMS = ReaderT Connection IO
+
+runXMMS :: XMMS a -> Connection -> IO a
+runXMMS = runReaderT
 
 
 connection :: XMMS Connection

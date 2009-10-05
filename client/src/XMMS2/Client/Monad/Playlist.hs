@@ -31,8 +31,8 @@ module XMMS2.Client.Monad.Playlist
   ) where
 
 import Control.Monad
-import Control.Monad.Error  
-import Data.Maybe  
+import Data.Maybe
+import Control.Exception  
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Result
@@ -76,7 +76,7 @@ instance ValueClass PlaylistPosition where
       (Just (DataInt32 p), Just (DataString n)) ->
         return (p, n)
       _ ->
-        throwError "not a playlist position"
+        throwM $ AssertionFailed "playlist position"
 
 playlistCurrentPos :: Maybe String -> XMMS (Result PlaylistPosition)
 playlistCurrentPos name =

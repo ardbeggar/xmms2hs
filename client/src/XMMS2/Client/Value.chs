@@ -35,6 +35,7 @@ module XMMS2.Client.Value
   , getType
   , getInt
   , getString
+  , getError
   , getColl
   , getData
   , listGetSize
@@ -62,44 +63,46 @@ import Control.Monad
 import Data.Int (Int32)
 import Data.Maybe
 import XMMS2.Utils
+import XMMS2.Client.Exception
+{# import XMMS2.Client.ValueBase #}
 {# import XMMS2.Client.CollBase #}
 
+
+get t f c v = do
+  (ok, v') <- f v
+  if ok
+     then
+       c v'
+     else do
+       t' <- getType v
+       case t' of
+         TypeError -> do
+           (_, p) <- get_error v
+           s <- peekCString p
+           throwIO $ XMMSError s
+         _         ->
+           throwIO $ TypeMismatch t t'
+
   
-data T = T
-{# pointer *t as ValuePtr -> T #}
-data Value = forall a. Value (Maybe a) (ForeignPtr T)
-
-withValue (Value _ p) = withForeignPtr p
-
-takeValue o p = do
-  f <- maybe (newForeignPtr unref p) (\_ -> newForeignPtr_ p) o
-  return $ Value o f
-foreign import ccall unsafe "&xmmsv_unref"
-  unref :: FunPtr (ValuePtr -> IO ())
-
-
-{# enum type_t as ValueType
- { underscoreToCase }
- deriving (Show) #}
-
-
-{# fun get_type as ^
- { withValue* `Value'
- } -> `ValueType' cToEnum #}
-               
-getInt v = get_int v >>= toMaybe_
+getInt = get TypeInt32 get_int return
 {# fun get_int as get_int
  { withValue* `Value'              ,
    alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
-getString v = get_string v >>= toMaybe peekCString
+getString = get TypeString get_string peekCString
 {# fun get_string as get_string
  { withValue* `Value'         ,
    alloca-    `CString' peek*
  } -> `Bool' #}
 
-getColl v = get_coll v >>= toMaybe (takeColl (Just v))
+getError = get TypeError get_error peekCString
+{# fun get_error as get_error
+ { withValue* `Value'         ,
+   alloca-    `CString' peek*
+ } -> `Bool' #}
+
+getColl v = get TypeColl get_coll (takeColl (Just v)) v
 {# fun get_coll as get_coll
  { withValue* `Value'         ,
    alloca-    `CollPtr' peek*
@@ -121,14 +124,14 @@ getData v = do
     TypeString -> mk DataString getString
     TypeColl   -> mk DataColl getColl
     _          -> return DataNone
-  where mk c g = liftM (c . fromJust) $ g v
+  where mk c g = liftM c $ g v
 
 
 {# fun list_get_size as listGetSize
  { withValue* `Value'
  } -> `Integer' cIntConv #}
 
-listGet l p = list_get l p >>= toMaybe (takeValue (Just l))
+listGet l p = get TypeList ((flip list_get) p) (takeValue (Just l)) l
 {# fun list_get as list_get
  { withValue* `Value'          ,
    cIntConv   `Integer'        , 
@@ -141,13 +144,16 @@ data ListIter = ListIter Value ListIterPtr
 
 withListIter (ListIter _ p) f = f p
 
-getListIter v = get_list_iter v >>= toMaybe (return . ListIter v)
+getListIter v = get TypeList get_list_iter (return . ListIter v) v
 {# fun get_list_iter as get_list_iter
  { withValue* `Value'             ,
    alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
 
-listIterEntry i@(ListIter v _) = list_iter_entry i >>= toMaybe (takeValue (Just v))
+listIterEntry i@(ListIter v _) = do
+  (ok, v') <- list_iter_entry i
+  unless ok $ throwIO $ InvalidIter
+  takeValue (Just v) v'
 {# fun list_iter_entry as list_iter_entry
  { withListIter* `ListIter'      ,
    alloca-       `ValuePtr' peek*
@@ -169,21 +175,18 @@ data DictIter = DictIter Value DictIterPtr
 
 withDictIter (DictIter _ p) f = f p
 
-getDictIter v = get_dict_iter v >>= toMaybe (return . DictIter v)
+getDictIter v = get TypeDict get_dict_iter (return . DictIter v) v
 {# fun get_dict_iter as get_dict_iter
  { withValue* `Value'             ,
    alloca-    `DictIterPtr' peek*
  } -> `Bool' #}
 
 dictIterPair i@(DictIter v _) = do
-  (success, keyptr, valptr) <- dict_iter_pair i
-  if success
-    then do
-      key <- peekCString keyptr
-      val <- takeValue (Just v) valptr
-      return $ Just (key, val)
-    else
-      return Nothing
+  (ok, keyptr, valptr) <- dict_iter_pair i
+  unless ok $ throwIO $ InvalidIter
+  key <- peekCString keyptr
+  val <- takeValue (Just v) valptr
+  return (key, val)
 {# fun dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter'       ,
    alloca-       `CString'  peek* ,
@@ -226,8 +229,3 @@ propdictToDict v p = propdict_to_dict v p >>= takeValue Nothing
    withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
 
-
-toMaybe _ (False, _) = return Nothing
-toMaybe f (True, v)  = liftM Just $ f v
-
-toMaybe_ = toMaybe return        

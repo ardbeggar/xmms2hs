@@ -69,17 +69,17 @@ instance ValueClass ValueData where
 
 listGetSize val = liftIO $ XV.listGetSize val
 
-listGet val = liftGet "list" $ XV.listGet val
+listGet val = liftGet $ XV.listGet val
 
-getInt = liftGet "int32" XV.getInt
+getInt = liftGet XV.getInt
 
-getString = liftGet "string" XV.getString
+getString = liftGet XV.getString
 
-getListIter = liftGet "list" XV.getListIter
+getListIter = liftGet XV.getListIter
 
 listIterValid = liftIO . XV.listIterValid
 
-listIterEntry = liftGet "list iterator" XV.listIterEntry
+listIterEntry = liftGet XV.listIterEntry
 
 listIterNext = liftIO . XV.listIterNext
           
@@ -93,11 +93,11 @@ getList val = do
     return item
 
 
-getDictIter = liftGet "dict" XV.getDictIter
+getDictIter = liftGet XV.getDictIter
 
 dictIterValid = liftIO . XV.dictIterValid
 
-dictIterPair = liftGet "dict iterator" XV.dictIterPair
+dictIterPair = liftGet XV.dictIterPair
 
 dictIterNext = liftIO . XV.dictIterNext
 

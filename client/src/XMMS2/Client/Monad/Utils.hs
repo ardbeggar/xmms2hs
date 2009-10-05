@@ -24,17 +24,15 @@ module XMMS2.Client.Monad.Utils
 
 import XMMS2.Client.Monad.Monad
 import Control.Monad.Error
+import Control.Exception
+--import Prelude hiding (try)  
   
 
-liftGet name f x =
-  checkGet ("the value does not hold " ++ name) $ liftIO $ f x
-
-checkGet :: String -> XMMS (Maybe a) -> XMMS a
-checkGet text a = do
-  a' <- a
-  case a' of
-    Just r  -> return r
-    Nothing -> throwError text
+liftGet f x = do
+  r <- liftIO $ try $ f x
+  case r of
+    Right v -> return v
+    Left  e -> throwError e
   
 
 while c a = do
