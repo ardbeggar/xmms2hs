@@ -41,27 +41,27 @@ import qualified XMMS2.Client.Playlist as XP
 import qualified Data.Map as Map  
 
 
-playlistAddURL :: Maybe String -> String -> XMMS (Result ())
+playlistAddURL :: MonadXMMS m => Maybe String -> String -> m (Result ())
 playlistAddURL name url =
   liftXMMSResult $ \xmmsc -> XP.playlistAddURL xmmsc name url
 
-playlistAddIdlist :: Maybe String -> Coll -> XMMS (Result ())
+playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll -> m (Result ())
 playlistAddIdlist name coll =
   liftXMMSResult $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
 
-playlistClear :: Maybe String -> XMMS (Result ())
+playlistClear :: MonadXMMS m => Maybe String -> m (Result ())
 playlistClear name =
   liftXMMSResult $ \xmmsc -> XP.playlistClear xmmsc name
                              
-playlistListEntries :: Maybe String -> XMMS (Result [Int32])
+playlistListEntries :: MonadXMMS m => Maybe String -> m (Result [Int32])
 playlistListEntries name =
   liftXMMSResult $ \xmmsc -> XP.playlistListEntries xmmsc name
 
-playlistSetNext :: Int32 -> XMMS (Result ())
+playlistSetNext :: MonadXMMS m => Int32 -> m (Result ())
 playlistSetNext n =
   liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
 
-playlistSetNextRel :: Int32 -> XMMS (Result ())
+playlistSetNextRel :: MonadXMMS m => Int32 -> m (Result ())
 playlistSetNextRel n =
   liftXMMSResult $ \xmmsc -> XP.playlistSetNextRel xmmsc n
 
@@ -78,14 +78,14 @@ instance ValueClass PlaylistPosition where
       _ ->
         throwM $ AssertionFailed "playlist position"
 
-playlistCurrentPos :: Maybe String -> XMMS (Result PlaylistPosition)
+playlistCurrentPos :: MonadXMMS m => Maybe String -> m (Result PlaylistPosition)
 playlistCurrentPos name =
   liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
 
                              
-broadcastPlaylistChanged :: XMMS (Result ())
+broadcastPlaylistChanged :: MonadXMMS m => m (Result ())
 broadcastPlaylistChanged = liftXMMSResult XP.broadcastPlaylistChanged
 
-broadcastPlaylistCurrentPos :: XMMS (Result ())
+broadcastPlaylistCurrentPos :: MonadXMMS m => m (Result ())
 broadcastPlaylistCurrentPos = liftXMMSResult XP.broadcastPlaylistCurrentPos
               

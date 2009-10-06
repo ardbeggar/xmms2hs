@@ -36,40 +36,40 @@ import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
 
-medialibGetInfo :: Int32 -> XMMS (Result (Dict (Dict ValueData)))
+medialibGetInfo :: MonadXMMS m => Int32 -> m (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
                              
 
-medialibEntryPropertySetInt :: Int32 -> String -> Int32 -> XMMS (Result ())
+medialibEntryPropertySetInt :: MonadXMMS m => Int32 -> String -> Int32 -> m (Result ())
 medialibEntryPropertySetInt id key val = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetInt xmmsc id key val
 
-medialibEntryPropertySetIntWithSource :: Int32 -> String -> String -> Int32 -> XMMS (Result ())
+medialibEntryPropertySetIntWithSource :: MonadXMMS m => Int32 -> String -> String -> Int32 -> m (Result ())
 medialibEntryPropertySetIntWithSource id key src val = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetIntWithSource xmmsc id key src val
 
-medialibEntryPropertySetStr :: Int32 -> String -> String -> XMMS (Result ())
+medialibEntryPropertySetStr :: MonadXMMS m => Int32 -> String -> String -> m (Result ())
 medialibEntryPropertySetStr id key val = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStr xmmsc id key val
 
-medialibEntryPropertySetStrWithSource :: Int32 -> String -> String -> String -> XMMS (Result ())
+medialibEntryPropertySetStrWithSource :: MonadXMMS m => Int32 -> String -> String -> String -> m (Result ())
 medialibEntryPropertySetStrWithSource id key src val = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStrWithSource xmmsc id key src val
 
-medialibEntryPropertyRemove :: Int32 -> String -> XMMS (Result ())
+medialibEntryPropertyRemove :: MonadXMMS m => Int32 -> String -> m (Result ())
 medialibEntryPropertyRemove id key = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemove xmmsc id key
 
-medialibEntryPropertyRemoveWithSource :: Int32 -> String -> String -> XMMS (Result ())
+medialibEntryPropertyRemoveWithSource :: MonadXMMS m => Int32 -> String -> String -> m (Result ())
 medialibEntryPropertyRemoveWithSource id key src = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
 
-xformMediaBrowse :: String -> XMMS (Result [Dict ValueData])
+xformMediaBrowse :: MonadXMMS m => String -> m (Result [Dict ValueData])
 xformMediaBrowse url = 
   liftXMMSResult $ \xmmsc -> XM.xformMediaBrowse xmmsc url
   
 
-broadcastMedialibEntryChanged :: XMMS (Result Int32)
+broadcastMedialibEntryChanged :: MonadXMMS m => m (Result Int32)
 broadcastMedialibEntryChanged =
   liftXMMSResult XM.broadcastMedialibEntryChanged

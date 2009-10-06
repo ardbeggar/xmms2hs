@@ -22,7 +22,6 @@ module XMMS2.Client.Monad.Monad
   , liftXMMS
   , liftIO
   , XMMS
-  , runXMMS
   , module Control.Monad.Exception
   ) where
 
@@ -33,6 +32,7 @@ import Control.Monad.Exception
 
 class (MonadIO m, MonadException m) => MonadXMMS m where
   connection :: m Connection
+  runXMMS :: m a -> Connection -> IO a
 
 liftXMMS :: MonadXMMS m => (Connection -> IO a) -> m a
 liftXMMS f = do
@@ -42,9 +42,6 @@ liftXMMS f = do
 
 type XMMS = ReaderT Connection IO
 
-instance (MonadIO m, MonadException m) => MonadXMMS (ReaderT Connection m) where
+instance MonadXMMS (ReaderT Connection IO) where
   connection = ask
-
-runXMMS :: XMMS a -> Connection -> IO a
-runXMMS = runReaderT
-
+  runXMMS = runReaderT

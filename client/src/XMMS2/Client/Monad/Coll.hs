@@ -38,6 +38,6 @@ instance ValueClass Coll where
 getColl = liftIO . XV.getColl
 
 
-collIdlistFromPlaylistFile :: String -> XMMS (Result Coll)
+collIdlistFromPlaylistFile :: MonadXMMS m => String -> m (Result Coll)
 collIdlistFromPlaylistFile name =
   liftXMMSResult $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
