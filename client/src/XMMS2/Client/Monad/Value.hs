@@ -21,8 +21,8 @@ module XMMS2.Client.Monad.Value
   ( Value
   , ValueType (..)
   , ValueData (..)
-  , Int32
   , ValueClass (..)
+  , Int32
   , listGetSize
   , listGet
   , getInt
@@ -34,7 +34,7 @@ module XMMS2.Client.Monad.Value
 
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Utils
-import XMMS2.Client.Value (Value, ValueType, ValueData, Int32)
+import XMMS2.Client.Value (Value, ValueType, ValueData, ValueClass, Int32, Dict)
 import qualified XMMS2.Client.Value as XV
 import Control.Monad  
 import Data.Maybe
@@ -42,75 +42,31 @@ import Data.Map (Map, fromList)
 import Control.Monad.Error
   
 
-class ValueClass t where
-  valueGet :: Value -> XMMS t
-                 
+listGetSize = liftIO . XV.listGetSize
 
-instance ValueClass () where
-  valueGet _ = return ()
+listGet val = liftIO . XV.listGet val
 
-instance ValueClass Value where
-  valueGet = return
+getInt = liftIO . XV.getInt
 
-instance ValueClass Int32 where
-  valueGet = getInt
+getString = liftIO . XV.getString
 
-instance ValueClass String where
-  valueGet = getString
+getList = liftIO . XV.getList
 
-instance ValueClass a => ValueClass [a] where
-  valueGet = getList
-
-instance ValueClass ValueData where
-  valueGet v = liftIO $ XV.getData v
-
-
--- TODO: check for value type errors.
-
-listGetSize val = liftIO $ XV.listGetSize val
-
-listGet val = liftGet $ XV.listGet val
-
-getInt = liftGet XV.getInt
-
-getString = liftGet XV.getString
-
-getListIter = liftGet XV.getListIter
+getListIter = liftIO . XV.getListIter
 
 listIterValid = liftIO . XV.listIterValid
 
-listIterEntry = liftGet XV.listIterEntry
+listIterEntry = liftIO . XV.listIterEntry
 
 listIterNext = liftIO . XV.listIterNext
+
+getDict = liftIO . XV.getDict          
           
-getList :: ValueClass a => Value -> XMMS [a]
-getList val = do
-  iter <- getListIter val
-  while (listIterValid iter) $ do
-    entry <- listIterEntry iter
-    item  <- valueGet entry
-    listIterNext iter
-    return item
-
-
-getDictIter = liftGet XV.getDictIter
+getDictIter = liftIO . XV.getDictIter
 
 dictIterValid = liftIO . XV.dictIterValid
 
-dictIterPair = liftGet XV.dictIterPair
+dictIterPair = liftIO . XV.dictIterPair
 
 dictIterNext = liftIO . XV.dictIterNext
 
-type Dict a = Map String a
-
-getDict :: ValueClass a => Value -> XMMS (Dict a)
-getDict val = liftM fromList $ do
-  iter <- getDictIter val
-  while (dictIterValid iter) $ do
-    (key, raw) <- dictIterPair iter
-    val        <- valueGet raw
-    dictIterNext iter
-    return (key, val)
-
-instance ValueClass a => ValueClass (Dict a) where
-  valueGet = getDict

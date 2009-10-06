@@ -19,13 +19,11 @@
 
 module XMMS2.Client.Monad.Utils
   ( liftGet
-  , while
   ) where
 
 import XMMS2.Client.Monad.Monad
 import Control.Monad.Error
 import Control.Exception
---import Prelude hiding (try)  
   
 
 liftGet f x = do
@@ -34,9 +32,3 @@ liftGet f x = do
     Right v -> return v
     Left  e -> throwError e
   
-
-while c a = do
-  continue <- c
-  if continue
-    then liftM2 (:) a (while c a)
-    else return []

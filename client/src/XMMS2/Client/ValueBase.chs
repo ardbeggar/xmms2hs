@@ -24,6 +24,7 @@ module XMMS2.Client.ValueBase
   , withValue
   , takeValue
   , getType
+  , ValueClass (..)
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -31,6 +32,8 @@ module XMMS2.Client.ValueBase
 {# context prefix = "xmmsv" #}         
 
 import Control.Monad
+import Control.Monad.Trans
+import Control.Monad.Exception  
 import Data.Maybe
 import XMMS2.Utils  
 
@@ -57,3 +60,14 @@ foreign import ccall unsafe "&xmmsv_unref"
  { withValue* `Value'
  } -> `ValueType' cToEnum #}
                
+
+class ValueClass t where
+  valueGet :: (MonadIO m, MonadException m) => Value -> m t
+                 
+
+instance ValueClass () where
+  valueGet _ = return ()
+
+instance ValueClass Value where
+  valueGet = return
+

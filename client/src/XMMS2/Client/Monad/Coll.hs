@@ -35,7 +35,7 @@ import qualified XMMS2.Client.Value as XV
 instance ValueClass Coll where
   valueGet = getColl
 
-getColl = liftGet XV.getColl
+getColl = liftIO . XV.getColl
 
 
 collIdlistFromPlaylistFile :: String -> XMMS (Result Coll)

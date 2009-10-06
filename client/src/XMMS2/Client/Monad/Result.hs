@@ -18,11 +18,10 @@
 --
 
 module XMMS2.Client.Monad.Result
-  ( Result (..)
+  ( MonadResult (..)
+  , Result (..)
   , ResultM
   , liftXMMSResult
-  , result
-  , resultRawValue
   , handler
   , resultWait
   , resultGetValue
@@ -33,10 +32,32 @@ import Data.Maybe
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import qualified XMMS2.Client.Result as XR
-import Control.Exception  
+import Control.Exception
+
+
+class (MonadXMMS m, ValueClass a) => MonadResult a m | m -> a where
+  resultRawValue :: m Value
+  result :: m a
+  result = resultRawValue >>= valueGet
 
 
 type ResultM a b = StateT (Maybe a, Value) XMMS b
+
+instance MonadXMMS m => MonadXMMS (StateT a m) where
+  connection = lift connection
+
+instance (ValueClass a, MonadXMMS m) => MonadResult a (StateT (Maybe a, Value) m) where
+  resultRawValue = gets snd
+  result = do
+    (res, raw) <- get
+    case res of
+      Just val ->
+        return val
+      Nothing  ->
+        do val <- lift $ valueGet raw
+           put (Just val, raw)
+           return val
+
 
 runResultM ::
   ValueClass a =>
@@ -45,23 +66,7 @@ runResultM ::
   XMMS b
 runResultM f v = evalStateT f (Nothing, v)
 
-result :: ValueClass a => ResultM a a
-result = do
-  (res, raw) <- get
-  case res of
-    Just val ->
-      return val
-    Nothing  ->
-      do val <- lift $ valueGet raw
-         put (Just val, raw)
-         return val
-
-resultRawValue :: ValueClass a => ResultM a Value
-resultRawValue = gets snd
-
-
-data (ValueClass a) =>
-  Result a = Result XR.Result
+data (ValueClass a) => Result a = Result XR.Result
                                 
 handler ::
   ValueClass a    =>
@@ -75,11 +80,8 @@ handler r f = do
 
 runHandler f xmmsc v = runXMMS (runResultM f v) xmmsc
         
-
 liftXMMSResult = liftM Result . liftXMMS                                    
-
 
 resultWait (Result r) = liftIO $ XR.resultWait r
 
 resultGetValue (Result r) = liftIO $ XR.resultGetValue r
-                            

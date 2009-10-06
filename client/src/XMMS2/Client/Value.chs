@@ -30,6 +30,7 @@ module XMMS2.Client.Value
   , ValueData (..)
   , ValuePtr
   , Value
+  , ValueClass (..)
   , withValue
   , takeValue
   , getType
@@ -38,6 +39,7 @@ module XMMS2.Client.Value
   , getError
   , getColl
   , getData
+  , getList
   , listGetSize
   , listGet
   , ListIter
@@ -46,6 +48,8 @@ module XMMS2.Client.Value
   , listIterEntry
   , listIterNext
   , Int32
+  , Dict
+  , getDict
   , propdictToDict
   , dictForeach
   , DictIter
@@ -60,8 +64,10 @@ module XMMS2.Client.Value
 {# context prefix = "xmmsv" #}         
 
 import Control.Monad
+import Control.Monad.Trans
 import Data.Int (Int32)
 import Data.Maybe
+import Data.Map (Map, fromList)
 import XMMS2.Utils
 import XMMS2.Client.Exception
 {# import XMMS2.Client.ValueBase #}
@@ -89,6 +95,13 @@ getInt = get TypeInt32 get_int return
  { withValue* `Value'              ,
    alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
+
+instance ValueClass Int32 where
+  valueGet = liftIO . getInt
+
+
+instance ValueClass String where
+  valueGet = liftIO . getString
 
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
@@ -125,6 +138,10 @@ getData v = do
     TypeColl   -> mk DataColl getColl
     _          -> return DataNone
   where mk c g = liftM c $ g v
+
+instance ValueClass ValueData where
+  valueGet = liftIO . getData
+                 
 
 
 {# fun list_get_size as listGetSize
@@ -166,6 +183,35 @@ listIterEntry i@(ListIter v _) = do
 {# fun list_iter_next as listIterNext
  { withListIter* `ListIter'
  } -> `()' #}
+
+
+instance ValueClass a => ValueClass [a] where
+  valueGet = liftIO . getList
+
+getList :: ValueClass a => Value -> IO [a]
+getList val = do
+  iter <- getListIter val
+  while (listIterValid iter) $ do
+    entry <- listIterEntry iter
+    item  <- valueGet entry
+    listIterNext iter
+    return item
+
+
+
+type Dict a = Map String a
+
+instance ValueClass a => ValueClass (Dict a) where
+  valueGet = liftIO . getDict
+
+getDict :: ValueClass a => Value -> IO (Dict a)
+getDict val = liftM fromList $ do
+  iter <- getDictIter val
+  while (dictIterValid iter) $ do
+    (key, raw) <- dictIterPair iter
+    val        <- valueGet raw
+    dictIterNext iter
+    return (key, val)
 
 
 

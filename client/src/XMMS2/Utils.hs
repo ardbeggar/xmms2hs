@@ -23,6 +23,7 @@ module XMMS2.Utils
   , withMaybeCString
   , withCStringArray0
   , peekCString
+  , while
   ) where
 
 import C2HS hiding (withCString, peekCString)
@@ -50,3 +51,9 @@ withCStringArray0 sl f =
 
 peekCString = liftM decodeString . CS.peekCString
 
+
+while c a = do
+  continue <- c
+  if continue
+    then liftM2 (:) a (while c a)
+    else return []

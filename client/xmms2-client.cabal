@@ -54,4 +54,7 @@ library
                     ExistentialQuantification,
                     TypeSynonymInstances,
                     DeriveDataTypeable,
-                    FlexibleInstances
+                    FlexibleInstances,
+                    NoMonomorphismRestriction,
+                    MultiParamTypeClasses,
+                    FunctionalDependencies
