@@ -35,6 +35,10 @@ data Xmmsv_coll_t = Xmmsv_coll_t
 {# pointer *xmmsv_coll_t as CollPtr -> Xmmsv_coll_t #}
 data Coll = forall a. Coll (Maybe a) (ForeignPtr Xmmsv_coll_t)
 
+instance Eq Coll where
+  _ == _ = False
+           
+
 withColl (Coll _ p) = withForeignPtr p
 
 takeColl o p = do
