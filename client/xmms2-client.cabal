@@ -33,6 +33,7 @@ library
                     XMMS2.Client.Playback,
                     XMMS2.Client.Playlist,
                     XMMS2.Client.Medialib,
+                    XMMS2.Client.Stats,
                     XMMS2.Client.Monad,
                     XMMS2.Client.Monad.Utils,
                     XMMS2.Client.Monad.Monad,
@@ -42,7 +43,8 @@ library
                     XMMS2.Client.Monad.Playlist,
                     XMMS2.Client.Monad.Playback,
                     XMMS2.Client.Monad.Medialib,
-                    XMMS2.Client.Monad.Coll
+                    XMMS2.Client.Monad.Coll,
+                    XMMS2.Client.Monad.Stats
   other-modules:    C2HS,
                     XMMS2.Utils
   c-sources:		src/XMMS2/Client/xmms2hs-client.c

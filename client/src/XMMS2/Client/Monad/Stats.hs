@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 8 Sep. 2009
+--  Created: 18 Oct. 2009
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,23 +17,17 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad
-  ( module XMMS2.Client.Monad.Monad
-  , module XMMS2.Client.Monad.Result
-  , module XMMS2.Client.Monad.Connection
-  , module XMMS2.Client.Monad.Playlist
-  , module XMMS2.Client.Monad.Playback
-  , module XMMS2.Client.Monad.Medialib
-  , module XMMS2.Client.Monad.Coll
-  , module XMMS2.Client.Monad.Stats
+module XMMS2.Client.Monad.Stats
+  ( PluginType (..)
+  , pluginList
   ) where
 
 import XMMS2.Client.Monad.Monad
+import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Connection
-import XMMS2.Client.Monad.Playlist
-import XMMS2.Client.Monad.Playback
-import XMMS2.Client.Monad.Medialib
-import XMMS2.Client.Monad.Coll
-import XMMS2.Client.Monad.Stats
-  
+import XMMS2.Client.Stats (PluginType (..))
+import qualified XMMS2.Client.Stats as XS
+
+
+pluginList :: MonadXMMS m => PluginType -> m (Result [Dict ValueData])
+pluginList pType = liftXMMSResult $ \xmmsc -> XS.pluginList xmmsc pType
