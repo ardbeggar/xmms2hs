@@ -20,11 +20,13 @@
 module XMMS2.Client.Playlist
   ( playlistAddURL
   , playlistAddIdlist
+  , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
   , playlistSetNext
   , playlistSetNextRel
   , playlistCurrentPos
+  , playlistInsertId
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   ) where
@@ -51,6 +53,12 @@ import XMMS2.Utils
    withColl*         `Coll'
  } -> `Result' takeResult* #}
 
+{# fun playlist_remove_entry as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ } -> `Result' takeResult* #}
+
 {# fun playlist_clear as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
@@ -74,6 +82,13 @@ import XMMS2.Utils
 {# fun playlist_current_pos as ^
  { withConnection*   `Connection' ,
    withMaybeCString* `Maybe String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_insert_id as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , cIntConv          `Int32'
  } -> `Result' takeResult* #}
 
 

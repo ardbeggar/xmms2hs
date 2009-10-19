@@ -20,12 +20,14 @@
 module XMMS2.Client.Monad.Playlist
   ( playlistAddURL
   , playlistAddIdlist
+  , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
   , playlistSetNext
   , playlistSetNextRel
   , PlaylistPosition
   , playlistCurrentPos
+  , playlistInsertId
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   ) where
@@ -49,6 +51,10 @@ playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll -> m (Result ())
 playlistAddIdlist name coll =
   liftXMMSResult $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
 
+playlistRemoveEntry :: MonadXMMS m => Maybe String -> Int -> m (Result ())
+playlistRemoveEntry name pos =
+  liftXMMSResult $ \xmmsc -> XP.playlistRemoveEntry xmmsc name pos
+                             
 playlistClear :: MonadXMMS m => Maybe String -> m (Result ())
 playlistClear name =
   liftXMMSResult $ \xmmsc -> XP.playlistClear xmmsc name
@@ -81,6 +87,10 @@ instance ValueClass PlaylistPosition where
 playlistCurrentPos :: MonadXMMS m => Maybe String -> m (Result PlaylistPosition)
 playlistCurrentPos name =
   liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
+
+playlistInsertId :: MonadXMMS m => Maybe String -> Int -> Int32 -> m (Result ())
+playlistInsertId name pos id =
+  liftXMMSResult $ \xmmsc -> XP.playlistInsertId xmmsc name pos id
 
                              
 broadcastPlaylistChanged :: MonadXMMS m => m (Result ())
