@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Medialib
   ( medialibGetInfo
+  , medialibGetId
   , medialibEntryPropertySetInt
   , medialibEntryPropertySetIntWithSource
   , medialibEntryPropertySetStr
@@ -44,6 +45,10 @@ import XMMS2.Utils
    cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
+{# fun medialib_get_id as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_int as ^
  { withConnection* `Connection' ,
