@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Monad.Playlist
   ( playlistAddURL
+  , playlistAddId
   , playlistAddIdlist
   , playlistRemoveEntry
   , playlistClear
@@ -47,6 +48,10 @@ import qualified Data.Map as Map
 playlistAddURL :: MonadXMMS m => Maybe String -> String -> m (Result ())
 playlistAddURL name url =
   liftXMMSResult $ \xmmsc -> XP.playlistAddURL xmmsc name url
+
+playlistAddId :: MonadXMMS m => Maybe String -> Int32 -> m (Result ())
+playlistAddId name id =
+  liftXMMSResult $ \xmmsc -> XP.playlistAddId xmmsc name id
 
 playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll -> m (Result ())
 playlistAddIdlist name coll =

@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Playlist
   ( playlistAddURL
+  , playlistAddId
   , playlistAddIdlist
   , playlistRemoveEntry
   , playlistClear
@@ -46,6 +47,12 @@ import XMMS2.Utils
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_add_id as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int32'
  } -> `Result' takeResult* #}
 
 {# fun playlist_add_idlist as ^
