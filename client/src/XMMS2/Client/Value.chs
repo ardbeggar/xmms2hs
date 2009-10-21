@@ -65,6 +65,7 @@ module XMMS2.Client.Value
 
 import Control.Monad
 import Control.Monad.Trans
+import Control.Monad.Exception  
 import Data.Int (Int32)
 import Data.Maybe
 import Data.Map (Map, fromList)
@@ -72,6 +73,18 @@ import XMMS2.Utils
 import XMMS2.Client.Exception
 {# import XMMS2.Client.ValueBase #}
 {# import XMMS2.Client.CollBase #}
+
+
+instance ValueClass () where
+  valueGet v = do
+    t <- liftIO $ getType v
+    case t of
+      TypeError -> do
+        (_, p) <- liftIO $ get_error v
+        s <- liftIO $ peekCString p
+        throwM $ XMMSError s
+      _ ->
+        return ()
 
 
 get t f c v = do

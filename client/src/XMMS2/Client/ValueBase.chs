@@ -65,9 +65,6 @@ class ValueClass t where
   valueGet :: (MonadIO m, MonadException m) => Value -> m t
                  
 
-instance ValueClass () where
-  valueGet _ = return ()
-
 instance ValueClass Value where
   valueGet = return
 
