@@ -289,8 +289,8 @@ dictIterPair i@(DictIter v _) = do
 type DictForeachFun a = CString -> ValuePtr -> Ptr () -> IO ()
 type DictForeachPtr a = FunPtr (DictForeachFun a)
 
-dictForeach :: Value a -> (String -> Value a -> IO ()) -> IO ()
-dictForeach d f = do
+dictForeach :: (String -> Value a -> IO ()) -> Value a -> IO ()
+dictForeach f d = do
   f' <- mkDictForeachPtr $
         \s v _ -> do
           s' <- peekCString s
@@ -298,7 +298,7 @@ dictForeach d f = do
           f s' v'
   dict_foreach d f' nullPtr
   freeHaskellFunPtr f'
-
+                    
 {# fun dict_foreach as dict_foreach
  { withValue* `Value a'
  , id         `DictForeachPtr a'
