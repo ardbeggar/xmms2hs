@@ -289,6 +289,7 @@ dictIterPair i@(DictIter v _) = do
 type DictForeachFun a = CString -> ValuePtr -> Ptr () -> IO ()
 type DictForeachPtr a = FunPtr (DictForeachFun a)
 
+dictForeach :: Value a -> (String -> Value a -> IO ()) -> IO ()
 dictForeach d f = do
   f' <- mkDictForeachPtr $
         \s v _ -> do
