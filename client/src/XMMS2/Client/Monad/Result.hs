@@ -23,6 +23,7 @@ module XMMS2.Client.Monad.Result
   , resultRawValue
   , result
   , liftXMMSResult
+  , (>>*)
   , handler
   , resultWait
   , resultGetValue
@@ -61,6 +62,8 @@ runResultM ::
 runResultM f v = evalStateT f (Nothing, v)
 
 data (ValueClass Immutable a) => Result a = Result XR.Result
+
+f >>* h = handler f h
                                 
 handler ::
   (ValueClass Immutable a, MonadXMMS m) =>
