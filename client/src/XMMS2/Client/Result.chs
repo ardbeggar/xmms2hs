@@ -45,6 +45,7 @@ foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
                         
 
+resultGetValue :: Result -> IO (Value Immutable)
 resultGetValue r = result_get_value r >>= takeValue (Just r)
 {# fun result_get_value as result_get_value
  { withResult* `Result'
@@ -55,7 +56,7 @@ resultGetValue r = result_get_value r >>= takeValue (Just r)
  } -> `()' #}
 
 
-type ResultNotifier = Value -> IO Bool
+type ResultNotifier = Value Immutable -> IO Bool
 
 resultNotifierSet :: Result -> ResultNotifier -> IO ()
 resultNotifierSet r f = do

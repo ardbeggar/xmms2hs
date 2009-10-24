@@ -59,4 +59,7 @@ library
                     FlexibleInstances,
                     NoMonomorphismRestriction,
                     MultiParamTypeClasses,
-                    FunctionalDependencies
+                    FunctionalDependencies,
+                    EmptyDataDecls,
+                    FlexibleContexts,
+                    ScopedTypeVariables

@@ -18,7 +18,9 @@
 --
 
 module XMMS2.Client.Value
-  ( ValueType
+  ( Mutable
+  , Immutable
+  , ValueType
     ( TypeNone
     , TypeError
     , TypeInt32
@@ -40,6 +42,7 @@ module XMMS2.Client.Value
   , getColl
   , getData
   , getList
+  , lazyGetList
   , listGetSize
   , listGet
   , ListIter
@@ -69,13 +72,14 @@ import Control.Monad.Exception
 import Data.Int (Int32)
 import Data.Maybe
 import Data.Map (Map, fromList)
+import System.IO.Unsafe  
 import XMMS2.Utils
 import XMMS2.Client.Exception
 {# import XMMS2.Client.ValueBase #}
 {# import XMMS2.Client.CollBase #}
 
 
-instance ValueClass () where
+instance (ValueClass a) () where
   valueGet v = do
     t <- liftIO $ getType v
     case t of
@@ -105,33 +109,33 @@ get t f c v = do
   
 getInt = get TypeInt32 get_int return
 {# fun get_int as get_int
- { withValue* `Value'              ,
-   alloca-    `Int32' peekIntConv*
+ { withValue* `Value a'
+ , alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
-instance ValueClass Int32 where
+instance ValueClass a Int32 where
   valueGet = liftIO . getInt
 
 
-instance ValueClass String where
+instance ValueClass a String where
   valueGet = liftIO . getString
 
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
- { withValue* `Value'         ,
-   alloca-    `CString' peek*
+ { withValue* `Value a'
+ , alloca-    `CString' peek*
  } -> `Bool' #}
 
 getError = get TypeError get_error peekCString
 {# fun get_error as get_error
- { withValue* `Value'         ,
-   alloca-    `CString' peek*
+ { withValue* `Value a'
+ , alloca-    `CString' peek*
  } -> `Bool' #}
 
 getColl v = get TypeColl get_coll (takeColl (Just v)) v
 {# fun get_coll as get_coll
- { withValue* `Value'         ,
-   alloca-    `CollPtr' peek*
+ { withValue* `Value a'
+ , alloca-    `CollPtr' peek*
  } -> `Bool' #}
 
 
@@ -143,6 +147,7 @@ data ValueData
   | DataColl Coll
     deriving (Show, Eq)
 
+getData ::  Value a -> IO ValueData
 getData v = do
   t <- getType v
   case t of
@@ -152,56 +157,58 @@ getData v = do
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
-instance ValueClass ValueData where
+instance ValueClass a ValueData where
   valueGet = liftIO . getData
                  
 
 
 {# fun list_get_size as listGetSize
- { withValue* `Value'
+ { withValue* `Value a'
  } -> `Integer' cIntConv #}
 
 listGet l p = get TypeList ((flip list_get) p) (takeValue (Just l)) l
 {# fun list_get as list_get
- { withValue* `Value'          ,
-   cIntConv   `Integer'        , 
-   alloca-    `ValuePtr' peek*
+ { withValue* `Value a'
+ , cIntConv   `Integer'
+ , alloca-    `ValuePtr' peek*
  } -> `Bool' #}
 
 {# pointer *list_iter_t as ListIterPtr #}
 
-data ListIter = ListIter Value ListIterPtr
+data ListIter a = ListIter (Value a) ListIterPtr
 
 withListIter (ListIter _ p) f = f p
 
+getListIter :: Value a -> IO (ListIter a)
 getListIter v = get TypeList get_list_iter (return . ListIter v) v
 {# fun get_list_iter as get_list_iter
- { withValue* `Value'             ,
-   alloca-    `ListIterPtr' peek*
+ { withValue* `Value a'
+ , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
 
+listIterEntry :: ListIter a -> IO (Value a)
 listIterEntry i@(ListIter v _) = do
   (ok, v') <- list_iter_entry i
   unless ok $ throwIO $ InvalidIter
   takeValue (Just v) v'
 {# fun list_iter_entry as list_iter_entry
- { withListIter* `ListIter'      ,
-   alloca-       `ValuePtr' peek*
+ { withListIter* `ListIter a'
+ , alloca-       `ValuePtr' peek*
  } -> `Bool' #}
 
 {# fun list_iter_valid as listIterValid
- { withListIter* `ListIter'
+ { withListIter* `ListIter a'
  } -> `Bool' #}
 
 {# fun list_iter_next as listIterNext
- { withListIter* `ListIter'
+ { withListIter* `ListIter a'
  } -> `()' #}
 
 
-instance ValueClass a => ValueClass [a] where
-  valueGet = liftIO . getList
+instance ValueClass Immutable a => ValueClass Immutable [a] where
+  valueGet = liftIO . lazyGetList
 
-getList :: ValueClass a => Value -> IO [a]
+getList :: ValueClass b a => Value b -> IO [a]
 getList val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
@@ -210,14 +217,30 @@ getList val = do
     listIterNext iter
     return item
 
+lazyGetList :: ValueClass Immutable a => Value Immutable -> IO [a]
+lazyGetList val = do
+  iter <- getListIter val
+  lazyGetList' iter
+  where lazyGetList' iter =
+          unsafeInterleaveIO $ do
+            valid <- listIterValid iter
+            if valid
+               then do
+                 entry <- listIterEntry iter
+                 item  <- valueGet entry
+                 listIterNext iter
+                 liftM (item :) $ lazyGetList' iter
+               else
+                 return []
+
 
 
 type Dict a = Map String a
 
-instance ValueClass a => ValueClass (Dict a) where
+instance ValueClass Immutable a => ValueClass Immutable (Dict a) where
   valueGet = liftIO . getDict
 
-getDict :: ValueClass a => Value -> IO (Dict a)
+getDict :: ValueClass b a => Value b -> IO (Dict a)
 getDict val = liftM fromList $ do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
@@ -230,16 +253,18 @@ getDict val = liftM fromList $ do
 
 {# pointer *dict_iter_t as DictIterPtr #}
 
-data DictIter = DictIter Value DictIterPtr
+data DictIter a = DictIter (Value a) DictIterPtr
 
 withDictIter (DictIter _ p) f = f p
 
+getDictIter :: Value a -> IO (DictIter a)
 getDictIter v = get TypeDict get_dict_iter (return . DictIter v) v
 {# fun get_dict_iter as get_dict_iter
- { withValue* `Value'             ,
-   alloca-    `DictIterPtr' peek*
+ { withValue* `Value a'
+ , alloca-    `DictIterPtr' peek*
  } -> `Bool' #}
 
+dictIterPair :: DictIter a -> IO (String, Value a)
 dictIterPair i@(DictIter v _) = do
   (ok, keyptr, valptr) <- dict_iter_pair i
   unless ok $ throwIO $ InvalidIter
@@ -247,22 +272,22 @@ dictIterPair i@(DictIter v _) = do
   val <- takeValue (Just v) valptr
   return (key, val)
 {# fun dict_iter_pair as dict_iter_pair
- { withDictIter* `DictIter'       ,
-   alloca-       `CString'  peek* ,
-   alloca-       `ValuePtr' peek*
+ { withDictIter* `DictIter a'
+ , alloca-       `CString'  peek*
+ , alloca-       `ValuePtr' peek*
  } -> `Bool' #}
 
 {# fun dict_iter_valid as dictIterValid
- { withDictIter* `DictIter'
+ { withDictIter* `DictIter a'
  } -> `Bool' #}
 
 {# fun dict_iter_next as dictIterNext
- { withDictIter* `DictIter'
+ { withDictIter* `DictIter a'
  } -> `()' #}
 
 
-type DictForeachFun = CString -> ValuePtr -> Ptr () -> IO ()
-type DictForeachPtr = FunPtr (DictForeachFun)
+type DictForeachFun a = CString -> ValuePtr -> Ptr () -> IO ()
+type DictForeachPtr a = FunPtr (DictForeachFun a)
 
 dictForeach d f = do
   f' <- mkDictForeachPtr $
@@ -274,17 +299,18 @@ dictForeach d f = do
   freeHaskellFunPtr f'
 
 {# fun dict_foreach as dict_foreach
- { withValue* `Value'          ,
-   id         `DictForeachPtr' ,
-   id         `Ptr ()'
+ { withValue* `Value a'
+ , id         `DictForeachPtr a'
+ , id         `Ptr ()'
  } -> `()' #}
   
 foreign import ccall "wrapper"
-  mkDictForeachPtr :: DictForeachFun -> IO DictForeachPtr
+  mkDictForeachPtr :: DictForeachFun a -> IO (DictForeachPtr a)
 
+propdictToDict :: Value a -> [String] -> IO (Value a)                      
 propdictToDict v p = propdict_to_dict v p >>= takeValue Nothing
 {# fun propdict_to_dict as propdict_to_dict
- { withValue*         `Value'    ,
-   withCStringArray0* `[String]'
+ { withValue*         `Value a'
+ , withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
 

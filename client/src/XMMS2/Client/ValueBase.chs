@@ -24,6 +24,8 @@ module XMMS2.Client.ValueBase
   , withValue
   , takeValue
   , getType
+  , Mutable
+  , Immutable
   , ValueClass (..)
   ) where
 
@@ -37,10 +39,13 @@ import Control.Monad.Exception
 import Data.Maybe
 import XMMS2.Utils  
 
+data Mutable
+data Immutable
+
   
 data T = T
 {# pointer *t as ValuePtr -> T #}
-data Value = forall a. Value (Maybe a) (ForeignPtr T)
+data Value b = forall a. Value (Maybe a) (ForeignPtr T)
 
 withValue (Value _ p) = withForeignPtr p
 
@@ -57,14 +62,14 @@ foreign import ccall unsafe "&xmmsv_unref"
 
 
 {# fun get_type as ^
- { withValue* `Value'
+ { withValue* `Value a'
  } -> `ValueType' cToEnum #}
                
 
-class ValueClass t where
-  valueGet :: (MonadIO m, MonadException m) => Value -> m t
+class ValueClass b t where
+  valueGet :: (MonadIO m, MonadException m) => Value b -> m t
                  
 
-instance ValueClass Value where
+instance ValueClass a (Value a) where
   valueGet = return
 

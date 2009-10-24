@@ -32,7 +32,7 @@ import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Value as XV
 
 
-instance ValueClass Coll where
+instance ValueClass Immutable Coll where
   valueGet = getColl
 
 getColl = liftIO . XV.getColl

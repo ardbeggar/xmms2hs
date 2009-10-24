@@ -36,12 +36,12 @@ import qualified XMMS2.Client.Result as XR
 import Control.Exception
 
 
-type ResultM m a b = StateT (Maybe a, Value) m b
+type ResultM m a b = StateT (Maybe a, Value Immutable) m b
 
-resultRawValue :: (ValueClass a, MonadXMMS m) => ResultM m a Value
+resultRawValue :: (ValueClass Immutable a, MonadXMMS m) => ResultM m a (Value Immutable)
 resultRawValue = gets snd
 
-result :: (ValueClass a, MonadXMMS m) => ResultM m a a
+result :: (ValueClass Immutable a, MonadXMMS m) => ResultM m a a
 result = do
   (res, raw) <- get
   case res of
@@ -54,16 +54,16 @@ result = do
 
 
 runResultM ::
-  (ValueClass a, MonadXMMS m) =>
+  (ValueClass Immutable a, MonadXMMS m) =>
   ResultM m a b               ->
-  Value                       ->
+  Value Immutable                      ->
   m b
 runResultM f v = evalStateT f (Nothing, v)
 
-data (ValueClass a) => Result a = Result XR.Result
+data (ValueClass Immutable a) => Result a = Result XR.Result
                                 
 handler ::
-  (ValueClass a, MonadXMMS m) =>
+  (ValueClass Immutable a, MonadXMMS m) =>
   m (Result a)                ->
   ResultM m a Bool            ->
   m ()

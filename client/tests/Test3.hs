@@ -7,15 +7,19 @@ import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Value
 
 main = do
-  (Just c) <- X.init "test2"
+  (Just c) <- X.init "test3"
   True     <- X.connect c Nothing
-  runXMMS (do r <- playlistListEntries Nothing
-              resultWait r
-              v <- resultGetValue r
-              l <- getList getInt v
-              mapM_ (\i -> liftIO $ print i) (take 10 l)
-          ) c
+  entries  <- runXMMS getEntries c
+  mapM_ print $ (take 5 entries)
+  mapM_ print $ (take 5 entries)
 
+getEntries :: XMMS [Int32]
+getEntries = do
+  r <- playlistListEntries Nothing
+  resultWait r
+  v <- resultGetValue r
+  lazyGetList v
+              
 
 -- local variables:
 -- compile-command: "ghc --make Test3.hs"
