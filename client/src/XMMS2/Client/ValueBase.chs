@@ -23,6 +23,7 @@ module XMMS2.Client.ValueBase
   , Value
   , withValue
   , takeValue
+  , refValue
   , getType
   , Mutable
   , Immutable
@@ -39,21 +40,32 @@ import Control.Monad.Exception
 import Data.Maybe
 import XMMS2.Utils  
 
+
 data Mutable
 data Immutable
 
   
 data T = T
 {# pointer *t as ValuePtr -> T #}
-data Value b = forall a. Value (Maybe a) (ForeignPtr T)
+data Value b = Value (ForeignPtr T)
 
-withValue (Value _ p) = withForeignPtr p
+withValue (Value p) = withForeignPtr p
 
-takeValue o p = do
-  f <- maybe (newForeignPtr unref p) (\_ -> newForeignPtr_ p) o
-  return $ Value o f
+takeValue ref p = do
+  p' <- if ref then xmmsv_ref p else return p
+  fp <- newForeignPtr xmmsv_unref p'
+  return $ Value fp
+
+refValue :: Value a -> IO (Value a)
+refValue val = withValue val $ takeValue True
+
+{# fun xmmsv_ref as xmmsv_ref
+ { id `ValuePtr'
+ } -> `ValuePtr' id #}
+
 foreign import ccall unsafe "&xmmsv_unref"
-  unref :: FunPtr (ValuePtr -> IO ())
+  xmmsv_unref :: FunPtr (ValuePtr -> IO ())
+
 
 
 {# enum type_t as ValueType

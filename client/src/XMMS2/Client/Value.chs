@@ -166,31 +166,36 @@ instance ValueClass a ValueData where
  { withValue* `Value a'
  } -> `Integer' cIntConv #}
 
-listGet l p = get TypeList ((flip list_get) p) (takeValue (Just l)) l
+listGet l p = get TypeList ((flip list_get) p) (takeValue True) l
 {# fun list_get as list_get
  { withValue* `Value a'
  , cIntConv   `Integer'
  , alloca-    `ValuePtr' peek*
  } -> `Bool' #}
 
-{# pointer *list_iter_t as ListIterPtr #}
 
+{# pointer *list_iter_t as ListIterPtr #}
 data ListIter a = ListIter (Value a) ListIterPtr
 
 withListIter (ListIter _ p) f = f p
 
 getListIter :: Value a -> IO (ListIter a)
 getListIter v = get TypeList get_list_iter (return . ListIter v) v
+
 {# fun get_list_iter as get_list_iter
  { withValue* `Value a'
  , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
 
+foreign import ccall unsafe "&xmmsv_list_iter_explicit_destroy"
+  xmmsv_list_iter_explicit_destroy :: FunPtr (ListIterPtr -> IO ())
+
+
 listIterEntry :: ListIter a -> IO (Value a)
 listIterEntry i@(ListIter v _) = do
   (ok, v') <- list_iter_entry i
   unless ok $ throwIO $ InvalidIter
-  takeValue (Just v) v'
+  takeValue True v'
 {# fun list_iter_entry as list_iter_entry
  { withListIter* `ListIter a'
  , alloca-       `ValuePtr' peek*
@@ -269,7 +274,7 @@ dictIterPair i@(DictIter v _) = do
   (ok, keyptr, valptr) <- dict_iter_pair i
   unless ok $ throwIO $ InvalidIter
   key <- peekCString keyptr
-  val <- takeValue (Just v) valptr
+  val <- takeValue True valptr
   return (key, val)
 {# fun dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter a'
@@ -294,7 +299,7 @@ dictForeach f d = do
   f' <- mkDictForeachPtr $
         \s v _ -> do
           s' <- peekCString s
-          v' <- takeValue (Just d) v
+          v' <- takeValue True v
           f s' v'
   dict_foreach d f' nullPtr
   freeHaskellFunPtr f'
@@ -309,7 +314,7 @@ foreign import ccall "wrapper"
   mkDictForeachPtr :: DictForeachFun a -> IO (DictForeachPtr a)
 
 propdictToDict :: Value a -> [String] -> IO (Value a)                      
-propdictToDict v p = propdict_to_dict v p >>= takeValue Nothing
+propdictToDict v p = propdict_to_dict v p >>= takeValue False
 {# fun propdict_to_dict as propdict_to_dict
  { withValue*         `Value a'
  , withCStringArray0* `[String]'
