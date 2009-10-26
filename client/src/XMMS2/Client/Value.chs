@@ -63,6 +63,7 @@ module XMMS2.Client.Value
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+#include <xmms2hs-client.h>         
 
 {# context prefix = "xmmsv" #}         
 
@@ -174,26 +175,27 @@ listGet l p = get TypeList ((flip list_get) p) (takeValue True) l
  } -> `Bool' #}
 
 
-{# pointer *list_iter_t as ListIterPtr #}
-data ListIter a = ListIter (Value a) ListIterPtr
+data Li = Li
+{# pointer *list_iter_t as ListIterPtr -> Li #}
+data ListIter a = ListIter (ForeignPtr Li)
 
-withListIter (ListIter _ p) f = f p
+withListIter (ListIter p) = withForeignPtr p
 
 getListIter :: Value a -> IO (ListIter a)
-getListIter v = get TypeList get_list_iter (return . ListIter v) v
+getListIter v = get TypeList get_list_iter (liftM ListIter . newForeignPtr finalize_list_iter) v
 
-{# fun get_list_iter as get_list_iter
+{# fun xmms2hs_get_list_iter as get_list_iter
  { withValue* `Value a'
  , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
 
-foreign import ccall unsafe "&xmmsv_list_iter_explicit_destroy"
-  xmmsv_list_iter_explicit_destroy :: FunPtr (ListIterPtr -> IO ())
+foreign import ccall unsafe "&xmms2hs_finalize_list_iter"
+  finalize_list_iter :: FinalizerPtr Li
 
 
 listIterEntry :: ListIter a -> IO (Value a)
-listIterEntry i@(ListIter v _) = do
-  (ok, v') <- list_iter_entry i
+listIterEntry iter = do
+  (ok, v') <- list_iter_entry iter
   unless ok $ throwIO $ InvalidIter
   takeValue True v'
 {# fun list_iter_entry as list_iter_entry
@@ -256,22 +258,28 @@ getDict val = liftM fromList $ do
 
 
 
-{# pointer *dict_iter_t as DictIterPtr #}
+data Di = Di
+{# pointer *xmms2hs_dict_iter_t as DictIterPtr -> Di #}
+data DictIter a = DictIter (ForeignPtr Di)
 
-data DictIter a = DictIter (Value a) DictIterPtr
-
-withDictIter (DictIter _ p) f = f p
+withDictIter (DictIter p) f =
+  withForeignPtr p $ \p -> {# get xmms2hs_dict_iter_t->iter #} p >>= f
+    
 
 getDictIter :: Value a -> IO (DictIter a)
-getDictIter v = get TypeDict get_dict_iter (return . DictIter v) v
-{# fun get_dict_iter as get_dict_iter
+getDictIter v = get TypeDict get_dict_iter (liftM DictIter . newForeignPtr finalize_dict_iter) v
+
+{# fun xmms2hs_get_dict_iter as get_dict_iter
  { withValue* `Value a'
  , alloca-    `DictIterPtr' peek*
  } -> `Bool' #}
 
+foreign import ccall unsafe "&xmms2hs_finalize_dict_iter"
+  finalize_dict_iter :: FinalizerPtr Di
+
 dictIterPair :: DictIter a -> IO (String, Value a)
-dictIterPair i@(DictIter v _) = do
-  (ok, keyptr, valptr) <- dict_iter_pair i
+dictIterPair iter = do
+  (ok, keyptr, valptr) <- dict_iter_pair iter
   unless ok $ throwIO $ InvalidIter
   key <- peekCString keyptr
   val <- takeValue True valptr

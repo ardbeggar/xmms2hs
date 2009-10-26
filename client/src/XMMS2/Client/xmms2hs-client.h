@@ -20,6 +20,20 @@
 
 #include <xmmsclient/xmmsclient.h>
 
+
 extern void xmms2hs_result_notifier_set (xmmsc_result_t *, xmmsc_result_notifier_t);
+
+extern int xmms2hs_get_list_iter (xmmsv_t *, xmmsv_list_iter_t **);
+extern void xmms2hs_finalize_list_iter (xmmsv_list_iter_t *);
+
+
+typedef struct {
+  xmmsv_t *parent;
+  xmmsv_dict_iter_t *iter;
+} xmms2hs_dict_iter_t;
+
+extern int xmms2hs_get_dict_iter (xmmsv_t *, xmms2hs_dict_iter_t **);
+extern void xmms2hs_finalize_dict_iter (xmms2hs_dict_iter_t *);
+
 
 #endif /* XMMS2HS_CLIENT_H */
