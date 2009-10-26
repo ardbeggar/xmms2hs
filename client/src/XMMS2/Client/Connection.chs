@@ -23,9 +23,13 @@ module XMMS2.Client.Connection
   , takeConnection
   , init
   , connect
+  , disconnectCallbackSet
   ) where
 
 #include <xmmsclient/xmmsclient.h>
+#include <xmms2hs-client.h>         
+
+{# context prefix = "xmmsc" #}
 
 import Control.Monad
 import Prelude hiding (init)
@@ -39,16 +43,32 @@ foreign import ccall unsafe "&xmmsc_unref"
   xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
 
 
-{# fun xmmsc_init as init
+{# fun init as ^
  { withCString* `String'
  } -> `Maybe Connection' maybeConnection* #}
 
 {# fun xmmsc_connect as connect
- { withConnection*   `Connection'   ,
-   withMaybeCString* `Maybe String'
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
  } -> `Bool' #}
 
 
+type DisconnectFun = Ptr () -> IO ()
+type DisconnectPtr = FunPtr DisconnectFun
+  
+disconnectCallbackSet xmmsc fun = do
+  ptr <- mkDisconnectPtr $ \_ -> fun
+  disconnect_callback_set xmmsc ptr
+                          
+{# fun xmms2hs_disconnect_callback_set as disconnect_callback_set
+ { withConnection* `Connection'
+ , id              `DisconnectPtr'
+ } -> `()' #}
+
+foreign import ccall "wrapper"
+  mkDisconnectPtr :: DisconnectFun -> IO DisconnectPtr
+
+                     
 maybeConnection p
   | p == nullPtr = return Nothing
   | otherwise    = liftM Just $ takeConnection p

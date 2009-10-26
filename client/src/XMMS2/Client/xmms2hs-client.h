@@ -21,11 +21,12 @@
 #include <xmmsclient/xmmsclient.h>
 
 
+extern void xmms2hs_disconnect_callback_set (xmmsc_connection_t *, xmmsc_disconnect_func_t);
+
 extern void xmms2hs_result_notifier_set (xmmsc_result_t *, xmmsc_result_notifier_t);
 
 extern int xmms2hs_get_list_iter (xmmsv_t *, xmmsv_list_iter_t **);
 extern void xmms2hs_finalize_list_iter (xmmsv_list_iter_t *);
-
 
 typedef struct {
   xmmsv_t *parent;

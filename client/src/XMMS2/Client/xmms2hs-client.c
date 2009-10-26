@@ -22,16 +22,23 @@
 
 
 static void
-xmms2hs_finalize_result_notifier (void *notifier)
+xmms2hs_finalize_callback (void *notifier)
 {
   hs_free_fun_ptr ((HsFunPtr) notifier);
+}
+
+void
+xmms2hs_disconnect_callback_set (xmmsc_connection_t *xmmsc,
+								 xmmsc_disconnect_func_t func)
+{
+  xmmsc_disconnect_callback_set_full (xmmsc, func, (void *) func, xmms2hs_finalize_callback);
 }
 
 void
 xmms2hs_result_notifier_set (xmmsc_result_t *res,
 							 xmmsc_result_notifier_t func)
 {
-  xmmsc_result_notifier_set_full (res, func, (void *) func, xmms2hs_finalize_result_notifier);
+  xmmsc_result_notifier_set_full (res, func, (void *) func, xmms2hs_finalize_callback);
 }
 
 
