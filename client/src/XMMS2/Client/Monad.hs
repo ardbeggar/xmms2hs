@@ -26,7 +26,6 @@ module XMMS2.Client.Monad
   , module XMMS2.Client.Monad.Medialib
   , module XMMS2.Client.Monad.Coll
   , module XMMS2.Client.Monad.Stats
-           
   , module XMMS2.Client.Exception
   ) where
 
@@ -38,6 +37,4 @@ import XMMS2.Client.Monad.Playback
 import XMMS2.Client.Monad.Medialib
 import XMMS2.Client.Monad.Coll
 import XMMS2.Client.Monad.Stats
-
 import XMMS2.Client.Exception  
-  
