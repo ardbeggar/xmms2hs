@@ -21,13 +21,16 @@ module XMMS2.Client.Monad.Coll
   ( Coll
   , getColl
   , collIdlistFromPlaylistFile
+  , collNew
+  , collSetIdlist
+  , collNewIdlist
   ) where
 
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Utils
 import XMMS2.Client.Monad.Value
-import XMMS2.Client.Coll (Coll)  
+import XMMS2.Client.Coll (Coll, CollType (..))  
 import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Value as XV
 
@@ -41,3 +44,14 @@ getColl = liftIO . XV.getColl
 collIdlistFromPlaylistFile :: MonadXMMS m => String -> m (Result (Coll Immutable))
 collIdlistFromPlaylistFile name =
   liftXMMSResult $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
+
+
+collNew :: MonadXMMS m => CollType -> m (Coll Mutable)
+collNew t = liftIO $ XC.collNew t
+
+collSetIdlist :: MonadXMMS m => Coll Mutable -> [Int32] -> m ()
+collSetIdlist c list = liftIO $ XC.collSetIdlist c list
+
+collNewIdlist :: MonadXMMS m => [Int32] -> m (Coll Mutable)
+collNewIdlist list = liftIO $ XC.collNewIdlist list
+                     

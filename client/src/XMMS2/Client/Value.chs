@@ -147,7 +147,7 @@ data ValueData a
   | DataString String
   | DataColl (Coll a)
     deriving (Show, Eq)
-
+           
 getData ::  Value a -> IO (ValueData a)
 getData v = do
   t <- getType v
@@ -244,10 +244,10 @@ lazyGetList val = do
 
 type Dict a = Map String a
 
-instance ValueClass Immutable a => ValueClass Immutable (Dict a) where
+instance ValueClass c a => ValueClass c (Dict a) where
   valueGet = liftIO . getDict
 
-getDict :: ValueClass b a => Value b -> IO (Dict a)
+getDict :: ValueClass c a => Value c -> IO (Dict a)
 getDict val = liftM fromList $ do
   iter <- getDictIter val
   while (dictIterValid iter) $ do

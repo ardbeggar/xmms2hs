@@ -86,17 +86,14 @@ playlistMoveEntry name from to =
 type PlaylistPosition = (Int32, String)
 
 instance ValueClass Immutable PlaylistPosition where
-  valueGet = getPlaylistPosition
-
-getPlaylistPosition :: (MonadIO m, MonadException m) => Value Immutable -> m PlaylistPosition
-getPlaylistPosition v = do
-  (dict :: Dict (ValueData Immutable)) <- getDict v
-  case (Map.lookup "position" dict,
-        Map.lookup "name"     dict) of
-    (Just (DataInt32 p), Just (DataString n)) ->
-      return (p, n)
-    _ ->
-      throwM $ AssertionFailed "playlist position"
+  valueGet v =  do
+    dict :: Dict (ValueData Immutable) <- getDict v
+    case (Map.lookup "position" dict,
+          Map.lookup "name"     dict) of
+      (Just (DataInt32 p), Just (DataString n)) ->
+        return (p, n)
+      _ ->
+        throwM $ AssertionFailed "playlist position"
              
 playlistCurrentPos :: MonadXMMS m => Maybe String -> m (Result PlaylistPosition)
 playlistCurrentPos name =

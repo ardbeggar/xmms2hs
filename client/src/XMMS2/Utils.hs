@@ -23,6 +23,7 @@ module XMMS2.Utils
   , withMaybeCString
   , withCStringArray0
   , peekCString
+  , withZTArray
   , while
   ) where
 
@@ -57,3 +58,7 @@ while c a = do
   if continue
     then liftM2 (:) a (while c a)
     else return []
+
+
+withZTArray = withArray0 0
+              
