@@ -37,33 +37,37 @@ module XMMS2.Client.CollBase
     , TypeIdlist
     , TypeQueue
     , TypePartyshuffle )
+  , collNew
+  , collSetIdlist
+  , collNewIdlist
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsv_coll" #}         
+{# context prefix = "xmmsv" #}         
 
 import XMMS2.Utils
+{# import XMMS2.Client.ValueBase #}
 
 
 data T = T
-{# pointer *t as CollPtr -> T #}
+{# pointer *coll_t as CollPtr -> T #}
 data Coll a = Coll (ForeignPtr T)
 
 
 withColl (Coll p) = withForeignPtr p
 
-takeColl r p = do
-  p' <- if r then ref p else return p
-  fp <- newForeignPtr unref p'
+takeColl ref p = do
+  p' <- if ref then coll_ref p else return p
+  fp <- newForeignPtr coll_unref p'
   return $ Coll fp
 
-{# fun ref as ^
+{# fun coll_ref as coll_ref
  { id `CollPtr'
  } -> `CollPtr' id #}
 
 foreign import ccall unsafe "&xmmsv_coll_unref"
-  unref :: FinalizerPtr T
+  coll_unref :: FinalizerPtr T
 
 
 instance Eq (Coll a) where
@@ -73,7 +77,26 @@ instance Show (Coll a) where
   show _ = "<<Coll>>"
 
 
-{# enum type_t as CollType
+{# enum coll_type_t as CollType
  { underscoreToCase }
  with prefix = "XMMS_COLLECTION"
  deriving (Show) #}
+
+
+collNew :: CollType -> IO (Coll Mutable)
+collNew t = coll_new t >>= takeColl False
+{# fun coll_new as coll_new
+ { cFromEnum `CollType'
+ } -> `CollPtr' id #}
+
+collSetIdlist :: Coll Mutable -> [Int32] -> IO ()
+collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
+{# fun coll_set_idlist as coll_set_idlist
+ { withColl*    `Coll Mutable'
+ , withZTArray* `[CUInt]'
+ } -> `()' #}
+
+collNewIdlist list = do
+  c <- collNew TypeIdlist
+  collSetIdlist c list
+  return c

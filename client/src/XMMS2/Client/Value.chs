@@ -140,20 +140,15 @@ getColl v = get TypeColl get_coll (takeColl False) v
  } -> `Bool' #}
 
 
-data ValueData
+data ValueData a
   = DataNone
   | DataError String
   | DataInt32 Int32
   | DataString String
-  | forall a. DataColl (Coll a)
-
-instance Eq ValueData where
-  DataError  e1 == DataError  e2 = e1 == e2
-  DataInt32  i1 == DataInt32  i2 = i1 == i2
-  DataString s1 == DataString s2 = s1 == s2
-  _ == _ = False
+  | DataColl (Coll a)
+    deriving (Show, Eq)
            
-getData ::  Value a -> IO ValueData
+getData ::  Value a -> IO (ValueData a)
 getData v = do
   t <- getType v
   case t of
@@ -163,7 +158,7 @@ getData v = do
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
-instance ValueClass a ValueData where
+instance ValueClass a (ValueData a) where
   valueGet = liftIO . getData
                  
 
@@ -249,10 +244,10 @@ lazyGetList val = do
 
 type Dict a = Map String a
 
-instance ValueClass Immutable a => ValueClass Immutable (Dict a) where
+instance ValueClass c a => ValueClass c (Dict a) where
   valueGet = liftIO . getDict
 
-getDict :: ValueClass b a => Value b -> IO (Dict a)
+getDict :: ValueClass c a => Value c -> IO (Dict a)
 getDict val = liftM fromList $ do
   iter <- getDictIter val
   while (dictIterValid iter) $ do

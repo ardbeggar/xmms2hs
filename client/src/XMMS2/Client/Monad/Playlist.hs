@@ -85,9 +85,9 @@ playlistMoveEntry name from to =
 
 type PlaylistPosition = (Int32, String)
 
-instance ValueClass a PlaylistPosition where
-  valueGet v = do
-    dict <- getDict v
+instance ValueClass Immutable PlaylistPosition where
+  valueGet v =  do
+    dict :: Dict (ValueData Immutable) <- getDict v
     case (Map.lookup "position" dict,
           Map.lookup "name"     dict) of
       (Just (DataInt32 p), Just (DataString n)) ->
