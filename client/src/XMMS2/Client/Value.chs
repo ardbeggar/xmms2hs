@@ -140,15 +140,20 @@ getColl v = get TypeColl get_coll (takeColl False) v
  } -> `Bool' #}
 
 
-data ValueData a
+data ValueData
   = DataNone
   | DataError String
   | DataInt32 Int32
   | DataString String
-  | DataColl (Coll a)
-    deriving (Show, Eq)
+  | forall a. DataColl (Coll a)
 
-getData ::  Value a -> IO (ValueData a)
+instance Eq ValueData where
+  DataError  e1 == DataError  e2 = e1 == e2
+  DataInt32  i1 == DataInt32  i2 = i1 == i2
+  DataString s1 == DataString s2 = s1 == s2
+  _ == _ = False
+           
+getData ::  Value a -> IO ValueData
 getData v = do
   t <- getType v
   case t of
@@ -158,7 +163,7 @@ getData v = do
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
-instance ValueClass a (ValueData a) where
+instance ValueClass a ValueData where
   valueGet = liftIO . getData
                  
 
