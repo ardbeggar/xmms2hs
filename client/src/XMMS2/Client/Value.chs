@@ -133,22 +133,22 @@ getError = get TypeError get_error peekCString
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
-getColl v = get TypeColl get_coll (takeColl (Just v)) v
+getColl v = get TypeColl get_coll (takeColl False) v
 {# fun get_coll as get_coll
  { withValue* `Value a'
  , alloca-    `CollPtr' peek*
  } -> `Bool' #}
 
 
-data ValueData
+data ValueData a
   = DataNone
   | DataError String
   | DataInt32 Int32
   | DataString String
-  | DataColl Coll
+  | DataColl (Coll a)
     deriving (Show, Eq)
 
-getData ::  Value a -> IO ValueData
+getData ::  Value a -> IO (ValueData a)
 getData v = do
   t <- getType v
   case t of
@@ -158,7 +158,7 @@ getData v = do
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
-instance ValueClass a ValueData where
+instance ValueClass a (ValueData a) where
   valueGet = liftIO . getData
                  
 

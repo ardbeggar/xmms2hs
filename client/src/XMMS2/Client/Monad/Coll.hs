@@ -32,12 +32,12 @@ import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Value as XV
 
 
-instance ValueClass Immutable Coll where
+instance ValueClass a (Coll a) where
   valueGet = getColl
 
 getColl = liftIO . XV.getColl
 
 
-collIdlistFromPlaylistFile :: MonadXMMS m => String -> m (Result Coll)
+collIdlistFromPlaylistFile :: MonadXMMS m => String -> m (Result (Coll Immutable))
 collIdlistFromPlaylistFile name =
   liftXMMSResult $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name

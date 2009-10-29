@@ -17,36 +17,63 @@
 --  Lesser General Public License for more details.
 --
 
+{-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
+
 module XMMS2.Client.CollBase
   ( CollPtr
   , Coll
   , withColl
   , takeColl
+  , CollType
+    ( TypeReference
+    , TypeUnion
+    , TypeIntersection
+    , TypeComplement
+    , TypeHas
+    , TypeEquals
+    , TypeMatch
+    , TypeSmaller
+    , TypeGreater
+    , TypeIdlist
+    , TypeQueue
+    , TypePartyshuffle )
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsc" #}         
+{# context prefix = "xmmsv_coll" #}         
 
 import XMMS2.Utils
 
 
-data Xmmsv_coll_t = Xmmsv_coll_t
-{# pointer *xmmsv_coll_t as CollPtr -> Xmmsv_coll_t #}
-data Coll = forall a. Coll (Maybe a) (ForeignPtr Xmmsv_coll_t)
+data T = T
+{# pointer *t as CollPtr -> T #}
+data Coll a = Coll (ForeignPtr T)
 
-instance Eq Coll where
-  _ == _ = False
-           
 
-withColl (Coll _ p) = withForeignPtr p
+withColl (Coll p) = withForeignPtr p
 
-takeColl o p = do
-  f <- maybe (newForeignPtr xmmsv_coll_unref p) (\_ -> newForeignPtr_ p) o
-  return $ Coll o f
+takeColl r p = do
+  p' <- if r then ref p else return p
+  fp <- newForeignPtr unref p'
+  return $ Coll fp
+
+{# fun ref as ^
+ { id `CollPtr'
+ } -> `CollPtr' id #}
+
 foreign import ccall unsafe "&xmmsv_coll_unref"
-  xmmsv_coll_unref :: FunPtr (CollPtr -> IO ())
+  unref :: FinalizerPtr T
 
 
-instance Show Coll where
+instance Eq (Coll a) where
+  _ == _ = False
+
+instance Show (Coll a) where
   show _ = "<<Coll>>"
+
+
+{# enum type_t as CollType
+ { underscoreToCase }
+ with prefix = "XMMS_COLLECTION"
+ deriving (Show) #}
