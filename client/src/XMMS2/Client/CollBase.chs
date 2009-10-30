@@ -47,12 +47,12 @@ module XMMS2.Client.CollBase
 {# context prefix = "xmmsv" #}         
 
 import XMMS2.Utils
-{# import XMMS2.Client.ValueBase #}
 
 
 data T = T
 {# pointer *coll_t as CollPtr -> T #}
-data Coll a = Coll (ForeignPtr T)
+data Coll = Coll (ForeignPtr T)
+          deriving (Show, Eq)
 
 
 withColl (Coll p) = withForeignPtr p
@@ -69,30 +69,21 @@ takeColl ref p = do
 foreign import ccall unsafe "&xmmsv_coll_unref"
   coll_unref :: FinalizerPtr T
 
-
-instance Eq (Coll a) where
-  _ == _ = False
-
-instance Show (Coll a) where
-  show _ = "<<Coll>>"
-
-
 {# enum coll_type_t as CollType
  { underscoreToCase }
  with prefix = "XMMS_COLLECTION"
  deriving (Show) #}
 
-
-collNew :: CollType -> IO (Coll Mutable)
+collNew :: CollType -> IO Coll
 collNew t = coll_new t >>= takeColl False
 {# fun coll_new as coll_new
  { cFromEnum `CollType'
  } -> `CollPtr' id #}
 
-collSetIdlist :: Coll Mutable -> [Int32] -> IO ()
+collSetIdlist :: Coll -> [Int32] -> IO ()
 collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
 {# fun coll_set_idlist as coll_set_idlist
- { withColl*    `Coll Mutable'
+ { withColl*    `Coll'
  , withZTArray* `[CUInt]'
  } -> `()' #}
 

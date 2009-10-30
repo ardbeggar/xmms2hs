@@ -54,7 +54,7 @@ playlistAddId :: MonadXMMS m => Maybe String -> Int32 -> m (Result ())
 playlistAddId name id =
   liftXMMSResult $ \xmmsc -> XP.playlistAddId xmmsc name id
 
-playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll a -> m (Result ())
+playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll -> m (Result ())
 playlistAddIdlist name coll =
   liftXMMSResult $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
 
@@ -85,9 +85,9 @@ playlistMoveEntry name from to =
 
 type PlaylistPosition = (Int32, String)
 
-instance ValueClass Immutable PlaylistPosition where
+instance ValueClass PlaylistPosition where
   valueGet v =  do
-    dict :: Dict (ValueData Immutable) <- getDict v
+    dict <- getDict v
     case (Map.lookup "position" dict,
           Map.lookup "name"     dict) of
       (Just (DataInt32 p), Just (DataString n)) ->

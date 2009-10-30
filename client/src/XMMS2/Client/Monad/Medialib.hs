@@ -37,7 +37,7 @@ import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
 
-medialibGetInfo :: MonadXMMS m => Int32 -> m (Result (Dict (Dict (ValueData Immutable))))
+medialibGetInfo :: MonadXMMS m => Int32 -> m (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
                              
@@ -69,7 +69,7 @@ medialibEntryPropertyRemoveWithSource :: MonadXMMS m => Int32 -> String -> Strin
 medialibEntryPropertyRemoveWithSource id key src = 
   liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
 
-xformMediaBrowse :: MonadXMMS m => String -> m (Result [Dict (ValueData Immutable)])
+xformMediaBrowse :: MonadXMMS m => String -> m (Result [Dict ValueData])
 xformMediaBrowse url = 
   liftXMMSResult $ \xmmsc -> XM.xformMediaBrowse xmmsc url
   

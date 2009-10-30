@@ -18,9 +18,7 @@
 --
 
 module XMMS2.Client.Monad.Value
-  ( Mutable
-  , Immutable
-  , Value
+  ( Value
   , ValueType (..)
   , ValueData (..)
   , ValueClass (..)
@@ -30,14 +28,13 @@ module XMMS2.Client.Monad.Value
   , getInt
   , getString
   , getList
-  , lazyGetList
   , Dict
   , getDict
   ) where
 
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Utils
-import XMMS2.Client.Value (Value, ValueType, ValueData, ValueClass, Int32, Dict, Mutable, Immutable)
+import XMMS2.Client.Value (Value, ValueType, ValueData, ValueClass, Int32, Dict)
 import qualified XMMS2.Client.Value as XV
 import Control.Monad  
 import Data.Maybe
@@ -54,8 +51,6 @@ getInt = liftIO . XV.getInt
 getString = liftIO . XV.getString
 
 getList = liftIO . XV.getList
-
-lazyGetList = liftIO . XV.lazyGetList
 
 getListIter = liftIO . XV.getListIter
 

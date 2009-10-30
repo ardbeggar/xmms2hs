@@ -18,9 +18,7 @@
 --
 
 module XMMS2.Client.Value
-  ( Mutable
-  , Immutable
-  , ValueType
+  ( ValueType
     ( TypeNone
     , TypeError
     , TypeInt32
@@ -42,7 +40,6 @@ module XMMS2.Client.Value
   , getColl
   , getData
   , getList
-  , lazyGetList
   , listGetSize
   , listGet
   , ListIter
@@ -80,7 +77,7 @@ import XMMS2.Client.Exception
 {# import XMMS2.Client.CollBase #}
 
 
-instance (ValueClass a) () where
+instance ValueClass () where
   valueGet v = do
     t <- liftIO $ getType v
     case t of
@@ -110,45 +107,45 @@ get t f c v = do
   
 getInt = get TypeInt32 get_int return
 {# fun get_int as get_int
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
-instance ValueClass a Int32 where
+instance ValueClass Int32 where
   valueGet = liftIO . getInt
 
 
-instance ValueClass a String where
+instance ValueClass String where
   valueGet = liftIO . getString
 
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
 getError = get TypeError get_error peekCString
 {# fun get_error as get_error
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
 getColl v = get TypeColl get_coll (takeColl False) v
 {# fun get_coll as get_coll
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `CollPtr' peek*
  } -> `Bool' #}
 
 
-data ValueData a
+data ValueData
   = DataNone
   | DataError String
   | DataInt32 Int32
   | DataString String
-  | DataColl (Coll a)
+  | DataColl Coll
     deriving (Show, Eq)
            
-getData ::  Value a -> IO (ValueData a)
+getData ::  Value -> IO ValueData
 getData v = do
   t <- getType v
   case t of
@@ -158,18 +155,18 @@ getData v = do
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
-instance ValueClass a (ValueData a) where
+instance ValueClass ValueData where
   valueGet = liftIO . getData
                  
 
 
 {# fun list_get_size as listGetSize
- { withValue* `Value a'
+ { withValue* `Value'
  } -> `Integer' cIntConv #}
 
 listGet l p = get TypeList ((flip list_get) p) (takeValue True) l
 {# fun list_get as list_get
- { withValue* `Value a'
+ { withValue* `Value'
  , cIntConv   `Integer'
  , alloca-    `ValuePtr' peek*
  } -> `Bool' #}
@@ -181,11 +178,11 @@ data ListIter a = ListIter (ForeignPtr Li)
 
 withListIter (ListIter p) = withForeignPtr p
 
-getListIter :: Value a -> IO (ListIter a)
+getListIter :: Value -> IO (ListIter a)
 getListIter v = get TypeList get_list_iter (liftM ListIter . newForeignPtr finalize_list_iter) v
 
 {# fun xmms2hs_get_list_iter as get_list_iter
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
 
@@ -193,7 +190,7 @@ foreign import ccall unsafe "&xmms2hs_finalize_list_iter"
   finalize_list_iter :: FinalizerPtr Li
 
 
-listIterEntry :: ListIter a -> IO (Value a)
+listIterEntry :: ListIter a -> IO (Value)
 listIterEntry iter = do
   (ok, v') <- list_iter_entry iter
   unless ok $ throwIO $ InvalidIter
@@ -212,10 +209,10 @@ listIterEntry iter = do
  } -> `()' #}
 
 
-instance ValueClass Immutable a => ValueClass Immutable [a] where
-  valueGet = liftIO . lazyGetList
+instance ValueClass a => ValueClass [a] where
+  valueGet = liftIO . getList
 
-getList :: ValueClass b a => Value b -> IO [a]
+getList :: ValueClass a => Value -> IO [a]
 getList val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
@@ -224,30 +221,15 @@ getList val = do
     listIterNext iter
     return item
 
-lazyGetList :: ValueClass Immutable a => Value Immutable -> IO [a]
-lazyGetList val = do
-  iter <- getListIter val
-  lazyGetList' iter
-  where lazyGetList' iter =
-          unsafeInterleaveIO $ do
-            valid <- listIterValid iter
-            if valid
-               then do
-                 entry <- listIterEntry iter
-                 item  <- valueGet entry
-                 listIterNext iter
-                 liftM (item :) $ lazyGetList' iter
-               else
-                 return []
 
 
 
 type Dict a = Map String a
 
-instance ValueClass c a => ValueClass c (Dict a) where
+instance ValueClass a => ValueClass (Dict a) where
   valueGet = liftIO . getDict
 
-getDict :: ValueClass c a => Value c -> IO (Dict a)
+getDict :: ValueClass a => Value -> IO (Dict a)
 getDict val = liftM fromList $ do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
@@ -266,18 +248,18 @@ withDictIter (DictIter p) f =
   withForeignPtr p $ \p -> {# get xmms2hs_dict_iter_t->iter #} p >>= f
     
 
-getDictIter :: Value a -> IO (DictIter a)
+getDictIter :: Value -> IO (DictIter a)
 getDictIter v = get TypeDict get_dict_iter (liftM DictIter . newForeignPtr finalize_dict_iter) v
 
 {# fun xmms2hs_get_dict_iter as get_dict_iter
- { withValue* `Value a'
+ { withValue* `Value'
  , alloca-    `DictIterPtr' peek*
  } -> `Bool' #}
 
 foreign import ccall unsafe "&xmms2hs_finalize_dict_iter"
   finalize_dict_iter :: FinalizerPtr Di
 
-dictIterPair :: DictIter a -> IO (String, Value a)
+dictIterPair :: DictIter a -> IO (String, Value)
 dictIterPair iter = do
   (ok, keyptr, valptr) <- dict_iter_pair iter
   unless ok $ throwIO $ InvalidIter
@@ -302,7 +284,7 @@ dictIterPair iter = do
 type DictForeachFun a = CString -> ValuePtr -> Ptr () -> IO ()
 type DictForeachPtr a = FunPtr (DictForeachFun a)
 
-dictForeach :: (String -> Value a -> IO ()) -> Value a -> IO ()
+dictForeach :: (String -> Value -> IO ()) -> Value -> IO ()
 dictForeach f d = do
   f' <- mkDictForeachPtr $
         \s v _ -> do
@@ -313,7 +295,7 @@ dictForeach f d = do
   freeHaskellFunPtr f'
                     
 {# fun dict_foreach as dict_foreach
- { withValue* `Value a'
+ { withValue* `Value'
  , id         `DictForeachPtr a'
  , id         `Ptr ()'
  } -> `()' #}
@@ -321,10 +303,10 @@ dictForeach f d = do
 foreign import ccall "wrapper"
   mkDictForeachPtr :: DictForeachFun a -> IO (DictForeachPtr a)
 
-propdictToDict :: Value a -> [String] -> IO (Value a)                      
+propdictToDict :: Value -> [String] -> IO (Value)                      
 propdictToDict v p = propdict_to_dict v p >>= takeValue False
 {# fun propdict_to_dict as propdict_to_dict
- { withValue*         `Value a'
+ { withValue*         `Value'
  , withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
 

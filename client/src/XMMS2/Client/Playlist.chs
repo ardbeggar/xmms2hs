@@ -58,7 +58,7 @@ import XMMS2.Utils
 {# fun playlist_add_idlist as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
- , withColl*         `Coll a'
+ , withColl*         `Coll'
  } -> `Result' takeResult* #}
 
 {# fun playlist_remove_entry as ^

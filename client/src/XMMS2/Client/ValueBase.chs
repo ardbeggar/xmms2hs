@@ -25,8 +25,6 @@ module XMMS2.Client.ValueBase
   , takeValue
   , refValue
   , getType
-  , Mutable
-  , Immutable
   , ValueClass (..)
   ) where
 
@@ -41,13 +39,9 @@ import Data.Maybe
 import XMMS2.Utils  
 
 
-data Mutable
-data Immutable
-
-  
 data T = T
 {# pointer *t as ValuePtr -> T #}
-data Value b = Value (ForeignPtr T)
+data Value = Value (ForeignPtr T)
 
 withValue (Value p) = withForeignPtr p
 
@@ -56,7 +50,7 @@ takeValue ref p = do
   fp <- newForeignPtr xmmsv_unref p'
   return $ Value fp
 
-refValue :: Value a -> IO (Value a)
+refValue :: Value -> IO Value
 refValue val = withValue val $ takeValue True
 
 {# fun xmmsv_ref as xmmsv_ref
@@ -74,14 +68,14 @@ foreign import ccall unsafe "&xmmsv_unref"
 
 
 {# fun get_type as ^
- { withValue* `Value a'
+ { withValue* `Value'
  } -> `ValueType' cToEnum #}
                
 
-class ValueClass b t where
-  valueGet :: (MonadIO m, MonadException m) => Value b -> m t
+class ValueClass t where
+  valueGet :: (MonadIO m, MonadException m) => Value -> m t
                  
 
-instance ValueClass a (Value a) where
+instance ValueClass Value where
   valueGet = return
 
