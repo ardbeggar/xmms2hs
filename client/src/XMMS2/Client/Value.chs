@@ -130,7 +130,7 @@ getError = get TypeError get_error peekCString
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
-getColl v = get TypeColl get_coll (takeColl False) v
+getColl v = get TypeColl get_coll (takeColl True) v
 {# fun get_coll as get_coll
  { withValue* `Value'
  , alloca-    `CollPtr' peek*
