@@ -142,8 +142,8 @@ data ValueData
   | DataError String
   | DataInt32 Int32
   | DataString String
-  | DataColl Coll
-    deriving (Show, Eq)
+--  | DataColl Coll
+    deriving (Read, Show, Eq)
            
 getData ::  Value -> IO ValueData
 getData v = do
@@ -151,7 +151,7 @@ getData v = do
   case t of
     TypeInt32  -> mk DataInt32 getInt
     TypeString -> mk DataString getString
-    TypeColl   -> mk DataColl getColl
+--    TypeColl   -> mk DataColl getColl
     _          -> return DataNone
   where mk c g = liftM c $ g v
 

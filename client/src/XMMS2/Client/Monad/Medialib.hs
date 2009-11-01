@@ -18,7 +18,8 @@
 --
 
 module XMMS2.Client.Monad.Medialib
-  ( medialibGetInfo
+  ( medialibAddEntry
+  , medialibGetInfo
   , medialibGetId
   , medialibEntryPropertySetInt
   , medialibEntryPropertySetIntWithSource
@@ -37,6 +38,9 @@ import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
 
+medialibAddEntry :: MonadXMMS m => String -> m (Result ())
+medialibAddEntry url = liftXMMSResult $ \xmmsc -> XM.medialibAddEntry xmmsc url
+                       
 medialibGetInfo :: MonadXMMS m => Int32 -> m (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
   liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
