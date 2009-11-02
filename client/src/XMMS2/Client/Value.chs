@@ -69,13 +69,17 @@ import Control.Monad.Trans
 import Control.Monad.Exception  
 import Data.Int (Int32)
 import Data.Maybe
-import Data.Map (Map, fromList)
+import Data.Map (Map, fromList, toList)
 import System.IO.Unsafe  
 import XMMS2.Utils
 import XMMS2.Client.Exception
 {# import XMMS2.Client.ValueBase #}
 {# import XMMS2.Client.CollBase #}
 
+
+newNone = new_none >>= takeValue False
+{# fun new_none as new_none
+ {} -> `ValuePtr' id #}
 
 instance ValueClass () where
   valueGet v = do
@@ -87,6 +91,7 @@ instance ValueClass () where
         throwM $ XMMSError s
       _ ->
         return ()
+  valueNew () = liftIO newNone
 
 
 get t f c v = do
@@ -105,24 +110,38 @@ get t f c v = do
            throwIO $ TypeMismatch t t'
 
   
+
 getInt = get TypeInt32 get_int return
 {# fun get_int as get_int
  { withValue* `Value'
  , alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
+newInt val = new_int val >>= takeValue False
+{# fun new_int as new_int
+ { cIntConv `Int32'
+ } -> `ValuePtr' id #}
+
 instance ValueClass Int32 where
   valueGet = liftIO . getInt
+  valueNew = liftIO . newInt
 
 
-instance ValueClass String where
-  valueGet = liftIO . getString
+newString val = new_string val >>= takeValue False
+{# fun new_string as new_string
+ { withCString* `String'
+ } -> `ValuePtr' id #}
 
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
+
+instance ValueClass String where
+  valueGet = liftIO . getString
+  valueNew = liftIO . newString
+
 
 getError = get TypeError get_error peekCString
 {# fun get_error as get_error
@@ -139,10 +158,8 @@ getColl v = get TypeColl get_coll (takeColl True) v
 
 data ValueData
   = DataNone
-  | DataError String
   | DataInt32 Int32
   | DataString String
---  | DataColl Coll
     deriving (Read, Show, Eq)
            
 getData ::  Value -> IO ValueData
@@ -151,12 +168,16 @@ getData v = do
   case t of
     TypeInt32  -> mk DataInt32 getInt
     TypeString -> mk DataString getString
---    TypeColl   -> mk DataColl getColl
     _          -> return DataNone
   where mk c g = liftM c $ g v
 
+newData (DataInt32  val) = newInt val
+newData (DataString val) = newString val
+newData DataNone         = newNone
+
 instance ValueClass ValueData where
   valueGet = liftIO . getData
+  valueNew = liftIO . newData
                  
 
 
@@ -209,9 +230,6 @@ listIterEntry iter = do
  } -> `()' #}
 
 
-instance ValueClass a => ValueClass [a] where
-  valueGet = liftIO . getList
-
 getList :: ValueClass a => Value -> IO [a]
 getList val = do
   iter <- getListIter val
@@ -221,6 +239,23 @@ getList val = do
     listIterNext iter
     return item
 
+newList list = do
+  val <- new_list >>= takeValue False
+  mapM_ (listAppend val) list
+  return val
+         
+{# fun new_list as new_list
+ {} -> `ValuePtr' id #}
+
+listAppend list val = valueNew val >>= list_append list
+{#fun list_append as list_append
+ { withValue* `Value'
+ , withValue* `Value'
+ } -> `Int' #}
+
+instance ValueClass a => ValueClass [a] where
+  valueGet = liftIO . getList
+  valueNew = liftIO . newList
 
 
 
@@ -228,6 +263,7 @@ type Dict a = Map String a
 
 instance ValueClass a => ValueClass (Dict a) where
   valueGet = liftIO . getDict
+  valueNew = liftIO . newDict
 
 getDict :: ValueClass a => Value -> IO (Dict a)
 getDict val = liftM fromList $ do
@@ -238,6 +274,20 @@ getDict val = liftM fromList $ do
     dictIterNext iter
     return (key, val)
 
+newDict dict = do
+  val <- new_dict >>= takeValue False
+  mapM_ (uncurry (dictSet val)) $ toList dict
+  return val
+
+dictSet dict key val = valueNew val >>= dict_set dict key         
+{# fun dict_set as dict_set
+ { withValue*   `Value'
+ , withCString* `String'
+ , withValue*   `Value'
+ } -> `Int' #}
+
+{# fun new_dict as new_dict
+ {} -> `ValuePtr' id #}
 
 
 data Di = Di

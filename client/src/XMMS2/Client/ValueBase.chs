@@ -74,8 +74,9 @@ foreign import ccall unsafe "&xmmsv_unref"
 
 class ValueClass t where
   valueGet :: (MonadIO m, MonadException m) => Value -> m t
-                 
+  valueNew :: (MonadIO m, MonadException m) => t -> m Value                 
 
 instance ValueClass Value where
   valueGet = return
+  valueNew = return
 
