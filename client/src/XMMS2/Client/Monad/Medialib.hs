@@ -19,8 +19,11 @@
 
 module XMMS2.Client.Monad.Medialib
   ( medialibAddEntry
+  , medialibAddEntryFull
+  , medialibAddEntryEncoded
   , medialibGetInfo
   , medialibGetId
+  , medialibGetIdEncoded
   , medialibEntryPropertySetInt
   , medialibEntryPropertySetIntWithSource
   , medialibEntryPropertySetStr
@@ -40,6 +43,12 @@ import qualified XMMS2.Client.Medialib as XM
 
 medialibAddEntry :: MonadXMMS m => String -> m (Result ())
 medialibAddEntry url = liftXMMSResult $ \xmmsc -> XM.medialibAddEntry xmmsc url
+
+medialibAddEntryFull :: (MonadXMMS m, ValueClass a) => String -> a -> m (Result ())
+medialibAddEntryFull url args = liftXMMSResult $ \xmmsc -> XM.medialibAddEntryFull xmmsc url args
+
+medialibAddEntryEncoded :: MonadXMMS m => String -> m (Result ())
+medialibAddEntryEncoded url = liftXMMSResult $ \xmmsc -> XM.medialibAddEntryEncoded xmmsc url
                        
 medialibGetInfo :: MonadXMMS m => Int32 -> m (Result (Dict (Dict ValueData)))
 medialibGetInfo id =
@@ -48,6 +57,10 @@ medialibGetInfo id =
 medialibGetId :: MonadXMMS m => String -> m (Result Int32)
 medialibGetId url =
   liftXMMSResult $ \xmmsc -> XM.medialibGetId xmmsc url
+
+medialibGetIdEncoded :: MonadXMMS m => String -> m (Result Int32)
+medialibGetIdEncoded url =
+  liftXMMSResult $ \xmmsc -> XM.medialibGetIdEncoded xmmsc url
 
 medialibEntryPropertySetInt :: MonadXMMS m => Int32 -> String -> Int32 -> m (Result ())
 medialibEntryPropertySetInt id key val = 

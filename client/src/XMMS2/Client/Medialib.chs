@@ -19,8 +19,11 @@
 
 module XMMS2.Client.Medialib
   ( medialibAddEntry
+  , medialibAddEntryFull
+  , medialibAddEntryEncoded
   , medialibGetInfo
   , medialibGetId
+  , medialibGetIdEncoded
   , medialibEntryPropertySetInt
   , medialibEntryPropertySetIntWithSource
   , medialibEntryPropertySetStr
@@ -39,9 +42,23 @@ import Control.Monad
 import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
+{# import XMMS2.Client.Value #}
 
 
 {# fun medialib_add_entry as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+medialibAddEntryFull xmmsc url args =
+  valueNew args >>= medialib_add_entry_full xmmsc url
+{# fun medialib_add_entry_full as medialib_add_entry_full
+ { withConnection* `Connection'
+ , withCString*    `String'
+ , withValue*      `Value'
+ } -> `Result' takeResult* #}
+
+{# fun medialib_add_entry_encoded as ^
  { withConnection* `Connection'
  , withCString*    `String'
  } -> `Result' takeResult* #}
@@ -52,6 +69,11 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun medialib_get_id as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun medialib_get_id_encoded as ^
  { withConnection* `Connection'
  , withCString*    `String'
  } -> `Result' takeResult* #}
