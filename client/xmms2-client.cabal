@@ -62,4 +62,5 @@ library
                     FunctionalDependencies,
                     EmptyDataDecls,
                     FlexibleContexts,
-                    ScopedTypeVariables
+                    ScopedTypeVariables,
+                    OverlappingInstances
