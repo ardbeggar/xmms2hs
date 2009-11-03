@@ -32,6 +32,7 @@ module XMMS2.Client.Monad.Playlist
   , playlistInsertId
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
+  , broadcastPlaylistLoaded
   ) where
 
 import Control.Monad
@@ -109,4 +110,7 @@ broadcastPlaylistChanged = liftXMMSResult XP.broadcastPlaylistChanged
 
 broadcastPlaylistCurrentPos :: MonadXMMS m => m (Result ())
 broadcastPlaylistCurrentPos = liftXMMSResult XP.broadcastPlaylistCurrentPos
+
+broadcastPlaylistLoaded :: MonadXMMS m => m (Result String)
+broadcastPlaylistLoaded = liftXMMSResult XP.broadcastPlaylistLoaded
               

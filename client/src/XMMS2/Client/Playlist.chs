@@ -31,6 +31,7 @@ module XMMS2.Client.Playlist
   , playlistInsertId
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
+  , broadcastPlaylistLoaded
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -112,5 +113,9 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun broadcast_playlist_current_pos as ^
+ { withConnection*   `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun broadcast_playlist_loaded as ^
  { withConnection*   `Connection'
  } -> `Result' takeResult* #}
