@@ -20,6 +20,7 @@
 module XMMS2.Client.Playlist
   ( playlistAddURL
   , playlistAddId
+  , playlistAddEncoded
   , playlistAddIdlist
   , playlistRemoveEntry
   , playlistClear
@@ -29,6 +30,8 @@ module XMMS2.Client.Playlist
   , playlistMoveEntry
   , playlistCurrentPos
   , playlistInsertId
+  , playlistRAdd
+  , playlistRAddEncoded
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   , broadcastPlaylistLoaded
@@ -54,6 +57,12 @@ import XMMS2.Utils
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_add_encoded as ^
+ { withConnection*   `Connection'   ,
+   withMaybeCString* `Maybe String' ,
+   withCString*      `String'
  } -> `Result' takeResult* #}
 
 {# fun playlist_add_idlist as ^
@@ -105,6 +114,18 @@ import XMMS2.Utils
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int'
  , cIntConv          `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_radd as playlistRAdd
+ { withConnection*   `Connection'   ,
+   withMaybeCString* `Maybe String' ,
+   withCString*      `String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_radd_encoded as playlistRAddEncoded
+ { withConnection*   `Connection'   ,
+   withMaybeCString* `Maybe String' ,
+   withCString*      `String'
  } -> `Result' takeResult* #}
 
 

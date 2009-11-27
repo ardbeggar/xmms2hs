@@ -20,6 +20,7 @@
 module XMMS2.Client.Monad.Playlist
   ( playlistAddURL
   , playlistAddId
+  , playlistAddEncoded
   , playlistAddIdlist
   , playlistRemoveEntry
   , playlistClear
@@ -30,6 +31,8 @@ module XMMS2.Client.Monad.Playlist
   , PlaylistPosition
   , playlistCurrentPos
   , playlistInsertId
+  , playlistRAdd
+  , playlistRAddEncoded
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   , broadcastPlaylistLoaded
@@ -54,6 +57,10 @@ playlistAddURL name url =
 playlistAddId :: MonadXMMS m => Maybe String -> Int32 -> m (Result ())
 playlistAddId name id =
   liftXMMSResult $ \xmmsc -> XP.playlistAddId xmmsc name id
+
+playlistAddEncoded :: MonadXMMS m => Maybe String -> String -> m (Result ())
+playlistAddEncoded name url =
+  liftXMMSResult $ \xmmsc -> XP.playlistAddEncoded xmmsc name url
 
 playlistAddIdlist :: MonadXMMS m => Maybe String -> Coll -> m (Result ())
 playlistAddIdlist name coll =
@@ -103,6 +110,14 @@ playlistCurrentPos name =
 playlistInsertId :: MonadXMMS m => Maybe String -> Int -> Int32 -> m (Result ())
 playlistInsertId name pos id =
   liftXMMSResult $ \xmmsc -> XP.playlistInsertId xmmsc name pos id
+
+playlistRAdd :: MonadXMMS m => Maybe String -> String -> m (Result ())
+playlistRAdd name url =
+  liftXMMSResult $ \xmmsc -> XP.playlistRAdd xmmsc name url
+
+playlistRAddEncoded :: MonadXMMS m => Maybe String -> String -> m (Result ())
+playlistRAddEncoded name url =
+  liftXMMSResult $ \xmmsc -> XP.playlistRAddEncoded xmmsc name url
 
                              
 broadcastPlaylistChanged :: MonadXMMS m => m (Result ())
