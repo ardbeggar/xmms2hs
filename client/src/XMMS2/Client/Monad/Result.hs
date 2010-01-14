@@ -18,62 +18,15 @@
 --
 
 module XMMS2.Client.Monad.Result
-  ( Result
-  , ResultM
-  , resultRawValue
-  , result
-  , (>>*)
-  , handler
+  ( module XMMS2.Client.Result
   , resultWait
   , resultGetValue
   ) where
 
-import Control.Monad.State
-import Control.Monad.Reader  
-import Data.Maybe
-import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Value
-import XMMS2.Client.Result (Result)  
+import Control.Monad.Trans  
+import XMMS2.Client.Result (Result, ResultM, result, resultRawValue, (>>*), handler)  
 import qualified XMMS2.Client.Result as XR
-import Control.Exception
 
-
-type ResultM m a b = StateT (Maybe a, Value) m b
-
-resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
-resultRawValue = gets snd
-
-result :: (ValueClass a, XMMSM m) => ResultM m a a
-result = do
-  (res, raw) <- get
-  case res of
-    Just val ->
-      return val
-    Nothing  ->
-      do val <- lift $ valueGet raw
-         put (Just val, raw)
-         return val
-
-
-runResultM ::
-  (ValueClass a, Monad m) =>
-  ResultM m a b               ->
-  Value                       ->
-  m b
-runResultM f v = evalStateT f (Nothing, v)
-
-
-f >>* h = handler f h
-                                
-handler ::
-  (ValueClass a, ToIO m, MonadIO m) =>
-  m (Result a)                ->
-  ResultM m a Bool            ->
-  m ()
-handler f h = do
-  result  <- f
-  wrapper <- toIO
-  liftIO $ XR.resultNotifierSet result $ \v -> wrapper (runResultM h v)
 
 resultWait = liftIO . XR.resultWait
 

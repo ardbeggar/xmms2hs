@@ -27,6 +27,11 @@ module XMMS2.Client.Result
   , ResultNotifier
   , resultNotifierSet
   , resultCallbackSet
+  , ResultM
+  , resultRawValue
+  , result
+  , (>>*)
+  , handler
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -35,7 +40,9 @@ module XMMS2.Client.Result
 {# context prefix = "xmmsc" #}
 
 import Control.Monad
+import Control.Monad.State  
 import XMMS2.Utils
+import XMMS2.Client.Monad.Monad  
 {# import XMMS2.Client.Value #}
 
 
@@ -83,3 +90,42 @@ type NotifierPtr = FunPtr NotifierFun
 
 foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierFun -> IO NotifierPtr
+
+
+
+type ResultM m a b = StateT (Maybe a, Value) m b
+
+resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
+resultRawValue = gets snd
+
+result :: (ValueClass a, XMMSM m) => ResultM m a a
+result = do
+  (res, raw) <- get
+  case res of
+    Just val ->
+      return val
+    Nothing  ->
+      do val <- lift $ valueGet raw
+         put (Just val, raw)
+         return val
+
+
+runResultM ::
+  (ValueClass a, XMMSM m) =>
+  ResultM m a b           ->
+  Value                   ->
+  m b
+runResultM f v = evalStateT f (Nothing, v)
+
+
+f >>* h = handler f h
+                                
+handler ::
+  (ValueClass a, XMMSM m) =>
+  m (Result a)            ->
+  ResultM m a Bool        ->
+  m ()
+handler f h = do
+  result  <- f
+  wrapper <- toIO
+  liftIO $ resultNotifierSet result $ \v -> wrapper (runResultM h v)
