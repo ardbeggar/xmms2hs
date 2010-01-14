@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Result
   ( Result
+  , ResultPtr
   , withResult
   , takeResult
   , resultGetValue
@@ -38,27 +39,31 @@ import XMMS2.Utils
 {# import XMMS2.Client.Value #}
 
 
-{# pointer *xmmsc_result_t as Result foreign newtype #}
+data T = T
+{# pointer *result_t as ResultPtr -> T #}
+data Result a = Result (ForeignPtr T)
+
+withResult (Result p) = withForeignPtr p
 
 takeResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
 foreign import ccall unsafe "&xmmsc_result_unref"
-  xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
+  xmmsc_result_unref :: FunPtr (ResultPtr -> IO ())
                         
 
-resultGetValue :: Result -> IO Value
+resultGetValue :: Result a -> IO Value
 resultGetValue r = result_get_value r >>= takeValue True
 {# fun result_get_value as result_get_value
- { withResult* `Result'
+ { withResult* `Result a'
  } -> `ValuePtr' id #}
 
 {# fun result_wait as ^
- { withResult* `Result'
+ { withResult* `Result a'
  } -> `()' #}
 
 
 type ResultNotifier = Value -> IO Bool
 
-resultNotifierSet :: Result -> ResultNotifier -> IO ()
+resultNotifierSet :: Result a -> ResultNotifier -> IO ()
 resultNotifierSet r f = do
   n <- mkNotifierPtr $ \p _ -> takeValue True p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
@@ -72,8 +77,8 @@ type NotifierFun = ValuePtr -> Ptr () -> IO CInt
 type NotifierPtr = FunPtr NotifierFun
   
 {# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
- { withResult* `Result'      ,
-   id          `NotifierPtr'
+ { withResult* `Result a'
+ , id          `NotifierPtr'
  } -> `()' #}
 
 foreign import ccall "wrapper"

@@ -18,7 +18,7 @@
 --
 
 module XMMS2.Client.Monad.Result
-  ( Result (..)
+  ( Result
   , ResultM
   , ToIO (..)
   , resultRawValue
@@ -35,6 +35,7 @@ import Control.Monad.Reader
 import Data.Maybe
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
+import XMMS2.Client.Result (Result)  
 import qualified XMMS2.Client.Result as XR
 import Control.Exception
 
@@ -63,8 +64,6 @@ runResultM ::
   m b
 runResultM f v = evalStateT f (Nothing, v)
 
-data (ValueClass a) => Result a = Result XR.Result
-
 class Monad m => ToIO m where
   toIO :: m (m a -> IO a)
 
@@ -84,13 +83,13 @@ handler ::
   m (Result a)                ->
   ResultM m a Bool            ->
   m ()
-handler r f = do
-  Result r' <- r
+handler f h = do
+  result  <- f
   wrapper <- toIO
-  liftIO $ XR.resultNotifierSet r' $ \v -> wrapper (runResultM f v)
+  liftIO $ XR.resultNotifierSet result $ \v -> wrapper (runResultM h v)
 
-liftXMMSResult = liftM Result . liftXMMS                                    
+liftXMMSResult = liftXMMS                                    
 
-resultWait (Result r) = liftIO $ XR.resultWait r
+resultWait = liftIO . XR.resultWait
 
-resultGetValue (Result r) = liftIO $ XR.resultGetValue r
+resultGetValue = liftIO . XR.resultGetValue

@@ -46,6 +46,7 @@ import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Coll  
+import XMMS2.Client.Playlist (PlaylistPosition)
 import qualified XMMS2.Client.Playlist as XP
 import qualified Data.Map as Map  
 
@@ -91,18 +92,6 @@ playlistMoveEntry name from to =
   liftXMMSResult $ \xmmsc -> XP.playlistMoveEntry xmmsc name from to
 
 
-type PlaylistPosition = (Int32, String)
-
-instance ValueClass PlaylistPosition where
-  valueGet v =  do
-    dict <- getDict v
-    case (Map.lookup "position" dict,
-          Map.lookup "name"     dict) of
-      (Just (DataInt32 p), Just (DataString n)) ->
-        return (p, n)
-      _ ->
-        throwM $ AssertionFailed "playlist position"
-             
 playlistCurrentPos :: MonadXMMS m => Maybe String -> m (Result PlaylistPosition)
 playlistCurrentPos name =
   liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
