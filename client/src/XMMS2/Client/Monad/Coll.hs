@@ -42,12 +42,12 @@ getColl = liftIO . XV.getColl
 
 
 collIdlistFromPlaylistFile name =
-  liftXMMSResult $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
+  liftXMMS $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
 
 
-collNew t = liftIO $ XC.collNew t
+collNew = liftIO . XC.collNew
 
 collSetIdlist c list = liftIO $ XC.collSetIdlist c list
 
-collNewIdlist list = liftIO $ XC.collNewIdlist list
+collNewIdlist = liftIO . XC.collNewIdlist
                      

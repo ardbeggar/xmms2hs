@@ -41,42 +41,42 @@ import XMMS2.Client.Monad.Result
 import qualified XMMS2.Client.Medialib as XM
 
 
-medialibAddEntry url = liftXMMSResult $ \xmmsc -> XM.medialibAddEntry xmmsc url
+medialibAddEntry url = liftXMMS $ \xmmsc -> XM.medialibAddEntry xmmsc url
 
-medialibAddEntryFull url args = liftXMMSResult $ \xmmsc -> XM.medialibAddEntryFull xmmsc url args
+medialibAddEntryFull url args = liftXMMS $ \xmmsc -> XM.medialibAddEntryFull xmmsc url args
 
-medialibAddEntryEncoded url = liftXMMSResult $ \xmmsc -> XM.medialibAddEntryEncoded xmmsc url
+medialibAddEntryEncoded url = liftXMMS $ \xmmsc -> XM.medialibAddEntryEncoded xmmsc url
                        
 medialibGetInfo id =
-  liftXMMSResult $ \xmmsc -> XM.medialibGetInfo xmmsc id
+  liftXMMS $ \xmmsc -> XM.medialibGetInfo xmmsc id
                              
 medialibGetId url =
-  liftXMMSResult $ \xmmsc -> XM.medialibGetId xmmsc url
+  liftXMMS $ \xmmsc -> XM.medialibGetId xmmsc url
 
 medialibGetIdEncoded url =
-  liftXMMSResult $ \xmmsc -> XM.medialibGetIdEncoded xmmsc url
+  liftXMMS $ \xmmsc -> XM.medialibGetIdEncoded xmmsc url
 
 medialibEntryPropertySetInt id key val = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetInt xmmsc id key val
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertySetInt xmmsc id key val
 
 medialibEntryPropertySetIntWithSource id key src val = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetIntWithSource xmmsc id key src val
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertySetIntWithSource xmmsc id key src val
 
 medialibEntryPropertySetStr id key val = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStr xmmsc id key val
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertySetStr xmmsc id key val
 
 medialibEntryPropertySetStrWithSource id key src val = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertySetStrWithSource xmmsc id key src val
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertySetStrWithSource xmmsc id key src val
 
 medialibEntryPropertyRemove id key = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemove xmmsc id key
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertyRemove xmmsc id key
 
 medialibEntryPropertyRemoveWithSource id key src = 
-  liftXMMSResult $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
+  liftXMMS $ \xmmsc -> XM.medialibEntryPropertyRemoveWithSource xmmsc id key src
 
 xformMediaBrowse url = 
-  liftXMMSResult $ \xmmsc -> XM.xformMediaBrowse xmmsc url
+  liftXMMS $ \xmmsc -> XM.xformMediaBrowse xmmsc url
   
 
 broadcastMedialibEntryChanged =
-  liftXMMSResult XM.broadcastMedialibEntryChanged
+  liftXMMS XM.broadcastMedialibEntryChanged

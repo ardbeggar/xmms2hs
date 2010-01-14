@@ -22,7 +22,6 @@ module XMMS2.Client.Monad.Result
   , ResultM
   , resultRawValue
   , result
-  , liftXMMSResult
   , (>>*)
   , handler
   , resultWait
@@ -75,8 +74,6 @@ handler f h = do
   result  <- f
   wrapper <- toIO
   liftIO $ XR.resultNotifierSet result $ \v -> wrapper (runResultM h v)
-
-liftXMMSResult = liftXMMS                                    
 
 resultWait = liftIO . XR.resultWait
 

@@ -29,4 +29,4 @@ import XMMS2.Client.Stats (PluginType (..))
 import qualified XMMS2.Client.Stats as XS
 
 
-pluginList pType = liftXMMSResult $ \xmmsc -> XS.pluginList xmmsc pType
+pluginList pType = liftXMMS $ \xmmsc -> XS.pluginList xmmsc pType

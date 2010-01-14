@@ -50,44 +50,44 @@ instance ValueClass PlaybackStatus where
   valueGet v = liftM (toEnum . fromIntegral) $ getInt v
 
 
-playbackStop = liftXMMSResult XP.playbackStop
+playbackStop = liftXMMS XP.playbackStop
 
-playbackTickle = liftXMMSResult XP.playbackTickle
+playbackTickle = liftXMMS XP.playbackTickle
 
-playbackStart = liftXMMSResult XP.playbackStart
+playbackStart = liftXMMS XP.playbackStart
                  
-playbackPause = liftXMMSResult XP.playbackPause
+playbackPause = liftXMMS XP.playbackPause
 
-playbackCurrentId = liftXMMSResult XP.playbackCurrentId
+playbackCurrentId = liftXMMS XP.playbackCurrentId
 
 playbackSeekMs pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekMs xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekMs xmmsc pos
 
 playbackSeekMsRel pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekMsRel xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekMsRel xmmsc pos
 
 playbackSeekSamples pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamples xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekSamples xmmsc pos
 
 playbackSeekSamplesRel pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamplesRel xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekSamplesRel xmmsc pos
 
-playbackPlaytime = liftXMMSResult XP.playbackPlaytime
+playbackPlaytime = liftXMMS XP.playbackPlaytime
 
-playbackStatus = liftXMMSResult XP.playbackStatus
+playbackStatus = liftXMMS XP.playbackStatus
 
 playbackVolumeSet channel volume =
-  liftXMMSResult $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
+  liftXMMS $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
 
-playbackVolumeGet = liftXMMSResult XP.playbackVolumeGet
+playbackVolumeGet = liftXMMS XP.playbackVolumeGet
 
 
 broadcastPlaybackVolumeChanged =
-  liftXMMSResult XP.broadcastPlaybackVolumeChanged
+  liftXMMS XP.broadcastPlaybackVolumeChanged
 
-broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus
+broadcastPlaybackStatus = liftXMMS XP.broadcastPlaybackStatus
 
-broadcastPlaybackCurrentId = liftXMMSResult XP.broadcastPlaybackCurrentId
+broadcastPlaybackCurrentId = liftXMMS XP.broadcastPlaybackCurrentId
                          
 
-signalPlaybackPlaytime = liftXMMSResult XP.signalPlaybackPlaytime
+signalPlaybackPlaytime = liftXMMS XP.signalPlaybackPlaytime

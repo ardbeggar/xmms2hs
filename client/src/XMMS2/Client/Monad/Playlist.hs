@@ -52,52 +52,52 @@ import qualified Data.Map as Map
 
 
 playlistAddURL name url =
-  liftXMMSResult $ \xmmsc -> XP.playlistAddURL xmmsc name url
+  liftXMMS $ \xmmsc -> XP.playlistAddURL xmmsc name url
 
 playlistAddId name id =
-  liftXMMSResult $ \xmmsc -> XP.playlistAddId xmmsc name id
+  liftXMMS $ \xmmsc -> XP.playlistAddId xmmsc name id
 
 playlistAddEncoded name url =
-  liftXMMSResult $ \xmmsc -> XP.playlistAddEncoded xmmsc name url
+  liftXMMS $ \xmmsc -> XP.playlistAddEncoded xmmsc name url
 
 playlistAddIdlist name coll =
-  liftXMMSResult $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
+  liftXMMS $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
 
 playlistRemoveEntry name pos =
-  liftXMMSResult $ \xmmsc -> XP.playlistRemoveEntry xmmsc name pos
+  liftXMMS $ \xmmsc -> XP.playlistRemoveEntry xmmsc name pos
                              
 playlistClear name =
-  liftXMMSResult $ \xmmsc -> XP.playlistClear xmmsc name
+  liftXMMS $ \xmmsc -> XP.playlistClear xmmsc name
                              
 playlistListEntries name =
-  liftXMMSResult $ \xmmsc -> XP.playlistListEntries xmmsc name
+  liftXMMS $ \xmmsc -> XP.playlistListEntries xmmsc name
 
 playlistSetNext n =
-  liftXMMSResult $ \xmmsc -> XP.playlistSetNext xmmsc n
+  liftXMMS $ \xmmsc -> XP.playlistSetNext xmmsc n
 
 playlistSetNextRel n =
-  liftXMMSResult $ \xmmsc -> XP.playlistSetNextRel xmmsc n
+  liftXMMS $ \xmmsc -> XP.playlistSetNextRel xmmsc n
 
 playlistMoveEntry name from to =
-  liftXMMSResult $ \xmmsc -> XP.playlistMoveEntry xmmsc name from to
+  liftXMMS $ \xmmsc -> XP.playlistMoveEntry xmmsc name from to
 
 
 playlistCurrentPos name =
-  liftXMMSResult $ \xmmsc -> XP.playlistCurrentPos xmmsc name
+  liftXMMS $ \xmmsc -> XP.playlistCurrentPos xmmsc name
 
 playlistInsertId name pos id =
-  liftXMMSResult $ \xmmsc -> XP.playlistInsertId xmmsc name pos id
+  liftXMMS $ \xmmsc -> XP.playlistInsertId xmmsc name pos id
 
 playlistRAdd name url =
-  liftXMMSResult $ \xmmsc -> XP.playlistRAdd xmmsc name url
+  liftXMMS $ \xmmsc -> XP.playlistRAdd xmmsc name url
 
 playlistRAddEncoded name url =
-  liftXMMSResult $ \xmmsc -> XP.playlistRAddEncoded xmmsc name url
+  liftXMMS $ \xmmsc -> XP.playlistRAddEncoded xmmsc name url
 
                              
-broadcastPlaylistChanged = liftXMMSResult XP.broadcastPlaylistChanged
+broadcastPlaylistChanged = liftXMMS XP.broadcastPlaylistChanged
 
-broadcastPlaylistCurrentPos = liftXMMSResult XP.broadcastPlaylistCurrentPos
+broadcastPlaylistCurrentPos = liftXMMS XP.broadcastPlaylistCurrentPos
 
-broadcastPlaylistLoaded = liftXMMSResult XP.broadcastPlaylistLoaded
+broadcastPlaylistLoaded = liftXMMS XP.broadcastPlaylistLoaded
               
