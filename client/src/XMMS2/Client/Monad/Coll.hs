@@ -26,6 +26,7 @@ module XMMS2.Client.Monad.Coll
   , collNewIdlist
   ) where
 
+import Control.Monad.Trans  
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Utils

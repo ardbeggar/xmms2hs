@@ -40,7 +40,8 @@ module XMMS2.Client.Result
 {# context prefix = "xmmsc" #}
 
 import Control.Monad
-import Control.Monad.State  
+import Control.Monad.State
+import Control.Monad.ToIO  
 import XMMS2.Utils
 import XMMS2.Client.Monad.Monad  
 {# import XMMS2.Client.Value #}
