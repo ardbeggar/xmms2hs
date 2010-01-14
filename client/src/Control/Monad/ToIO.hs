@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 8 Sep. 2009
+--  Created: 14 Jan. 2010
 --
 --  Copyright (C) 2009 Oleg Belozeorov
 --
@@ -17,25 +17,22 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Monad.Monad
-  ( XMMSM
-  , XMMSCM (..)
-  , module Control.Monad.Exception
+module Control.Monad.ToIO
+  ( MonadToIO (..)
   ) where
 
-import Control.Monad.Trans  
-import Control.Monad.Exception
-import Control.Monad.ToIO  
-import XMMS2.Client.Connection (Connection)
+import Control.Monad.Reader
 
 
-class (MonadIO m, MonadException m, MonadToIO m) => XMMSM m
+class Monad m => MonadToIO m where
+  toIO :: m (m a -> IO a)
+          
 
-instance XMMSM IO  
+instance MonadToIO IO where
+  toIO = return id
 
-  
-class XMMSM m => XMMSCM e m | m -> e where
-  connection  :: m Connection
-  environment :: m e
-  liftXMMS    :: (Connection -> IO a) -> m a
-  liftXMMS f = connection >>= liftIO . f
+instance MonadToIO m => MonadToIO (ReaderT r m) where
+  toIO = do
+    r <- ask
+    w <- lift toIO
+    return $ w . flip runReaderT r

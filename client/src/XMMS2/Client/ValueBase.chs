@@ -36,7 +36,8 @@ import Control.Monad
 import Control.Monad.Trans
 import Control.Monad.Exception  
 import Data.Maybe
-import XMMS2.Utils  
+import XMMS2.Utils
+import XMMS2.Client.Monad.Monad  
 
 
 data T = T
@@ -73,8 +74,8 @@ foreign import ccall unsafe "&xmmsv_unref"
                
 
 class ValueClass t where
-  valueGet :: (MonadIO m, MonadException m) => Value -> m t
-  valueNew :: (MonadIO m, MonadException m) => t -> m Value                 
+  valueGet :: XMMSM m => Value -> m t
+  valueNew :: XMMSM m => t -> m Value                 
 
 instance ValueClass Value where
   valueGet = return

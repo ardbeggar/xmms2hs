@@ -50,61 +50,44 @@ instance ValueClass PlaybackStatus where
   valueGet v = liftM (toEnum . fromIntegral) $ getInt v
 
 
-playbackStop :: MonadXMMS m => m (Result ())
-playbackStop = liftXMMSResult XP.playbackStop
+playbackStop = liftXMMS XP.playbackStop
 
-playbackTickle :: MonadXMMS m => m (Result ())               
-playbackTickle = liftXMMSResult XP.playbackTickle
+playbackTickle = liftXMMS XP.playbackTickle
 
-playbackStart :: MonadXMMS m => m (Result ())
-playbackStart = liftXMMSResult XP.playbackStart
+playbackStart = liftXMMS XP.playbackStart
                  
-playbackPause :: MonadXMMS m => m (Result ())
-playbackPause = liftXMMSResult XP.playbackPause
+playbackPause = liftXMMS XP.playbackPause
 
-playbackCurrentId :: MonadXMMS m => m (Result Int32)
-playbackCurrentId = liftXMMSResult XP.playbackCurrentId
+playbackCurrentId = liftXMMS XP.playbackCurrentId
 
-playbackSeekMs :: MonadXMMS m => Int32 -> m (Result ())
 playbackSeekMs pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekMs xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekMs xmmsc pos
 
-playbackSeekMsRel :: MonadXMMS m => Int32 -> m (Result ())
 playbackSeekMsRel pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekMsRel xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekMsRel xmmsc pos
 
-playbackSeekSamples :: MonadXMMS m => Int32 -> m (Result ())
 playbackSeekSamples pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamples xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekSamples xmmsc pos
 
-playbackSeekSamplesRel :: MonadXMMS m => Int32 -> m (Result ())
 playbackSeekSamplesRel pos =
-  liftXMMSResult $ \xmmsc -> XP.playbackSeekSamplesRel xmmsc pos
+  liftXMMS $ \xmmsc -> XP.playbackSeekSamplesRel xmmsc pos
 
-playbackPlaytime :: MonadXMMS m => m (Result Int32)
-playbackPlaytime = liftXMMSResult XP.playbackPlaytime
+playbackPlaytime = liftXMMS XP.playbackPlaytime
 
-playbackStatus :: MonadXMMS m => m (Result PlaybackStatus)
-playbackStatus = liftXMMSResult XP.playbackStatus
+playbackStatus = liftXMMS XP.playbackStatus
 
-playbackVolumeSet :: MonadXMMS m => String -> Int -> m (Result ())
 playbackVolumeSet channel volume =
-  liftXMMSResult $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
+  liftXMMS $ \xmmsc -> XP.playbackVolumeSet xmmsc channel volume
 
-playbackVolumeGet :: MonadXMMS m => m (Result (Dict Int32))
-playbackVolumeGet = liftXMMSResult XP.playbackVolumeGet
+playbackVolumeGet = liftXMMS XP.playbackVolumeGet
 
 
-broadcastPlaybackVolumeChanged :: MonadXMMS m => m (Result (Dict Int32))
 broadcastPlaybackVolumeChanged =
-  liftXMMSResult XP.broadcastPlaybackVolumeChanged
+  liftXMMS XP.broadcastPlaybackVolumeChanged
 
-broadcastPlaybackStatus :: MonadXMMS m => m (Result PlaybackStatus)
-broadcastPlaybackStatus = liftXMMSResult XP.broadcastPlaybackStatus
+broadcastPlaybackStatus = liftXMMS XP.broadcastPlaybackStatus
 
-broadcastPlaybackCurrentId :: MonadXMMS m => m (Result Int32)
-broadcastPlaybackCurrentId = liftXMMSResult XP.broadcastPlaybackCurrentId
+broadcastPlaybackCurrentId = liftXMMS XP.broadcastPlaybackCurrentId
                          
 
-signalPlaybackPlaytime :: MonadXMMS m => m (Result Int32)
-signalPlaybackPlaytime = liftXMMSResult XP.signalPlaybackPlaytime
+signalPlaybackPlaytime = liftXMMS XP.signalPlaybackPlaytime

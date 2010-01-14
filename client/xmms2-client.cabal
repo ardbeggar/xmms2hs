@@ -23,6 +23,7 @@ extra-tmp-files:    config.status, config.log,
 
 library
   exposed-modules:	Control.Monad.Exception,
+                    Control.Monad.ToIO,
                     XMMS2.Client.ValueBase,
                     XMMS2.Client.Exception,
                     XMMS2.Client.CollBase,
@@ -37,6 +38,7 @@ library
                     XMMS2.Client.Monad,
                     XMMS2.Client.Monad.Utils,
                     XMMS2.Client.Monad.Monad,
+                    XMMS2.Client.Monad.XMMS,
                     XMMS2.Client.Monad.Value,
                     XMMS2.Client.Monad.Result,
                     XMMS2.Client.Monad.Connection, 

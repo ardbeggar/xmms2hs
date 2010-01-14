@@ -35,4 +35,4 @@ import XMMS2.Utils
 {# fun coll_idlist_from_playlist_file as ^
  { withConnection* `Connection' ,
    withCString*    `String'
- } -> `Result' takeResult* #}
+ } -> `Result Coll' takeResult* #}

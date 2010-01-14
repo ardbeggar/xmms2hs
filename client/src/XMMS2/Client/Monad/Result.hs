@@ -18,67 +18,16 @@
 --
 
 module XMMS2.Client.Monad.Result
-  ( Result (..)
-  , ResultM
-  , resultRawValue
-  , result
-  , liftXMMSResult
-  , (>>*)
-  , handler
+  ( module XMMS2.Client.Result
   , resultWait
   , resultGetValue
   ) where
 
-import Control.Monad.State
-import Data.Maybe
-import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.Value
+import Control.Monad.Trans  
+import XMMS2.Client.Result (Result, ResultM, result, resultRawValue, (>>*), handler)  
 import qualified XMMS2.Client.Result as XR
-import Control.Exception
 
 
-type ResultM m a b = StateT (Maybe a, Value) m b
+resultWait = liftIO . XR.resultWait
 
-resultRawValue :: (ValueClass a, MonadXMMS m) => ResultM m a Value
-resultRawValue = gets snd
-
-result :: (ValueClass a, MonadXMMS m) => ResultM m a a
-result = do
-  (res, raw) <- get
-  case res of
-    Just val ->
-      return val
-    Nothing  ->
-      do val <- lift $ valueGet raw
-         put (Just val, raw)
-         return val
-
-
-runResultM ::
-  (ValueClass a, MonadXMMS m) =>
-  ResultM m a b               ->
-  Value                       ->
-  m b
-runResultM f v = evalStateT f (Nothing, v)
-
-data (ValueClass a) => Result a = Result XR.Result
-
-f >>* h = handler f h
-                                
-handler ::
-  (ValueClass a, MonadXMMS m) =>
-  m (Result a)                ->
-  ResultM m a Bool            ->
-  m ()
-handler r f = do
-  Result r' <- r
-  xmmsc <- connection
-  liftIO $ XR.resultNotifierSet r' $ runHandler f xmmsc
-
-runHandler f xmmsc v = runXMMS (runResultM f v) xmmsc
-        
-liftXMMSResult = liftM Result . liftXMMS                                    
-
-resultWait (Result r) = liftIO $ XR.resultWait r
-
-resultGetValue (Result r) = liftIO $ XR.resultGetValue r
+resultGetValue = liftIO . XR.resultGetValue

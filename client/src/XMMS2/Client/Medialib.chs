@@ -48,7 +48,7 @@ import XMMS2.Utils
 {# fun medialib_add_entry as ^
  { withConnection* `Connection'
  , withCString*    `String'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 medialibAddEntryFull xmmsc url args =
   valueNew args >>= medialib_add_entry_full xmmsc url
@@ -56,34 +56,34 @@ medialibAddEntryFull xmmsc url args =
  { withConnection* `Connection'
  , withCString*    `String'
  , withValue*      `Value'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun medialib_add_entry_encoded as ^
  { withConnection* `Connection'
  , withCString*    `String'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun medialib_get_info as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
- } -> `Result' takeResult* #}
+ } -> `Result (Dict (Dict ValueData))' takeResult* #}
 
 {# fun medialib_get_id as ^
  { withConnection* `Connection'
  , withCString*    `String'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
 {# fun medialib_get_id_encoded as ^
  { withConnection* `Connection'
  , withCString*    `String'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
 {# fun medialib_entry_property_set_int as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'      ,
    withCString*    `String'     ,
    cIntConv        `Int32'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun medialib_entry_property_set_int_with_source as ^
  { withConnection* `Connection' ,
@@ -91,14 +91,14 @@ medialibAddEntryFull xmmsc url args =
    withCString*    `String'     ,
    withCString*    `String'     ,
    cIntConv        `Int32'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun medialib_entry_property_set_str as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'      ,
    withCString*    `String'     ,
    withCString*    `String'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun medialib_entry_property_set_str_with_source as ^
  { withConnection* `Connection' ,
@@ -106,28 +106,28 @@ medialibAddEntryFull xmmsc url args =
    withCString*    `String'     ,
    withCString*    `String'     ,
    withCString*    `String'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun medialib_entry_property_remove as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'      ,
    withCString*    `String'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun medialib_entry_property_remove_with_source as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'      ,
    withCString*    `String'     ,
    withCString*    `String'
- }  -> `Result' takeResult* #}
+ }  -> `Result ()' takeResult* #}
 
 {# fun xform_media_browse as ^
  { withConnection* `Connection' ,
    withCString*    `String'
- }  -> `Result' takeResult* #}
+ }  -> `Result [Dict ValueData]' takeResult* #}
 
 
 {# fun broadcast_medialib_entry_changed as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
