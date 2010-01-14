@@ -20,6 +20,7 @@
 module XMMS2.Client.Monad.Result
   ( Result (..)
   , ResultM
+  , ToIO (..)
   , resultRawValue
   , result
   , liftXMMSResult
@@ -30,6 +31,7 @@ module XMMS2.Client.Monad.Result
   ) where
 
 import Control.Monad.State
+import Control.Monad.Reader  
 import Data.Maybe
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
@@ -55,7 +57,7 @@ result = do
 
 
 runResultM ::
-  (ValueClass a, MonadXMMS m) =>
+  (ValueClass a, Monad m) =>
   ResultM m a b               ->
   Value                       ->
   m b
@@ -63,20 +65,30 @@ runResultM f v = evalStateT f (Nothing, v)
 
 data (ValueClass a) => Result a = Result XR.Result
 
+class Monad m => ToIO m where
+  toIO :: m (m a -> IO a)
+
+instance ToIO IO where
+  toIO = return id
+
+instance ToIO m => ToIO (ReaderT r m) where
+  toIO = do
+    r <- ask
+    w <- lift toIO
+    return $ w . flip runReaderT r
+
 f >>* h = handler f h
                                 
 handler ::
-  (ValueClass a, MonadXMMS m) =>
+  (ValueClass a, ToIO m, MonadIO m) =>
   m (Result a)                ->
   ResultM m a Bool            ->
   m ()
 handler r f = do
   Result r' <- r
-  xmmsc <- connection
-  liftIO $ XR.resultNotifierSet r' $ runHandler f xmmsc
+  wrapper <- toIO
+  liftIO $ XR.resultNotifierSet r' $ \v -> wrapper (runResultM f v)
 
-runHandler f xmmsc v = runXMMS (runResultM f v) xmmsc
-        
 liftXMMSResult = liftM Result . liftXMMS                                    
 
 resultWait (Result r) = liftIO $ XR.resultWait r
