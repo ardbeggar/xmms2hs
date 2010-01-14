@@ -3,8 +3,6 @@ module Main
 
 import qualified XMMS2.Client.Connection as X
 import XMMS2.Client.Monad
-import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Value
 import XMMS2.Client.Glib  
 import System.Glib.MainLoop
 import Control.Monad.Trans
@@ -15,7 +13,7 @@ main = do
   (Just c) <- X.init "test4"
   True     <- X.connect c Nothing
   mainLoopGMainInit c
-  runXMMS (getEntries `handler` printEntries mloop) c
+  runXMMS (playlistListEntries Nothing >>* printEntries mloop) c ()
   mainLoopRun mloop
              
 printEntries mloop = do
@@ -24,9 +22,6 @@ printEntries mloop = do
   liftIO $ mapM_ print $ (take 7 entries)
   liftIO $ mainLoopQuit mloop
   return False
-
-getEntries :: XMMS (Result [Int32])
-getEntries = playlistListEntries Nothing
               
 
 -- local variables:
