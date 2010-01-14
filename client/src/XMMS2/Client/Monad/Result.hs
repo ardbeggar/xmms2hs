@@ -20,7 +20,6 @@
 module XMMS2.Client.Monad.Result
   ( Result
   , ResultM
-  , ToIO (..)
   , resultRawValue
   , result
   , liftXMMSResult
@@ -42,10 +41,10 @@ import Control.Exception
 
 type ResultM m a b = StateT (Maybe a, Value) m b
 
-resultRawValue :: (ValueClass a, MonadXMMS m) => ResultM m a Value
+resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
 resultRawValue = gets snd
 
-result :: (ValueClass a, MonadXMMS m) => ResultM m a a
+result :: (ValueClass a, XMMSM m) => ResultM m a a
 result = do
   (res, raw) <- get
   case res of
@@ -64,17 +63,6 @@ runResultM ::
   m b
 runResultM f v = evalStateT f (Nothing, v)
 
-class Monad m => ToIO m where
-  toIO :: m (m a -> IO a)
-
-instance ToIO IO where
-  toIO = return id
-
-instance ToIO m => ToIO (ReaderT r m) where
-  toIO = do
-    r <- ask
-    w <- lift toIO
-    return $ w . flip runReaderT r
 
 f >>* h = handler f h
                                 

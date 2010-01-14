@@ -18,10 +18,12 @@
 --
 
 module XMMS2.Client.Monad.Monad
-  ( MonadXMMS (..)
-  , liftXMMS
+  ( XMMSM
+  , XMMSCM (..)
   , liftIO
+  , ToIO (..)
   , XMMS
+  , runXMMS
   , module Control.Monad.Exception
   ) where
 
@@ -29,19 +31,35 @@ import Control.Monad.Reader
 import XMMS2.Client.Connection (Connection)
 import Control.Monad.Exception
 
+class Monad m => ToIO m where
+  toIO :: m (m a -> IO a)
 
-class (MonadIO m, MonadException m) => MonadXMMS m where
-  connection :: m Connection
-  runXMMS :: m a -> Connection -> IO a
+instance ToIO IO where
+  toIO = return id
 
-liftXMMS :: MonadXMMS m => (Connection -> IO a) -> m a
-liftXMMS f = do
-  xmmsc <- connection
-  liftIO $ f xmmsc
+instance ToIO m => ToIO (ReaderT r m) where
+  toIO = do
+    r <- ask
+    w <- lift toIO
+    return $ w . flip runReaderT r
+
+class (MonadIO m, MonadException m, ToIO m) => XMMSM m
+
+class XMMSM m => XMMSCM e m | m -> e where
+  connection  :: m Connection
+  environment :: m e
+  liftXMMS    :: (Connection -> IO a) -> m a
+  liftXMMS f = connection >>= liftIO . f
+
+instance XMMSM IO  
+
+type XMMS e m = ReaderT (Connection, e) m
+
+runXMMS f c e = runReaderT f (c, e)
+
+instance XMMSM m => XMMSM (ReaderT (Connection, e) m)
   
+instance XMMSM m => XMMSCM e (ReaderT (Connection, e) m) where
+  connection  = asks fst
+  environment = asks snd
 
-type XMMS = ReaderT Connection IO
-
-instance MonadXMMS (ReaderT Connection IO) where
-  connection = ask
-  runXMMS = runReaderT

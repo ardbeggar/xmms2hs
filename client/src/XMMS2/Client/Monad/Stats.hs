@@ -29,5 +29,4 @@ import XMMS2.Client.Stats (PluginType (..))
 import qualified XMMS2.Client.Stats as XS
 
 
-pluginList :: MonadXMMS m => PluginType -> m (Result [Dict ValueData])
 pluginList pType = liftXMMSResult $ \xmmsc -> XS.pluginList xmmsc pType
