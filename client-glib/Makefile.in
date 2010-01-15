@@ -1,0 +1,32 @@
+ABS_TOP_SRCDIR := @abs_top_srcdir@
+
+ifeq ($(ABS_TOP_SRCDIR),$(shell pwd))
+all-dev: build register-inplace
+
+build: configure-dev
+	./Setup.hs build
+
+register-inplace:
+	./Setup.hs register --user --inplace
+
+configure-dev: config.status
+
+config.status: xmms2-client-glib.cabal configure
+	./Setup.hs configure --user
+
+configure: configure.ac
+	autoconf
+
+clean:
+	./Setup.hs clean
+
+.PHONY: all-dev build configure-dev register-inplace clean
+else
+all-dev:
+	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
+
+clean:
+	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
+
+.PHONY: all-dev clean
+endif
