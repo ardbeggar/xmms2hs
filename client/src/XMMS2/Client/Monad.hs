@@ -19,7 +19,6 @@
 
 module XMMS2.Client.Monad
   ( module XMMS2.Client.Monad.Monad
-  , module XMMS2.Client.Monad.XMMS
   , module XMMS2.Client.Monad.Result
   , module XMMS2.Client.Monad.Connection
   , module XMMS2.Client.Monad.Playlist
@@ -31,7 +30,6 @@ module XMMS2.Client.Monad
   ) where
 
 import XMMS2.Client.Monad.Monad
-import XMMS2.Client.Monad.XMMS
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Connection
 import XMMS2.Client.Monad.Playlist
