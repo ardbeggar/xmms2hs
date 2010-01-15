@@ -19,5 +19,9 @@ fi
 
 AC_SUBST(BUILD_PACKAGE_BOOL)
 
-AC_CONFIG_FILES(xmms2-client-glib.buildinfo)
+AC_CONFIG_FILES(xmms2-client-glib.buildinfo
+                Makefile
+                src/Makefile
+                src/XMMS2/Makefile
+                src/XMMS2/Client/Makefile)
 AC_OUTPUT

@@ -22,3 +22,7 @@ C2HS\.hs$
 ^client/src/Control/Monad/Makefile$
 ^client/src/Control/Makefile$
 ^client/tests/Test4$
+^client-glib/src/XMMS2/Makefile$
+^client-glib/src/XMMS2/Client/Makefile$
+^client-glib/src/Makefile$
+^client-glib/Makefile$
