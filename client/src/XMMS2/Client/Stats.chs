@@ -28,6 +28,7 @@ module XMMS2.Client.Stats
 
 import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
+{# import XMMS2.Client.Value #}
 {# import XMMS2.Client.Result #}  
 
 
@@ -40,4 +41,4 @@ import XMMS2.Utils
 {# fun plugin_list as ^
  { withConnection* `Connection'
  , cFromEnum       `PluginType'
- } -> `Result' takeResult* #}
+ } -> `Result [Dict ValueData]' takeResult* #}

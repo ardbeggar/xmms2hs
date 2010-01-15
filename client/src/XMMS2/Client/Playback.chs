@@ -44,6 +44,7 @@ module XMMS2.Client.Playback
 
 import XMMS2.Utils         
 {# import XMMS2.Client.Connection #}  
+{# import XMMS2.Client.Value #}  
 {# import XMMS2.Client.Result #}
 
 
@@ -55,76 +56,76 @@ import XMMS2.Utils
 
 {# fun playback_stop as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_tickle as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_start as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_pause as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_current_id as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
 {# fun playback_seek_ms as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_seek_ms_rel as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_seek_samples as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_seek_samples_rel as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_playtime as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
 {# fun playback_status as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result PlaybackStatus' takeResult* #}
 
 {# fun playback_volume_set as ^
  { withConnection* `Connection'
  , withCString*    `String'
  , cIntConv        `Int'
- } -> `Result' takeResult* #}
+ } -> `Result ()' takeResult* #}
 
 {# fun playback_volume_get as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result (Dict Int32)' takeResult* #}
 
 
 {# fun broadcast_playback_volume_changed as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result (Dict Int32)' takeResult* #}
 
 {# fun broadcast_playback_status as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result PlaybackStatus' takeResult* #}
 
 {# fun broadcast_playback_current_id as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}
 
 
 {# fun signal_playback_playtime as ^
  { withConnection* `Connection'
- } -> `Result' takeResult* #}
+ } -> `Result Int32' takeResult* #}

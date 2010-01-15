@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Result
   ( Result
+  , ResultPtr
   , withResult
   , takeResult
   , resultGetValue
@@ -26,6 +27,11 @@ module XMMS2.Client.Result
   , ResultNotifier
   , resultNotifierSet
   , resultCallbackSet
+  , ResultM
+  , resultRawValue
+  , result
+  , (>>*)
+  , handler
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -34,31 +40,38 @@ module XMMS2.Client.Result
 {# context prefix = "xmmsc" #}
 
 import Control.Monad
+import Control.Monad.State
+import Control.Monad.ToIO  
 import XMMS2.Utils
+import XMMS2.Client.Monad.Monad  
 {# import XMMS2.Client.Value #}
 
 
-{# pointer *xmmsc_result_t as Result foreign newtype #}
+data T = T
+{# pointer *result_t as ResultPtr -> T #}
+data Result a = Result (ForeignPtr T)
+
+withResult (Result p) = withForeignPtr p
 
 takeResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
 foreign import ccall unsafe "&xmmsc_result_unref"
-  xmmsc_result_unref :: FunPtr (Ptr Result -> IO ())
+  xmmsc_result_unref :: FunPtr (ResultPtr -> IO ())
                         
 
-resultGetValue :: Result -> IO Value
+resultGetValue :: Result a -> IO Value
 resultGetValue r = result_get_value r >>= takeValue True
 {# fun result_get_value as result_get_value
- { withResult* `Result'
+ { withResult* `Result a'
  } -> `ValuePtr' id #}
 
 {# fun result_wait as ^
- { withResult* `Result'
+ { withResult* `Result a'
  } -> `()' #}
 
 
 type ResultNotifier = Value -> IO Bool
 
-resultNotifierSet :: Result -> ResultNotifier -> IO ()
+resultNotifierSet :: Result a -> ResultNotifier -> IO ()
 resultNotifierSet r f = do
   n <- mkNotifierPtr $ \p _ -> takeValue True p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
@@ -72,9 +85,48 @@ type NotifierFun = ValuePtr -> Ptr () -> IO CInt
 type NotifierPtr = FunPtr NotifierFun
   
 {# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
- { withResult* `Result'      ,
-   id          `NotifierPtr'
+ { withResult* `Result a'
+ , id          `NotifierPtr'
  } -> `()' #}
 
 foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierFun -> IO NotifierPtr
+
+
+
+type ResultM m a b = StateT (Maybe a, Value) m b
+
+resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
+resultRawValue = gets snd
+
+result :: (ValueClass a, XMMSM m) => ResultM m a a
+result = do
+  (res, raw) <- get
+  case res of
+    Just val ->
+      return val
+    Nothing  ->
+      do val <- lift $ valueGet raw
+         put (Just val, raw)
+         return val
+
+
+runResultM ::
+  (ValueClass a, XMMSM m) =>
+  ResultM m a b           ->
+  Value                   ->
+  m b
+runResultM f v = evalStateT f (Nothing, v)
+
+
+f >>* h = handler f h
+                                
+handler ::
+  (ValueClass a, XMMSM m) =>
+  m (Result a)            ->
+  ResultM m a Bool        ->
+  m ()
+handler f h = do
+  result  <- f
+  wrapper <- toIO
+  liftIO $ resultNotifierSet result $ \v -> wrapper (runResultM h v)
