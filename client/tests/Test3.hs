@@ -1,21 +1,22 @@
 module Main
   where
 
-import qualified XMMS2.Client.Connection as X
-import XMMS2.Client.Monad
-import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Value
+import Prelude hiding (init)    
+import XMMS2.Client.Connection
+import XMMS2.Client.Result
+import XMMS2.Client.Value
+import XMMS2.Client.Playlist  
 
 main = do
-  (Just c) <- X.init "test3"
-  True     <- X.connect c Nothing
-  entries  <- runXMMS getEntries c
+  (Just c) <- init "test3"
+  True     <- connect c Nothing
+  entries  <- getEntries c
   mapM_ print $ (take 5 entries)
-  mapM_ print $ (take 5 entries)
+  mapM_ print $ (take 10 entries)
 
-getEntries :: XMMS [Int32]
-getEntries = do
-  r <- playlistListEntries Nothing
+getEntries :: Connection -> IO [Int32]
+getEntries c = do
+  r <- playlistListEntries c Nothing
   resultWait r
   v <- resultGetValue r
   lazyGetList v

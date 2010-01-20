@@ -248,7 +248,6 @@ lazyGetList val = do
           valid <- listIterValid iter
           if valid
              then do
-               putStrLn "getting entry"
                entry <- listIterEntry iter
                item  <- valueGet entry
                listIterNext iter
