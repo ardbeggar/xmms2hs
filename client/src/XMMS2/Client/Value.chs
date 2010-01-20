@@ -40,6 +40,7 @@ module XMMS2.Client.Value
   , getColl
   , getData
   , getList
+  , lazyGetList
   , listGetSize
   , listGet
   , ListIter
@@ -238,6 +239,23 @@ getList val = do
     item  <- valueGet entry
     listIterNext iter
     return item
+
+lazyGetList :: ValueClass a => Value -> IO [a]
+lazyGetList val = do
+  iter <- getListIter val
+  lazyGetList' iter
+  where lazyGetList' iter = do
+          valid <- listIterValid iter
+          if valid
+             then do
+               putStrLn "getting entry"
+               entry <- listIterEntry iter
+               item  <- valueGet entry
+               listIterNext iter
+               rest <- unsafeInterleaveIO $ lazyGetList' iter
+               return $ item : rest
+             else
+               return []
 
 newList list = do
   val <- new_list >>= takeValue False
