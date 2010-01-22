@@ -67,7 +67,7 @@ module XMMS2.Client.Value
 
 import Control.Monad
 import Control.Monad.Trans
-import Control.Monad.Exception  
+import Control.Monad.CatchIO
 import Data.Int (Int32)
 import Data.Maybe
 import Data.Map (Map, fromList, toList)
@@ -89,7 +89,7 @@ instance ValueClass () where
       TypeError -> do
         (_, p) <- liftIO $ get_error v
         s <- liftIO $ peekCString p
-        throwM $ XMMSError s
+        throw $ XMMSError s
       _ ->
         return ()
   valueNew () = liftIO newNone

@@ -20,16 +20,16 @@
 module XMMS2.Client.Monad.Monad
   ( XMMSM
   , XMMSCM (..)
-  , module Control.Monad.Exception
+  , module Control.Monad.CatchIO
   ) where
 
 import Control.Monad.Trans  
-import Control.Monad.Exception
+import Control.Monad.CatchIO
 import Control.Monad.ToIO  
 import XMMS2.Client.Connection (Connection)
 
 
-class (MonadIO m, MonadException m, MonadToIO m) => XMMSM m
+class (MonadIO m, MonadCatchIO m, MonadToIO m) => XMMSM m
 
 instance XMMSM IO  
 

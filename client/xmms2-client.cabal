@@ -22,8 +22,7 @@ extra-tmp-files:    config.status, config.log,
                     xmms2-client.buildinfo, C2HS.hs
 
 library
-  exposed-modules:	Control.Monad.Exception,
-                    Control.Monad.ToIO,
+  exposed-modules:  Control.Monad.ToIO,
                     XMMS2.Client.ValueBase,
                     XMMS2.Client.Exception,
                     XMMS2.Client.CollBase,
@@ -51,7 +50,8 @@ library
                     XMMS2.Utils
   c-sources:		src/XMMS2/Client/xmms2hs-client.c
   include-dirs:		src/XMMS2/Client
-  build-depends:	base, haskell98, utf8-string, mtl, containers
+  build-depends:	base, haskell98, utf8-string, mtl, containers,
+                    MonadCatchIO-mtl
   build-tools:		c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface,

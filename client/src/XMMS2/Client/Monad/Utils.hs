@@ -23,7 +23,6 @@ module XMMS2.Client.Monad.Utils
 
 import XMMS2.Client.Monad.Monad
 import Control.Monad.Error
-import Control.Exception
   
 
 liftGet f x = do

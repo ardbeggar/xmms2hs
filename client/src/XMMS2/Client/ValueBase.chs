@@ -34,7 +34,6 @@ module XMMS2.Client.ValueBase
 
 import Control.Monad
 import Control.Monad.Trans
-import Control.Monad.Exception  
 import Data.Maybe
 import XMMS2.Utils
 import XMMS2.Client.Monad.Monad  

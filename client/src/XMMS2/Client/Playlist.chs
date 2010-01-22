@@ -42,9 +42,9 @@ module XMMS2.Client.Playlist
 
 {# context prefix = "xmmsc" #}         
 
-import Control.Monad.Exception
-import Control.Exception
-import Control.Monad.Trans  
+import Control.Monad.CatchIO
+import Control.Monad.Trans
+import Control.Exception (AssertionFailed (..))
 import qualified Data.Map as Map
 import XMMS2.Utils
 {# import XMMS2.Client.Connection #}
@@ -63,7 +63,7 @@ instance ValueClass PlaylistPosition where
       (Just (DataInt32 p), Just (DataString n)) ->
         return (p, n)
       _ ->
-        throwM $ AssertionFailed "playlist position"
+        throw $ AssertionFailed "playlist position"
 
 
 {# fun playlist_add_url as playlistAddURL
