@@ -30,6 +30,7 @@ module XMMS2.Client.Result
   , ResultM
   , resultRawValue
   , result
+  , resultLength
   , (>>*)
   , handler
   ) where
@@ -109,6 +110,9 @@ result = do
       do val <- lift $ valueGet raw
          put (Just val, raw)
          return val
+
+resultLength :: (ValueClass a, ValueClass [a], XMMSM m) => ResultM m [a] Integer
+resultLength = resultRawValue >>= liftIO . listGetSize
 
 
 runResultM ::
