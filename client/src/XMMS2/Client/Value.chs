@@ -244,17 +244,19 @@ lazyGetList :: ValueClass a => Value -> IO [a]
 lazyGetList val = do
   iter <- getListIter val
   lazyGetList' iter
-  where lazyGetList' iter = do
-          valid <- listIterValid iter
-          if valid
-             then do
-               entry <- listIterEntry iter
-               item  <- valueGet entry
-               listIterNext iter
-               rest <- unsafeInterleaveIO $ lazyGetList' iter
-               return $ item : rest
-             else
-               return []
+  where
+    lazyGetList' iter =
+      unsafeInterleaveIO $ do
+        valid <- listIterValid iter
+        if valid
+           then do
+             entry <- listIterEntry iter
+             item  <- valueGet entry
+             listIterNext iter
+             rest <- lazyGetList' iter
+             return $ item : rest
+           else
+             return []
 
 newList list = do
   val <- new_list >>= takeValue False
@@ -271,7 +273,7 @@ listAppend list val = valueNew val >>= list_append list
  } -> `Int' #}
 
 instance ValueClass a => ValueClass [a] where
-  valueGet = liftIO . getList
+  valueGet = liftIO . lazyGetList
   valueNew = liftIO . newList
 
 
