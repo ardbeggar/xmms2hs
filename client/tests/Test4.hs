@@ -3,6 +3,7 @@ module Main
 
 import qualified XMMS2.Client.Connection as X
 import XMMS2.Client.Monad
+import XMMS2.Client.Monad.XMMS
 import XMMS2.Client.Glib  
 import System.Glib.MainLoop
 import Control.Monad.Trans
