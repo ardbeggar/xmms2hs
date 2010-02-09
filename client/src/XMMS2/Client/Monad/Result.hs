@@ -23,8 +23,15 @@ module XMMS2.Client.Monad.Result
   , resultGetValue
   ) where
 
-import Control.Monad.Trans  
-import XMMS2.Client.Result (Result, ResultM, result, resultRawValue, resultLength, (>>*), handler)  
+import Control.Monad.Trans
+  
+import XMMS2.Client.Result
+  ( Result
+  , ResultM
+  , result
+  , resultRawValue
+  , resultLength
+  , (>>*) )  
 import qualified XMMS2.Client.Result as XR
 
 

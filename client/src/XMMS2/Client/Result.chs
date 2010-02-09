@@ -32,7 +32,6 @@ module XMMS2.Client.Result
   , result
   , resultLength
   , (>>*)
-  , handler
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -40,11 +39,14 @@ module XMMS2.Client.Result
 
 {# context prefix = "xmmsc" #}
 
+import Control.Applicative
 import Control.Monad
-import Control.Monad.State
-import Control.Monad.ToIO  
+import Control.Monad.Reader
+import Control.Monad.ToIO
+  
 import XMMS2.Utils
-import XMMS2.Client.Monad.Monad  
+import XMMS2.Client.Monad.Monad
+  
 {# import XMMS2.Client.Value #}
 
 
@@ -94,43 +96,26 @@ foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierFun -> IO NotifierPtr
 
 
+newtype RVC a = RVC { value :: Value }
+  
+type ResultM m a b = ReaderT (RVC a) m b
 
-type ResultM m a b = StateT (Maybe a, Value) m b
+runResultM :: XMMSM m => ResultM m a b -> Value -> m b
+runResultM f v = runReaderT f $ RVC v
+
 
 resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
-resultRawValue = gets snd
+resultRawValue = value <$> ask
 
 result :: (ValueClass a, XMMSM m) => ResultM m a a
-result = do
-  (res, raw) <- get
-  case res of
-    Just val ->
-      return val
-    Nothing  ->
-      do val <- lift $ valueGet raw
-         put (Just val, raw)
-         return val
+result = resultRawValue >>= lift . valueGet
 
 resultLength :: (ValueClass a, ValueClass [a], XMMSM m) => ResultM m [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
 
-runResultM ::
-  (ValueClass a, XMMSM m) =>
-  ResultM m a b           ->
-  Value                   ->
-  m b
-runResultM f v = evalStateT f (Nothing, v)
-
-
-f >>* h = handler f h
-                                
-handler ::
-  (ValueClass a, XMMSM m) =>
-  m (Result a)            ->
-  ResultM m a Bool        ->
-  m ()
-handler f h = do
+(>>*) :: (ValueClass a, XMMSM m) => m (Result a) -> ResultM m a Bool -> m ()
+f >>* h = do
   result  <- f
   wrapper <- toIO
   liftIO $ resultNotifierSet result $ \v -> wrapper (runResultM h v)
