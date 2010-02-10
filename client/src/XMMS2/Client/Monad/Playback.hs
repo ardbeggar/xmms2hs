@@ -41,12 +41,12 @@ module XMMS2.Client.Monad.Playback
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Result
-import XMMS2.Client.Playback (PlaybackStatus)  
+import XMMS2.Client.Playback (PlaybackStatus)
 import qualified XMMS2.Client.Playback as XP
 import Control.Monad
 
 
-instance ValueClass PlaybackStatus where
+instance ValueGet PlaybackStatus where
   valueGet v = liftM (toEnum . fromIntegral) $ getInt v
 
 
@@ -55,7 +55,7 @@ playbackStop = liftXMMS XP.playbackStop
 playbackTickle = liftXMMS XP.playbackTickle
 
 playbackStart = liftXMMS XP.playbackStart
-                 
+
 playbackPause = liftXMMS XP.playbackPause
 
 playbackCurrentId = liftXMMS XP.playbackCurrentId
@@ -88,6 +88,6 @@ broadcastPlaybackVolumeChanged =
 broadcastPlaybackStatus = liftXMMS XP.broadcastPlaybackStatus
 
 broadcastPlaybackCurrentId = liftXMMS XP.broadcastPlaybackCurrentId
-                         
+
 
 signalPlaybackPlaytime = liftXMMS XP.signalPlaybackPlaytime

@@ -25,18 +25,21 @@ module XMMS2.Client.ValueBase
   , takeValue
   , refValue
   , getType
-  , ValueClass (..)
+  , ValueGet (..)
+  , ValueNew (..)
   ) where
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsv" #}         
+{# context prefix = "xmmsv" #}
 
 import Control.Monad
 import Control.Monad.Trans
+
 import Data.Maybe
+
 import XMMS2.Utils
-import XMMS2.Client.Monad.Monad  
+import XMMS2.Client.Monad.Monad
 
 
 data T = T
@@ -49,34 +52,34 @@ takeValue ref p = do
   p' <- if ref then xmmsv_ref p else return p
   fp <- newForeignPtr xmmsv_unref p'
   return $ Value fp
-
-refValue :: Value -> IO Value
-refValue val = withValue val $ takeValue True
-
 {# fun xmmsv_ref as xmmsv_ref
  { id `ValuePtr'
  } -> `ValuePtr' id #}
-
 foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (ValuePtr -> IO ())
 
+refValue :: Value -> IO Value
+refValue val = withValue val $ takeValue True
 
 
 {# enum type_t as ValueType
  { underscoreToCase }
  deriving (Show) #}
 
-
 {# fun get_type as ^
  { withValue* `Value'
  } -> `ValueType' cToEnum #}
-               
 
-class ValueClass t where
-  valueGet :: XMMSM m => Value -> m t
-  valueNew :: XMMSM m => t -> m Value                 
 
-instance ValueClass Value where
+class ValueGet a where
+  valueGet :: XMMSM m => Value -> m a
+
+class ValueNew a where
+  valueNew :: XMMSM m => a -> m Value
+
+instance ValueGet Value where
   valueGet = return
+
+instance ValueNew Value where
   valueNew = return
 

@@ -40,22 +40,25 @@ module XMMS2.Client.Playlist
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsc" #}         
+{# context prefix = "xmmsc" #}
 
-import Control.Monad.CatchIO
 import Control.Monad.Trans
+import Control.Monad.CatchIO
 import Control.Exception (AssertionFailed (..))
+
 import qualified Data.Map as Map
+
 import XMMS2.Utils
+
 {# import XMMS2.Client.Connection #}
-{# import XMMS2.Client.Value #}  
-{# import XMMS2.Client.Result #}  
-{# import XMMS2.Client.Coll #}  
+{# import XMMS2.Client.Value #}
+{# import XMMS2.Client.Result #}
+{# import XMMS2.Client.Coll #}
 
 
 type PlaylistPosition = (Int32, String)
 
-instance ValueClass PlaylistPosition where
+instance ValueGet PlaylistPosition where
   valueGet v = do
     dict <- liftIO $ getDict v
     case (Map.lookup "position" dict,

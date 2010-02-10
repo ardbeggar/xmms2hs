@@ -26,17 +26,17 @@ module XMMS2.Client.Monad.Coll
   , collNewIdlist
   ) where
 
-import Control.Monad.Trans  
+import Control.Monad.Trans
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Utils
 import XMMS2.Client.Monad.Value
-import XMMS2.Client.Coll (Coll, CollType (..))  
+import XMMS2.Client.Coll (Coll, CollType (..))
 import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Value as XV
 
 
-instance ValueClass Coll where
+instance ValueGet Coll where
   valueGet = getColl
 
 getColl = liftIO . XV.getColl
@@ -51,4 +51,3 @@ collNew = liftIO . XC.collNew
 collSetIdlist c list = liftIO $ XC.collSetIdlist c list
 
 collNewIdlist = liftIO . XC.collNewIdlist
-                     

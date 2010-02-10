@@ -21,7 +21,8 @@ module XMMS2.Client.Monad.Value
   ( Value
   , ValueType (..)
   , ValueData (..)
-  , ValueClass (..)
+  , ValueGet (..)
+  , ValueNew (..)
   , Int32
   , listGetSize
   , listGet
@@ -32,15 +33,25 @@ module XMMS2.Client.Monad.Value
   , getDict
   ) where
 
+import Control.Monad
+import Control.Monad.Error
+
+import Data.Maybe
+import Data.Map (Map, fromList)
+
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Utils
-import XMMS2.Client.Value (Value, ValueType, ValueData, ValueClass, Int32, Dict)
+
+import XMMS2.Client.Value
+  ( Value
+  , ValueType
+  , ValueData
+  , ValueGet
+  , ValueNew
+  , Int32
+  , Dict )
 import qualified XMMS2.Client.Value as XV
-import Control.Monad  
-import Data.Maybe
-import Data.Map (Map, fromList)  
-import Control.Monad.Error
-  
+
 
 listGetSize = liftIO . XV.listGetSize
 
@@ -60,8 +71,8 @@ listIterEntry = liftIO . XV.listIterEntry
 
 listIterNext = liftIO . XV.listIterNext
 
-getDict = liftIO . XV.getDict          
-          
+getDict = liftIO . XV.getDict
+
 getDictIter = liftIO . XV.getDictIter
 
 dictIterValid = liftIO . XV.dictIterValid

@@ -43,10 +43,10 @@ import Control.Applicative
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.ToIO
-  
+
 import XMMS2.Utils
 import XMMS2.Client.Monad.Monad
-  
+
 {# import XMMS2.Client.Value #}
 
 
@@ -59,7 +59,7 @@ withResult (Result p) = withForeignPtr p
 takeResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
 foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (ResultPtr -> IO ())
-                        
+
 
 resultGetValue :: Result a -> IO Value
 resultGetValue r = result_get_value r >>= takeValue True
@@ -86,7 +86,7 @@ resultCallbackSet o f = do
 
 type NotifierFun = ValuePtr -> Ptr () -> IO CInt
 type NotifierPtr = FunPtr NotifierFun
-  
+
 {# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
  { withResult* `Result a'
  , id          `NotifierPtr'
@@ -97,24 +97,24 @@ foreign import ccall "wrapper"
 
 
 newtype RVC a = RVC { value :: Value }
-  
+
 type ResultM m a b = ReaderT (RVC a) m b
 
 runResultM :: XMMSM m => ResultM m a b -> Value -> m b
 runResultM f v = runReaderT f $ RVC v
 
 
-resultRawValue :: (ValueClass a, XMMSM m) => ResultM m a Value
+resultRawValue :: (ValueGet a, XMMSM m) => ResultM m a Value
 resultRawValue = value <$> ask
 
-result :: (ValueClass a, XMMSM m) => ResultM m a a
+result :: (ValueGet a, XMMSM m) => ResultM m a a
 result = resultRawValue >>= lift . valueGet
 
-resultLength :: (ValueClass a, ValueClass [a], XMMSM m) => ResultM m [a] Integer
+resultLength :: (ValueGet a, ValueGet [a], XMMSM m) => ResultM m [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
 
-(>>*) :: (ValueClass a, XMMSM m) => m (Result a) -> ResultM m a Bool -> m ()
+(>>*) :: (ValueGet a, XMMSM m) => m (Result a) -> ResultM m a Bool -> m ()
 f >>* h = do
   result  <- f
   wrapper <- toIO
