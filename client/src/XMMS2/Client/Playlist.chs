@@ -23,6 +23,7 @@ module XMMS2.Client.Playlist
   , playlistAddId
   , playlistAddEncoded
   , playlistAddIdlist
+  , playlistAddCollection
   , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
@@ -91,6 +92,22 @@ instance ValueGet PlaylistPosition where
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , withColl*         `Coll'
+ } -> `Result ()' takeResult* #}
+
+playlistAddCollection
+  :: Connection
+  -> Maybe String
+  -> Coll
+  -> [String]
+  -> IO (Result ())
+playlistAddCollection xmmsc pls coll order = do
+  list <- newList order
+  playlist_add_collection xmmsc pls coll list
+{# fun playlist_add_collection as playlist_add_collection
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , withColl*         `Coll'
+ , withValue*        `Value'
  } -> `Result ()' takeResult* #}
 
 {# fun playlist_remove_entry as ^

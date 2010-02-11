@@ -29,6 +29,7 @@ module XMMS2.Client.Monad.Value
   , getInt
   , getString
   , getList
+  , newList
   , Dict
   , getDict
   ) where
@@ -62,6 +63,8 @@ getInt = liftIO . XV.getInt
 getString = liftIO . XV.getString
 
 getList = liftIO . XV.getList
+
+newList = liftIO . XV.newList
 
 getListIter = liftIO . XV.getListIter
 
