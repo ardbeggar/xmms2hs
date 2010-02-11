@@ -41,6 +41,7 @@ module XMMS2.Client.Value
   , getColl
   , getData
   , getList
+  , newList
   , strictGetList
   , listGetSize
   , listGet
