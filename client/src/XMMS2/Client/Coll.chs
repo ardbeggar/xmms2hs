@@ -20,6 +20,7 @@
 module XMMS2.Client.Coll
   ( module XMMS2.Client.CollBase
   , collIdlistFromPlaylistFile
+  , collSync
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -34,6 +35,10 @@ import XMMS2.Utils
 
 
 {# fun coll_idlist_from_playlist_file as ^
- { withConnection* `Connection' ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , withCString*    `String'
  } -> `Result Coll' takeResult* #}
+
+{# fun coll_sync as ^
+ { withConnection* `Connection'
+ } -> `Result ()' takeResult* #}

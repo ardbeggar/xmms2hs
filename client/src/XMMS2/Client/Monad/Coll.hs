@@ -21,6 +21,7 @@ module XMMS2.Client.Monad.Coll
   ( Coll
   , getColl
   , collIdlistFromPlaylistFile
+  , collSync
   , collNew
   , collSetIdlist
   , collNewIdlist
@@ -44,6 +45,8 @@ getColl = liftIO . XV.getColl
 
 collIdlistFromPlaylistFile name =
   liftXMMS $ \xmmsc -> XC.collIdlistFromPlaylistFile xmmsc name
+
+collSync = liftXMMS $ \xmmsc -> XC.collSync xmmsc
 
 
 collNew = liftIO . XC.collNew
