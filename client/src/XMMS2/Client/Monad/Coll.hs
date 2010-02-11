@@ -24,6 +24,7 @@ module XMMS2.Client.Monad.Coll
   , collSync
   , collNew
   , collSetIdlist
+  , collIdlistAppend
   , collNewIdlist
   ) where
 
@@ -52,5 +53,9 @@ collSync = liftXMMS $ \xmmsc -> XC.collSync xmmsc
 collNew = liftIO . XC.collNew
 
 collSetIdlist c list = liftIO $ XC.collSetIdlist c list
+
+
+collIdlistAppend c id = liftIO $ XC.collIdlistAppend c id
+
 
 collNewIdlist = liftIO . XC.collNewIdlist

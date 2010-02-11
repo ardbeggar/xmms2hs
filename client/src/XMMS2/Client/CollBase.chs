@@ -39,6 +39,7 @@ module XMMS2.Client.CollBase
     , TypePartyshuffle )
   , collNew
   , collSetIdlist
+  , collIdlistAppend
   , collNewIdlist
   ) where
 
@@ -85,6 +86,15 @@ collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
  { withColl*    `Coll'
  , withZTArray* `[CUInt]'
  } -> `()' #}
+
+
+collIdlistAppend :: Coll -> Int32 -> IO ()
+collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
+{# fun coll_idlist_append as coll_idlist_append
+ { withColl* `Coll'
+ , cIntConv  `CUInt'
+ } -> `()' #}
+
 
 collNewIdlist list = do
   c <- collNew TypeIdlist
