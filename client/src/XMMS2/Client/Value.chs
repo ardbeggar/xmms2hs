@@ -237,15 +237,16 @@ data ListIter a = ListIter (ForeignPtr Li)
 withListIter (ListIter p) = withForeignPtr p
 
 getListIter :: Value -> IO (ListIter a)
-getListIter =
-  get TypeList get_list_iter
-        (liftM ListIter . newForeignPtr finalize_list_iter)
+getListIter = get TypeList get_list_iter (takePtr ListIter finalize_list_iter)
+
 {# fun xmms2hs_get_list_iter as get_list_iter
  { withValue* `Value'
  , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
+
 foreign import ccall unsafe "&xmms2hs_finalize_list_iter"
   finalize_list_iter :: FinalizerPtr Li
+
 
 listIterEntry :: ListIter a -> IO (Value)
 listIterEntry iter = do
@@ -307,9 +308,7 @@ withDictIter (DictIter p) f =
   withForeignPtr p $ \p -> {# get xmms2hs_dict_iter_t->iter #} p >>= f
 
 getDictIter :: Value -> IO (DictIter a)
-getDictIter =
-  get TypeDict get_dict_iter
-        (liftM DictIter . newForeignPtr finalize_dict_iter)
+getDictIter = get TypeDict get_dict_iter (takePtr DictIter finalize_dict_iter)
 
 {# fun xmms2hs_get_dict_iter as get_dict_iter
  { withValue* `Value'

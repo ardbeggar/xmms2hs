@@ -50,11 +50,12 @@ withValue (Value p) = withForeignPtr p
 
 takeValue ref p = do
   p' <- if ref then xmmsv_ref p else return p
-  fp <- newForeignPtr xmmsv_unref p'
-  return $ Value fp
+  takePtr Value xmmsv_unref p'
+
 {# fun xmmsv_ref as xmmsv_ref
  { id `ValuePtr'
  } -> `ValuePtr' id #}
+
 foreign import ccall unsafe "&xmmsv_unref"
   xmmsv_unref :: FunPtr (ValuePtr -> IO ())
 
@@ -76,6 +77,7 @@ class ValueGet a where
 
 class ValueNew a where
   valueNew :: XMMSM m => a -> m Value
+
 
 instance ValueGet Value where
   valueGet = return

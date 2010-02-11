@@ -44,7 +44,7 @@ module XMMS2.Client.CollBase
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsv" #}         
+{# context prefix = "xmmsv" #}
 
 import XMMS2.Utils
 
@@ -52,15 +52,12 @@ import XMMS2.Utils
 data T = T
 {# pointer *coll_t as CollPtr -> T #}
 data Coll = Coll (ForeignPtr T)
-          deriving (Show, Eq)
-
 
 withColl (Coll p) = withForeignPtr p
 
 takeColl ref p = do
   p' <- if ref then coll_ref p else return p
-  fp <- newForeignPtr coll_unref p'
-  return $ Coll fp
+  takePtr Coll coll_unref p'
 
 {# fun coll_ref as coll_ref
  { id `CollPtr'
@@ -69,10 +66,12 @@ takeColl ref p = do
 foreign import ccall unsafe "&xmmsv_coll_unref"
   coll_unref :: FinalizerPtr T
 
+
 {# enum coll_type_t as CollType
  { underscoreToCase }
  with prefix = "XMMS_COLLECTION"
  deriving (Show) #}
+
 
 collNew :: CollType -> IO Coll
 collNew t = coll_new t >>= takeColl False

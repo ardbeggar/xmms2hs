@@ -24,12 +24,13 @@ module XMMS2.Client.Coll
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsc" #}         
+{# context prefix = "xmmsc" #}
 
 import XMMS2.Utils
+
 {# import XMMS2.Client.Connection #}
-{# import XMMS2.Client.Result #}  
-{# import XMMS2.Client.CollBase #}  
+{# import XMMS2.Client.Result #}
+{# import XMMS2.Client.CollBase #}
 
 
 {# fun coll_idlist_from_playlist_file as ^

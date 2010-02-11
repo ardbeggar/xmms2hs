@@ -25,6 +25,7 @@ module XMMS2.Utils
   , peekCString
   , withZTArray
   , while
+  , takePtr
   ) where
 
 import C2HS hiding (withCString, peekCString)
@@ -32,11 +33,11 @@ import qualified Foreign.C.String as CS
 import Foreign.Ptr
 import Control.Monad
 import Codec.Binary.UTF8.String
-  
+
 
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
-        
+
 withCString = CS.withCString . encodeString
 
 withCStringArray0 [] f =
@@ -48,7 +49,7 @@ withCStringArray0 sl f =
       poke p nullPtr >> f
     doIt (x:xs) p f =
       withCString x $ \s -> poke p s >> doIt xs (advancePtr p 1) f
-              
+
 
 peekCString = liftM decodeString . CS.peekCString
 
@@ -61,4 +62,6 @@ while c a = do
 
 
 withZTArray = withArray0 0
-              
+
+
+takePtr con fin = liftM con . newForeignPtr fin

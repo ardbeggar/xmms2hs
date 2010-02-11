@@ -56,7 +56,8 @@ data Result a = Result (ForeignPtr T)
 
 withResult (Result p) = withForeignPtr p
 
-takeResult p = liftM Result $ newForeignPtr xmmsc_result_unref p
+takeResult = takePtr Result xmmsc_result_unref
+
 foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (ResultPtr -> IO ())
 
