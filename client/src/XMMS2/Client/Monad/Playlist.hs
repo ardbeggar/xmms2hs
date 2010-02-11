@@ -22,6 +22,7 @@ module XMMS2.Client.Monad.Playlist
   , playlistAddId
   , playlistAddEncoded
   , playlistAddIdlist
+  , playlistAddCollection
   , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
@@ -41,14 +42,14 @@ module XMMS2.Client.Monad.Playlist
 import Control.Monad
 import Control.Monad.Trans
 import Data.Maybe
-import Control.Exception  
+import Control.Exception
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Value
 import XMMS2.Client.Monad.Result
-import XMMS2.Client.Monad.Coll  
+import XMMS2.Client.Monad.Coll
 import XMMS2.Client.Playlist (PlaylistPosition)
 import qualified XMMS2.Client.Playlist as XP
-import qualified Data.Map as Map  
+import qualified Data.Map as Map
 
 
 playlistAddURL name url =
@@ -63,12 +64,15 @@ playlistAddEncoded name url =
 playlistAddIdlist name coll =
   liftXMMS $ \xmmsc -> XP.playlistAddIdlist xmmsc name coll
 
+playlistAddCollection name coll order =
+  liftXMMS $ \xmmsc -> XP.playlistAddCollection xmmsc name coll order
+
 playlistRemoveEntry name pos =
   liftXMMS $ \xmmsc -> XP.playlistRemoveEntry xmmsc name pos
-                             
+
 playlistClear name =
   liftXMMS $ \xmmsc -> XP.playlistClear xmmsc name
-                             
+
 playlistListEntries name =
   liftXMMS $ \xmmsc -> XP.playlistListEntries xmmsc name
 
@@ -94,10 +98,9 @@ playlistRAdd name url =
 playlistRAddEncoded name url =
   liftXMMS $ \xmmsc -> XP.playlistRAddEncoded xmmsc name url
 
-                             
+
 broadcastPlaylistChanged = liftXMMS XP.broadcastPlaylistChanged
 
 broadcastPlaylistCurrentPos = liftXMMS XP.broadcastPlaylistCurrentPos
 
 broadcastPlaylistLoaded = liftXMMS XP.broadcastPlaylistLoaded
-              
