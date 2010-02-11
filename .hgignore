@@ -26,3 +26,4 @@ C2HS\.hs$
 ^client-glib/src/XMMS2/Client/Makefile$
 ^client-glib/src/Makefile$
 ^client-glib/Makefile$
+^client/tests/Test5$
