@@ -30,6 +30,7 @@ module XMMS2.Client.Medialib
   , medialibEntryPropertySetStrWithSource
   , medialibEntryPropertyRemove
   , medialibEntryPropertyRemoveWithSource
+  , BrowseEntry (..)
   , xformMediaBrowse
   , broadcastMedialibEntryChanged
   ) where
@@ -38,8 +39,11 @@ module XMMS2.Client.Medialib
 
 {# context prefix = "xmmsc" #}
 
+import Control.Applicative
 import Control.Monad
+
 import XMMS2.Utils
+
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
 {# import XMMS2.Client.Value #}
@@ -121,10 +125,23 @@ medialibAddEntryFull xmmsc url args =
    withCString*    `String'
  }  -> `Result ()' takeResult* #}
 
+
+data BrowseEntry
+  = BrowseEntry { entryPath  :: String
+                , entryIsDir :: Bool }
+
+instance ValueGet BrowseEntry where
+  valueGet v = do
+    dict <- valueGet v
+    maybe (fail "not a browse entry") return $ do
+      path <- lookupString "realpath" dict `mplus` lookupString "path" dict
+      dirp <- (1 ==) <$> lookupInt32 "isdir" dict
+      return BrowseEntry { entryPath = path, entryIsDir = dirp }
+
 {# fun xform_media_browse as ^
  { withConnection* `Connection' ,
    withCString*    `String'
- }  -> `Result [Dict ValueData]' takeResult* #}
+ }  -> `Result [BrowseEntry]' takeResult* #}
 
 
 {# fun broadcast_medialib_entry_changed as ^
