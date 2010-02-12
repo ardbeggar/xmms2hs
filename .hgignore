@@ -10,7 +10,7 @@ C2HS\.hs$
 \.o$
 ^client/tests/Test1$
 \.orig$
-(^|/)\#.*\#$
+(^|/)\.*\#
 ^client-glib/tests/Test1$
 ^client/src/XMMS2/Makefile$
 ^client/src/XMMS2/Client/Makefile$
