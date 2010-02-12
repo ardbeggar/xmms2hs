@@ -130,17 +130,16 @@ instance ValueGet String where
 instance ValueNew String where
   valueNew = liftIO . newString
 
-newString val = new_string val >>= takeValue False
-{# fun new_string as new_string
- { withCString* `String'
- } -> `ValuePtr' id #}
-
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
+newString val = new_string val >>= takeValue False
+{# fun new_string as new_string
+ { withCString* `String'
+ } -> `ValuePtr' id #}
 
 
 getError value = do
@@ -267,6 +266,7 @@ listIterEntry iter = do
   (ok, v') <- list_iter_entry iter
   unless ok $ throwIO $ InvalidIter
   takeValue True v'
+
 {# fun list_iter_entry as list_iter_entry
  { withListIter* `ListIter a'
  , alloca-       `ValuePtr' peek*
@@ -340,6 +340,7 @@ dictIterPair iter = do
   key <- peekCString keyptr
   val <- takeValue True valptr
   return (key, val)
+
 {# fun dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter a'
  , alloca-       `CString'  peek*
