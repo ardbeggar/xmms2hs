@@ -50,7 +50,9 @@ import XMMS2.Client.Value
   , ValueGet
   , ValueNew
   , Int32
-  , Dict )
+  , Dict
+  , Property
+  , PropDict )
 import qualified XMMS2.Client.Value as XV
 
 

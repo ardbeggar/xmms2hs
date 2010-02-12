@@ -60,6 +60,8 @@ module XMMS2.Client.Value
   , dictIterValid
   , dictIterPair
   , dictIterNext
+  , Property (..)
+  , PropDict
   , ValuePrim (..)
   , Data
   , mkData
@@ -402,6 +404,34 @@ get t f c v = do
            throwIO $ XMMSError s
          _         ->
            throwIO $ TypeMismatch t t'
+
+
+data Property
+  = PropInt32 Int32
+  | PropString String
+    deriving (Eq, Show, Read)
+
+instance ValueGet Property where
+  valueGet v =
+    liftIO $ do
+      t <- getType v
+      case t of
+        TypeInt32  -> PropInt32  <$> getInt v
+        TypeString -> PropString <$> getString v
+        _          -> fail $ "Property.valueGet: bad type " ++ show t
+
+type PropDict = Dict [(String, Property)]
+
+instance ValueGet [(String, Property)] where
+  valueGet v =
+    liftIO $ do
+      dict <- valueGet v
+      iter <- getDictIter dict
+      while (dictIterValid iter) $ do
+        (key, raw) <- dictIterPair iter
+        val        <- valueGet raw
+        dictIterNext iter
+        return (key, val)
 
 
 class ValuePrim a where

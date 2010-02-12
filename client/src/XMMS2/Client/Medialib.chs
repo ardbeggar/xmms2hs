@@ -41,6 +41,7 @@ module XMMS2.Client.Medialib
 
 import Control.Applicative
 import Control.Monad
+import Control.Monad.Trans
 
 import XMMS2.Utils
 
@@ -70,7 +71,7 @@ medialibAddEntryFull xmmsc url args =
 {# fun medialib_get_info as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
- } -> `Result (Dict (Dict ValueData))' takeResult* #}
+ } -> `Result PropDict' takeResult* #}
 
 {# fun medialib_get_id as ^
  { withConnection* `Connection'
