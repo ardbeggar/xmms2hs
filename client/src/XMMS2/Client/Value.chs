@@ -27,7 +27,6 @@ module XMMS2.Client.Value
     , TypeBin
     , TypeList
     , TypeDict )
-  , ValueData (..)
   , ValuePtr
   , Value
   , ValueGet (..)
@@ -39,7 +38,6 @@ module XMMS2.Client.Value
   , getString
   , getError
   , getColl
-  , getData
   , getList
   , newList
   , strictGetList
@@ -159,32 +157,6 @@ getColl v = get TypeColl get_coll (takeColl True) v
  { withValue* `Value'
  , alloca-    `CollPtr' peek*
  } -> `Bool' #}
-
-
-data ValueData
-  = DataNone
-  | DataInt32 Int32
-  | DataString String
-    deriving (Read, Show, Eq)
-
-instance ValueGet ValueData where
-  valueGet = liftIO . getData
-
-instance ValueNew ValueData where
-  valueNew = liftIO . newData
-
-getData ::  Value -> IO ValueData
-getData v = do
-  t <- getType v
-  case t of
-    TypeInt32  -> mk DataInt32 getInt
-    TypeString -> mk DataString getString
-    _          -> return DataNone
-  where mk c g = liftM c $ g v
-
-newData (DataInt32  val) = newInt val
-newData (DataString val) = newString val
-newData DataNone         = newNone
 
 
 instance ValueGet a => ValueGet [a] where
@@ -434,7 +406,7 @@ instance ValueGet [(String, Property)] where
         return (key, val)
 
 
-class ValuePrim a where
+class (ValueGet a, ValueNew a) => ValuePrim a where
   primInt32 :: a -> Maybe Int32
   primInt32 = const Nothing
   primString :: a -> Maybe String
@@ -462,3 +434,6 @@ instance ValueGet Data where
     case t of
       TypeInt32  -> (Data . snd) <$> get_int v
       TypeString -> Data <$> (peekCString . snd =<< get_string v)
+
+instance ValueNew Data where
+  valueNew (Data a) = valueNew a
