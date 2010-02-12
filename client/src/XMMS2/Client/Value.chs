@@ -63,10 +63,12 @@ module XMMS2.Client.Value
   , ValuePrim (..)
   , Data
   , mkData
-  , toInt32
-  , toString
+  , dataInt32
+  , dataString
+  , dataList
   , lookupInt32
   , lookupString
+  , lookupList
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -152,11 +154,23 @@ getError value = do
  } -> `Bool' #}
 
 
+instance ValueGet Coll where
+  valueGet = liftIO . getColl
+
+instance ValueNew Coll where
+  valueNew = liftIO . newColl
+
 getColl v = get TypeColl get_coll (takeColl True) v
 {# fun get_coll as get_coll
  { withValue* `Value'
  , alloca-    `CollPtr' peek*
  } -> `Bool' #}
+
+newColl v = new_coll v >>= takeValue False
+{# fun new_coll as new_coll
+ { withColl* `Coll'
+ } -> `ValuePtr' id #}
+
 
 
 instance ValueGet a => ValueGet [a] where
@@ -411,6 +425,12 @@ class (ValueGet a, ValueNew a) => ValuePrim a where
   primInt32 = const Nothing
   primString :: a -> Maybe String
   primString = const Nothing
+  primColl :: a -> Maybe Coll
+  primColl = const Nothing
+  primList :: a -> Maybe [Data]
+  primList = const Nothing
+  primDict :: a -> Maybe (Dict Data)
+  primDict = const Nothing
 
 instance ValuePrim Int32 where
   primInt32 = Just
@@ -418,22 +438,40 @@ instance ValuePrim Int32 where
 instance ValuePrim String where
   primString = Just
 
+instance ValuePrim Coll where
+  primColl = Just
+
+instance ValuePrim [Data] where
+  primList = Just
+
+instance ValuePrim (Dict Data) where
+  primDict = Just
+
 data Data = forall a. ValuePrim a => Data a
 
 mkData = Data
 
-toInt32 (Data a) = primInt32 a
-toString (Data a) = primString a
+dataInt32  (Data a) = primInt32 a
+dataString (Data a) = primString a
+dataColl   (Data a) = primColl a
+dataList   (Data a) = primList a
+dataDict   (Data a) = primDict a
 
-lookupInt32  k d = toInt32  =<< Map.lookup k d
-lookupString k d = toString =<< Map.lookup k d
+lookupInt32  k d = dataInt32  =<< Map.lookup k d
+lookupString k d = dataString =<< Map.lookup k d
+lookupColl   k d = dataColl   =<< Map.lookup k d
+lookupList   k d = dataList   =<< Map.lookup k d
+lookupDict   k d = dataDict   =<< Map.lookup k d
 
 instance ValueGet Data where
   valueGet v = liftIO $ do
     t <- getType v
     case t of
-      TypeInt32  -> (Data . snd) <$> get_int v
-      TypeString -> Data <$> (peekCString . snd =<< get_string v)
+      TypeInt32  -> Data <$> getInt v
+      TypeString -> Data <$> getString v
+      TypeColl   -> Data <$> getColl v
+      TypeList   -> Data <$> ((getList v) :: IO [Data])
+      TypeDict   -> Data <$> ((getDict v) :: IO (Dict Data))
 
 instance ValueNew Data where
   valueNew (Data a) = valueNew a
