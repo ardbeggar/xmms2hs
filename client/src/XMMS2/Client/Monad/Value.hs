@@ -20,7 +20,6 @@
 module XMMS2.Client.Monad.Value
   ( Value
   , ValueType (..)
-  , ValueData (..)
   , ValueGet (..)
   , ValueNew (..)
   , Int32
@@ -46,7 +45,6 @@ import XMMS2.Client.Monad.Utils
 import XMMS2.Client.Value
   ( Value
   , ValueType
-  , ValueData
   , ValueGet
   , ValueNew
   , Int32
