@@ -62,6 +62,7 @@ module XMMS2.Client.Value
   , dictIterNext
   , ValuePrim (..)
   , Data
+  , mkData
   , toInt32
   , toString
   , lookupInt32
@@ -415,6 +416,8 @@ instance ValuePrim String where
   primString = Just
 
 data Data = forall a. ValuePrim a => Data a
+
+mkData = Data
 
 instance ValuePrim Data where
   primInt32 = toInt32
