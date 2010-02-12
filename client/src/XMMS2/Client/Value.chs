@@ -60,6 +60,12 @@ module XMMS2.Client.Value
   , dictIterValid
   , dictIterPair
   , dictIterNext
+  , ValuePrim (..)
+  , Data
+  , toInt32
+  , toString
+  , lookupInt32
+  , lookupString
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -67,13 +73,15 @@ module XMMS2.Client.Value
 
 {# context prefix = "xmmsv" #}
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
 import Control.Monad.CatchIO
 
 import Data.Int (Int32)
 import Data.Maybe
-import Data.Map (Map, fromList, toList)
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 import System.IO.Unsafe
 
@@ -281,7 +289,7 @@ instance ValueNew a => ValueNew (Dict a) where
   valueNew = liftIO . newDict
 
 getDict :: ValueGet a => Value -> IO (Dict a)
-getDict val = liftM fromList $ do
+getDict val = Map.fromList <$> do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
     (key, raw) <- dictIterPair iter
@@ -291,7 +299,7 @@ getDict val = liftM fromList $ do
 
 newDict dict = do
   val <- new_dict >>= takeValue False
-  mapM_ (uncurry (dictSet val)) $ toList dict
+  mapM_ (uncurry (dictSet val)) $ Map.toList dict
   return val
 
 {# fun new_dict as new_dict
@@ -392,3 +400,35 @@ get t f c v = do
            throwIO $ XMMSError s
          _         ->
            throwIO $ TypeMismatch t t'
+
+
+class ValuePrim a where
+  primInt32 :: a -> Maybe Int32
+  primInt32 = const Nothing
+  primString :: a -> Maybe String
+  primString = const Nothing
+
+instance ValuePrim Int32 where
+  primInt32 = Just
+
+instance ValuePrim String where
+  primString = Just
+
+data Data = forall a. ValuePrim a => Data a
+
+instance ValuePrim Data where
+  primInt32 = toInt32
+  primString = toString
+
+toInt32 (Data a) = primInt32 a
+toString (Data a) = primString a
+
+lookupInt32  k d = toInt32  =<< Map.lookup k d
+lookupString k d = toString =<< Map.lookup k d
+
+instance ValueGet Data where
+  valueGet v = liftIO $ do
+    t <- getType v
+    case t of
+      TypeInt32  -> (Data . snd) <$> get_int v
+      TypeString -> Data <$> (peekCString . snd =<< get_string v)
