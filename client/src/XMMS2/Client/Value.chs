@@ -134,11 +134,15 @@ getString = get TypeString get_string peekCString
 
 
 
-getError = get TypeError get_error peekCString
+getError value = do
+  (ok, etext) <- get_error value
+  return $ if ok then Just etext else Nothing
+
 {# fun get_error as get_error
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
+
 
 getColl v = get TypeColl get_coll (takeColl True) v
 {# fun get_coll as get_coll
