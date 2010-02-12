@@ -420,10 +420,6 @@ data Data = forall a. ValuePrim a => Data a
 
 mkData = Data
 
-instance ValuePrim Data where
-  primInt32 = toInt32
-  primString = toString
-
 toInt32 (Data a) = primInt32 a
 toString (Data a) = primString a
 
