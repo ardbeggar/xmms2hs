@@ -43,11 +43,7 @@ module XMMS2.Client.Playlist
 
 {# context prefix = "xmmsc" #}
 
-import Control.Monad.Trans
-import Control.Monad.CatchIO
-import Control.Exception (AssertionFailed (..))
-
-import qualified Data.Map as Map
+import Data.Maybe
 
 import XMMS2.Utils
 
@@ -61,13 +57,11 @@ type PlaylistPosition = (Int32, String)
 
 instance ValueGet PlaylistPosition where
   valueGet v = do
-    dict <- liftIO $ getDict v
-    case (Map.lookup "position" dict,
-          Map.lookup "name"     dict) of
-      (Just (DataInt32 p), Just (DataString n)) ->
-        return (p, n)
-      _ ->
-        throw $ AssertionFailed "playlist position"
+    dict <- valueGet v
+    maybe (fail "not a playlist position") return $ do
+      pv <- lookupInt32 "position" dict
+      nv <- lookupString "name" dict
+      return (pv, nv)
 
 
 {# fun playlist_add_url as playlistAddURL

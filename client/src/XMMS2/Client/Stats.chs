@@ -24,12 +24,13 @@ module XMMS2.Client.Stats
 
 #include <xmmsclient/xmmsclient.h>
 
-{# context prefix = "xmmsc" #}         
+{# context prefix = "xmmsc" #}
 
 import XMMS2.Utils
+
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Value #}
-{# import XMMS2.Client.Result #}  
+{# import XMMS2.Client.Result #}
 
 
 {# enum xmms_plugin_type_t as PluginType
@@ -41,4 +42,4 @@ import XMMS2.Utils
 {# fun plugin_list as ^
  { withConnection* `Connection'
  , cFromEnum       `PluginType'
- } -> `Result [Dict ValueData]' takeResult* #}
+ } -> `Result [Dict Data]' takeResult* #}

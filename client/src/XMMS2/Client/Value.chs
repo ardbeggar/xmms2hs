@@ -27,7 +27,6 @@ module XMMS2.Client.Value
     , TypeBin
     , TypeList
     , TypeDict )
-  , ValueData (..)
   , ValuePtr
   , Value
   , ValueGet (..)
@@ -35,13 +34,22 @@ module XMMS2.Client.Value
   , withValue
   , takeValue
   , getType
-  , getInt
-  , getString
   , getError
+  , getInt
+  , newInt
+  , getString
+  , newString
   , getColl
-  , getData
+  , newColl
+  , Bin
+  , withBin
+  , makeBin
+  , getBin
+  , newBin
   , getList
   , newList
+  , getDict
+  , newDict
   , strictGetList
   , listGetSize
   , listGet
@@ -52,7 +60,6 @@ module XMMS2.Client.Value
   , listIterNext
   , Int32
   , Dict
-  , getDict
   , propdictToDict
   , dictForeach
   , DictIter
@@ -60,6 +67,23 @@ module XMMS2.Client.Value
   , dictIterValid
   , dictIterPair
   , dictIterNext
+  , Property (..)
+  , PropDict
+  , ValuePrim (..)
+  , Data
+  , mkData
+  , dataInt32
+  , dataString
+  , dataColl
+  , dataBin
+  , dataList
+  , dataDict
+  , lookupInt32
+  , lookupString
+  , lookupColl
+  , lookupBin
+  , lookupList
+  , lookupDict
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -67,13 +91,15 @@ module XMMS2.Client.Value
 
 {# context prefix = "xmmsv" #}
 
+import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
 import Control.Monad.CatchIO
 
 import Data.Int (Int32)
 import Data.Maybe
-import Data.Map (Map, fromList, toList)
+import Data.Map (Map)
+import qualified Data.Map as Map
 
 import System.IO.Unsafe
 
@@ -121,28 +147,68 @@ instance ValueGet String where
 instance ValueNew String where
   valueNew = liftIO . newString
 
-newString val = new_string val >>= takeValue False
-{# fun new_string as new_string
- { withCString* `String'
- } -> `ValuePtr' id #}
-
 getString = get TypeString get_string peekCString
 {# fun get_string as get_string
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
+newString val = new_string val >>= takeValue False
+{# fun new_string as new_string
+ { withCString* `String'
+ } -> `ValuePtr' id #}
 
 
 getError value = do
-  (ok, etext) <- get_error value
-  return $ if ok then Just etext else Nothing
-
+  (ok, err) <- get_error value
+  if ok
+     then Just <$> peekCString err
+     else return Nothing
 {# fun get_error as get_error
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
+
+data Bin = Bin (Maybe Value) CUInt (ForeignPtr CUChar)
+
+withBin (Bin _ len ptr) f =
+  withForeignPtr ptr $ (flip f) len . castPtr
+
+makeBin len =
+  takePtr (Bin Nothing len) finalizerFree
+    =<< mallocArray (fromIntegral len)
+
+
+instance ValueGet Bin where
+  valueGet = liftIO . getBin
+
+instance ValueNew Bin where
+  valueNew = liftIO . newBin
+
+getBin v = do
+  (ok, ptr, len) <- get_bin v
+  if ok
+     then takePtr_ (Bin (Just v) len) ptr
+     else raiseGetError TypeBin v
+{# fun get_bin as get_bin
+ { withValue* `Value'
+ , alloca-    `Ptr CUChar' peek*
+ , alloca-    `CUInt'      peek*
+ } -> `Bool' #}
+
+newBin = (flip withBin) (\ptr len -> new_bin ptr len >>= takeValue True)
+{# fun new_bin as new_bin
+ { id `Ptr CUChar'
+ , id `CUInt'
+ } -> `ValuePtr' id #}
+
+
+instance ValueGet Coll where
+  valueGet = liftIO . getColl
+
+instance ValueNew Coll where
+  valueNew = liftIO . newColl
 
 getColl v = get TypeColl get_coll (takeColl True) v
 {# fun get_coll as get_coll
@@ -150,31 +216,10 @@ getColl v = get TypeColl get_coll (takeColl True) v
  , alloca-    `CollPtr' peek*
  } -> `Bool' #}
 
-
-data ValueData
-  = DataNone
-  | DataInt32 Int32
-  | DataString String
-    deriving (Read, Show, Eq)
-
-instance ValueGet ValueData where
-  valueGet = liftIO . getData
-
-instance ValueNew ValueData where
-  valueNew = liftIO . newData
-
-getData ::  Value -> IO ValueData
-getData v = do
-  t <- getType v
-  case t of
-    TypeInt32  -> mk DataInt32 getInt
-    TypeString -> mk DataString getString
-    _          -> return DataNone
-  where mk c g = liftM c $ g v
-
-newData (DataInt32  val) = newInt val
-newData (DataString val) = newString val
-newData DataNone         = newNone
+newColl v = new_coll v >>= takeValue False
+{# fun new_coll as new_coll
+ { withColl* `Coll'
+ } -> `ValuePtr' id #}
 
 
 instance ValueGet a => ValueGet [a] where
@@ -184,25 +229,12 @@ instance ValueNew a => ValueNew [a] where
   valueNew = liftIO . newList
 
 getList :: ValueGet a => Value -> IO [a]
-getList val = do
-  iter <- getListIter val
-  lazyGetList' iter
-  where
-    lazyGetList' iter =
-      unsafeInterleaveIO $ do
-        valid <- listIterValid iter
-        if valid
-           then do
-             entry <- listIterEntry iter
-             item  <- valueGet entry
-             listIterNext iter
-             rest <- lazyGetList' iter
-             return $ item : rest
-           else
-             return []
+getList = getList' lazyWhile
 
 strictGetList :: ValueGet a => Value -> IO [a]
-strictGetList val = do
+strictGetList = getList' while
+
+getList' while val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
     entry <- listIterEntry iter
@@ -258,6 +290,7 @@ listIterEntry iter = do
   (ok, v') <- list_iter_entry iter
   unless ok $ throwIO $ InvalidIter
   takeValue True v'
+
 {# fun list_iter_entry as list_iter_entry
  { withListIter* `ListIter a'
  , alloca-       `ValuePtr' peek*
@@ -281,7 +314,7 @@ instance ValueNew a => ValueNew (Dict a) where
   valueNew = liftIO . newDict
 
 getDict :: ValueGet a => Value -> IO (Dict a)
-getDict val = liftM fromList $ do
+getDict val = Map.fromList <$> do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
     (key, raw) <- dictIterPair iter
@@ -291,9 +324,8 @@ getDict val = liftM fromList $ do
 
 newDict dict = do
   val <- new_dict >>= takeValue False
-  mapM_ (uncurry (dictSet val)) $ toList dict
+  mapM_ (uncurry (dictSet val)) $ Map.toList dict
   return val
-
 {# fun new_dict as new_dict
  {} -> `ValuePtr' id #}
 
@@ -331,6 +363,7 @@ dictIterPair iter = do
   key <- peekCString keyptr
   val <- takeValue True valptr
   return (key, val)
+
 {# fun dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter a'
  , alloca-       `CString'  peek*
@@ -380,15 +413,111 @@ propdictToDict v p = propdict_to_dict v p >>= takeValue False
 
 get t f c v = do
   (ok, v') <- f v
-  if ok
-     then
-       c v'
-     else do
-       t' <- getType v
-       case t' of
-         TypeError -> do
-           (_, p) <- get_error v
-           s <- peekCString p
-           throwIO $ XMMSError s
-         _         ->
-           throwIO $ TypeMismatch t t'
+  if ok then c v' else raiseGetError t v
+
+raiseGetError t v = do
+  t' <- getType v
+  case t' of
+    TypeError -> do
+      (_, p) <- get_error v
+      s <- peekCString p
+      throwIO $ XMMSError s
+    _         ->
+      throwIO $ TypeMismatch t t'
+
+
+data Property
+  = PropInt32 Int32
+  | PropString String
+    deriving (Eq, Show, Read)
+
+instance ValueGet Property where
+  valueGet v =
+    liftIO $ do
+      t <- getType v
+      case t of
+        TypeInt32  -> PropInt32  <$> getInt v
+        TypeString -> PropString <$> getString v
+        _          -> fail $ "Property.valueGet: bad type " ++ show t
+
+type PropDict = Dict [(String, Property)]
+
+instance ValueGet [(String, Property)] where
+  valueGet v =
+    liftIO $ do
+      dict <- valueGet v
+      iter <- getDictIter dict
+      while (dictIterValid iter) $ do
+        (key, raw) <- dictIterPair iter
+        val        <- valueGet raw
+        dictIterNext iter
+        return (key, val)
+
+
+class (ValueGet a, ValueNew a) => ValuePrim a where
+  primInt32  :: a -> Maybe Int32
+  primInt32  = const Nothing
+  primString :: a -> Maybe String
+  primString = const Nothing
+  primColl   :: a -> Maybe Coll
+  primColl   = const Nothing
+  primBin    :: a -> Maybe Bin
+  primBin    = const Nothing
+  primList   :: a -> Maybe [Data]
+  primList   = const Nothing
+  primDict   :: a -> Maybe (Dict Data)
+  primDict   = const Nothing
+
+instance ValuePrim ()
+
+instance ValuePrim Int32 where
+  primInt32 = Just
+
+instance ValuePrim String where
+  primString = Just
+
+instance ValuePrim Coll where
+  primColl = Just
+
+instance ValuePrim Bin where
+  primBin = Just
+
+instance ValuePrim [Data] where
+  primList = Just
+
+instance ValuePrim (Dict Data) where
+  primDict = Just
+
+data Data = forall a. ValuePrim a => Data a
+
+mkData = Data
+
+dataInt32  (Data a) = primInt32 a
+dataString (Data a) = primString a
+dataColl   (Data a) = primColl a
+dataBin    (Data a) = primBin a
+dataList   (Data a) = primList a
+dataDict   (Data a) = primDict a
+
+lookupInt32  k d = dataInt32  =<< Map.lookup k d
+lookupString k d = dataString =<< Map.lookup k d
+lookupColl   k d = dataColl   =<< Map.lookup k d
+lookupBin    k d = dataBin    =<< Map.lookup k d
+lookupList   k d = dataList   =<< Map.lookup k d
+lookupDict   k d = dataDict   =<< Map.lookup k d
+
+instance ValueGet Data where
+  valueGet v = liftIO $ do
+    t <- getType v
+    case t of
+      TypeNone   -> Data <$> getNone v
+      TypeInt32  -> Data <$> getInt v
+      TypeString -> Data <$> getString v
+      TypeColl   -> Data <$> getColl v
+      TypeBin    -> Data <$> getBin v
+      TypeList   -> Data <$> ((getList v) :: IO [Data])
+      TypeDict   -> Data <$> ((getDict v) :: IO (Dict Data))
+      TypeError  -> throwIO . XMMSError . fromJust =<< getError v
+
+instance ValueNew Data where
+  valueNew (Data a) = valueNew a
