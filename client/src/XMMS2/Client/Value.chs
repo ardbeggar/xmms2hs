@@ -237,7 +237,6 @@ strictGetList = getList' while
 getList' while val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
-    putStrLn "getting"
     entry <- listIterEntry iter
     item  <- valueGet entry
     listIterNext iter
