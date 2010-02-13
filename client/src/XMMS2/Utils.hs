@@ -26,6 +26,7 @@ module XMMS2.Utils
   , withZTArray
   , while
   , takePtr
+  , takePtr_
   ) where
 
 import C2HS hiding (withCString, peekCString)
@@ -64,4 +65,5 @@ while c a = do
 withZTArray = withArray0 0
 
 
-takePtr con fin = liftM con . newForeignPtr fin
+takePtr  con fin = liftM con . newForeignPtr fin
+takePtr_ con     = liftM con . newForeignPtr_
