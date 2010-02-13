@@ -34,12 +34,22 @@ module XMMS2.Client.Value
   , withValue
   , takeValue
   , getType
-  , getInt
-  , getString
   , getError
+  , getInt
+  , newInt
+  , getString
+  , newString
   , getColl
+  , newColl
+  , Bin
+  , withBin
+  , makeBin
+  , getBin
+  , newBin
   , getList
   , newList
+  , getDict
+  , newDict
   , strictGetList
   , listGetSize
   , listGet
@@ -50,7 +60,6 @@ module XMMS2.Client.Value
   , listIterNext
   , Int32
   , Dict
-  , getDict
   , propdictToDict
   , dictForeach
   , DictIter
@@ -65,10 +74,16 @@ module XMMS2.Client.Value
   , mkData
   , dataInt32
   , dataString
+  , dataColl
+  , dataBin
   , dataList
+  , dataDict
   , lookupInt32
   , lookupString
+  , lookupColl
+  , lookupBin
   , lookupList
+  , lookupDict
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -145,13 +160,48 @@ newString val = new_string val >>= takeValue False
 
 
 getError value = do
-  (ok, etext) <- get_error value
-  return $ if ok then Just etext else Nothing
-
+  (ok, err) <- get_error value
+  if ok
+     then Just <$> peekCString err
+     else return Nothing
 {# fun get_error as get_error
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
+
+
+data Bin = Bin (Maybe Value) CUInt (ForeignPtr CUChar)
+
+withBin (Bin _ len ptr) f =
+  withForeignPtr ptr $ (flip f) len . castPtr
+
+makeBin len =
+  takePtr (Bin Nothing len) finalizerFree
+    =<< mallocArray (fromIntegral len)
+
+
+instance ValueGet Bin where
+  valueGet = liftIO . getBin
+
+instance ValueNew Bin where
+  valueNew = liftIO . newBin
+
+getBin v = do
+  (ok, ptr, len) <- get_bin v
+  if ok
+     then takePtr_ (Bin (Just v) len) ptr
+     else raiseGetError TypeBin v
+{# fun get_bin as get_bin
+ { withValue* `Value'
+ , alloca-    `Ptr CUChar' peek*
+ , alloca-    `CUInt'      peek*
+ } -> `Bool' #}
+
+newBin = (flip withBin) (\ptr len -> new_bin ptr len >>= takeValue True)
+{# fun new_bin as new_bin
+ { id `Ptr CUChar'
+ , id `CUInt'
+ } -> `ValuePtr' id #}
 
 
 instance ValueGet Coll where
@@ -290,7 +340,6 @@ newDict dict = do
   val <- new_dict >>= takeValue False
   mapM_ (uncurry (dictSet val)) $ Map.toList dict
   return val
-
 {# fun new_dict as new_dict
  {} -> `ValuePtr' id #}
 
@@ -378,18 +427,17 @@ propdictToDict v p = propdict_to_dict v p >>= takeValue False
 
 get t f c v = do
   (ok, v') <- f v
-  if ok
-     then
-       c v'
-     else do
-       t' <- getType v
-       case t' of
-         TypeError -> do
-           (_, p) <- get_error v
-           s <- peekCString p
-           throwIO $ XMMSError s
-         _         ->
-           throwIO $ TypeMismatch t t'
+  if ok then c v' else raiseGetError t v
+
+raiseGetError t v = do
+  t' <- getType v
+  case t' of
+    TypeError -> do
+      (_, p) <- get_error v
+      s <- peekCString p
+      throwIO $ XMMSError s
+    _         ->
+      throwIO $ TypeMismatch t t'
 
 
 data Property
@@ -421,16 +469,20 @@ instance ValueGet [(String, Property)] where
 
 
 class (ValueGet a, ValueNew a) => ValuePrim a where
-  primInt32 :: a -> Maybe Int32
-  primInt32 = const Nothing
+  primInt32  :: a -> Maybe Int32
+  primInt32  = const Nothing
   primString :: a -> Maybe String
   primString = const Nothing
-  primColl :: a -> Maybe Coll
-  primColl = const Nothing
-  primList :: a -> Maybe [Data]
-  primList = const Nothing
-  primDict :: a -> Maybe (Dict Data)
-  primDict = const Nothing
+  primColl   :: a -> Maybe Coll
+  primColl   = const Nothing
+  primBin    :: a -> Maybe Bin
+  primBin    = const Nothing
+  primList   :: a -> Maybe [Data]
+  primList   = const Nothing
+  primDict   :: a -> Maybe (Dict Data)
+  primDict   = const Nothing
+
+instance ValuePrim ()
 
 instance ValuePrim Int32 where
   primInt32 = Just
@@ -440,6 +492,9 @@ instance ValuePrim String where
 
 instance ValuePrim Coll where
   primColl = Just
+
+instance ValuePrim Bin where
+  primBin = Just
 
 instance ValuePrim [Data] where
   primList = Just
@@ -454,12 +509,14 @@ mkData = Data
 dataInt32  (Data a) = primInt32 a
 dataString (Data a) = primString a
 dataColl   (Data a) = primColl a
+dataBin    (Data a) = primBin a
 dataList   (Data a) = primList a
 dataDict   (Data a) = primDict a
 
 lookupInt32  k d = dataInt32  =<< Map.lookup k d
 lookupString k d = dataString =<< Map.lookup k d
 lookupColl   k d = dataColl   =<< Map.lookup k d
+lookupBin    k d = dataBin    =<< Map.lookup k d
 lookupList   k d = dataList   =<< Map.lookup k d
 lookupDict   k d = dataDict   =<< Map.lookup k d
 
@@ -467,11 +524,14 @@ instance ValueGet Data where
   valueGet v = liftIO $ do
     t <- getType v
     case t of
+      TypeNone   -> Data <$> getNone v
       TypeInt32  -> Data <$> getInt v
       TypeString -> Data <$> getString v
       TypeColl   -> Data <$> getColl v
+      TypeBin    -> Data <$> getBin v
       TypeList   -> Data <$> ((getList v) :: IO [Data])
       TypeDict   -> Data <$> ((getDict v) :: IO (Dict Data))
+      TypeError  -> throwIO . XMMSError . fromJust =<< getError v
 
 instance ValueNew Data where
   valueNew (Data a) = valueNew a
