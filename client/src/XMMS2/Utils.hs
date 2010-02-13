@@ -25,15 +25,22 @@ module XMMS2.Utils
   , peekCString
   , withZTArray
   , while
+  , lazyWhile
   , takePtr
   , takePtr_
   ) where
 
-import C2HS hiding (withCString, peekCString)
-import qualified Foreign.C.String as CS
-import Foreign.Ptr
+import Control.Applicative
 import Control.Monad
+
+import System.IO.Unsafe
+
+import Foreign.Ptr
+import qualified Foreign.C.String as CS
+
 import Codec.Binary.UTF8.String
+
+import C2HS hiding (withCString, peekCString)
 
 
 withMaybeCString (Just s) f = withCString s f
@@ -54,12 +61,14 @@ withCStringArray0 sl f =
 
 peekCString = liftM decodeString . CS.peekCString
 
+while = while' id
+lazyWhile = while' unsafeInterleaveIO
 
-while c a = do
+while' w c a = w $ do
   continue <- c
   if continue
-    then liftM2 (:) a (while c a)
-    else return []
+     then (:) <$> a <*> while' w c a
+     else return []
 
 
 withZTArray = withArray0 0

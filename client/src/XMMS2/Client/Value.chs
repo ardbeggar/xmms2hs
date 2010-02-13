@@ -222,7 +222,6 @@ newColl v = new_coll v >>= takeValue False
  } -> `ValuePtr' id #}
 
 
-
 instance ValueGet a => ValueGet [a] where
   valueGet = liftIO . getList
 
@@ -230,27 +229,15 @@ instance ValueNew a => ValueNew [a] where
   valueNew = liftIO . newList
 
 getList :: ValueGet a => Value -> IO [a]
-getList val = do
-  iter <- getListIter val
-  lazyGetList' iter
-  where
-    lazyGetList' iter =
-      unsafeInterleaveIO $ do
-        valid <- listIterValid iter
-        if valid
-           then do
-             entry <- listIterEntry iter
-             item  <- valueGet entry
-             listIterNext iter
-             rest <- lazyGetList' iter
-             return $ item : rest
-           else
-             return []
+getList = getList' lazyWhile
 
 strictGetList :: ValueGet a => Value -> IO [a]
-strictGetList val = do
+strictGetList = getList' while
+
+getList' while val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
+    putStrLn "getting"
     entry <- listIterEntry iter
     item  <- valueGet entry
     listIterNext iter
