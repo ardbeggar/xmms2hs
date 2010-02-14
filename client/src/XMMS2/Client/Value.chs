@@ -105,9 +105,24 @@ import System.IO.Unsafe
 
 import XMMS2.Utils
 import XMMS2.Client.Exception
+import XMMS2.Client.Monad.Monad
 
-{# import XMMS2.Client.ValueBase #}
+{# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.CollBase #}
+
+
+class ValueGet a where
+  valueGet :: XMMSM m => Value -> m a
+
+class ValueNew a where
+  valueNew :: XMMSM m => a -> m Value
+
+
+instance ValueGet Value where
+  valueGet = return
+
+instance ValueNew Value where
+  valueNew = return
 
 
 instance ValueGet () where

@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 5 Oct. 2009
+--  Created: 14 Feb. 2010
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -17,21 +17,8 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Exception
-  ( XMMSException (..)
-  , throwIO
+module XMMS2.Client.Bindings.Types
+  ( module XMMS2.Client.Bindings.Types.Value
   ) where
 
-import Control.Exception
-import Data.Typeable
-import XMMS2.Client.Bindings.Types
-
-
-data XMMSException
-  = XMMSError String
-  | TypeMismatch ValueType ValueType
-  | InvalidIter
-    deriving (Typeable, Show)
-
-instance Exception XMMSException
-
+import XMMS2.Client.Bindings.Types.Value

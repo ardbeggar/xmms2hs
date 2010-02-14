@@ -47,6 +47,7 @@ import Control.Monad.ToIO
 import XMMS2.Utils
 import XMMS2.Client.Monad.Monad
 
+{# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Value #}
 
 

@@ -17,7 +17,7 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.ValueBase
+module XMMS2.Client.Bindings.Types.Value
   ( ValueType (..)
   , ValuePtr
   , Value
@@ -25,8 +25,6 @@ module XMMS2.Client.ValueBase
   , takeValue
   , refValue
   , getType
-  , ValueGet (..)
-  , ValueNew (..)
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -70,18 +68,3 @@ refValue val = withValue val $ takeValue True
 {# fun get_type as ^
  { withValue* `Value'
  } -> `ValueType' cToEnum #}
-
-
-class ValueGet a where
-  valueGet :: XMMSM m => Value -> m a
-
-class ValueNew a where
-  valueNew :: XMMSM m => a -> m Value
-
-
-instance ValueGet Value where
-  valueGet = return
-
-instance ValueNew Value where
-  valueNew = return
-
