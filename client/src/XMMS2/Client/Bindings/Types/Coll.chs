@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 17 Sep. 2009
+--  Created: 14 Feb. 2010
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -19,7 +19,7 @@
 
 {-# OPTIONS_GHC -fno-warn-overlapping-patterns #-}
 
-module XMMS2.Client.CollBase
+module XMMS2.Client.Bindings.Types.Coll
   ( CollPtr
   , Coll
   , withColl

@@ -18,7 +18,7 @@
 --
 
 module XMMS2.Client.Coll
-  ( module XMMS2.Client.CollBase
+  ( module XMMS2.Client.Bindings.Types.Coll
   , collIdlistFromPlaylistFile
   , collSync
   ) where
@@ -31,7 +31,7 @@ import XMMS2.Utils
 
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
-{# import XMMS2.Client.CollBase #}
+{# import XMMS2.Client.Bindings.Types.Coll #}
 
 
 {# fun coll_idlist_from_playlist_file as ^

@@ -19,6 +19,8 @@
 
 module XMMS2.Client.Bindings.Types
   ( module XMMS2.Client.Bindings.Types.Value
+  , module XMMS2.Client.Bindings.Types.Coll
   ) where
 
 import XMMS2.Client.Bindings.Types.Value
+import XMMS2.Client.Bindings.Types.Coll

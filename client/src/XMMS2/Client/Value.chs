@@ -108,7 +108,7 @@ import XMMS2.Client.Exception
 import XMMS2.Client.Monad.Monad
 
 {# import XMMS2.Client.Bindings.Types.Value #}
-{# import XMMS2.Client.CollBase #}
+{# import XMMS2.Client.Bindings.Types.Coll #}
 
 
 class ValueGet a where
