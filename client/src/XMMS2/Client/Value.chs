@@ -238,9 +238,8 @@ getList' while val = do
   iter <- getListIter val
   while (listIterValid iter) $ do
     entry <- listIterEntry iter
-    item  <- valueGet entry
     listIterNext iter
-    return item
+    return entry
 
 newList list = do
   val <- new_list >>= takeValue False
@@ -275,7 +274,6 @@ withListIter (ListIter p) = withForeignPtr p
 
 getListIter :: Value -> IO (ListIter a)
 getListIter = get TypeList get_list_iter (takePtr ListIter finalize_list_iter)
-
 {# fun xmms2hs_get_list_iter as get_list_iter
  { withValue* `Value'
  , alloca-    `ListIterPtr' peek*
@@ -285,12 +283,11 @@ foreign import ccall unsafe "&xmms2hs_finalize_list_iter"
   finalize_list_iter :: FinalizerPtr Li
 
 
-listIterEntry :: ListIter a -> IO (Value)
+listIterEntry :: ValueGet a => ListIter a -> IO a
 listIterEntry iter = do
   (ok, v') <- list_iter_entry iter
-  unless ok $ throwIO $ InvalidIter
-  takeValue True v'
-
+  unless ok $ throwIO InvalidIter
+  valueGet =<< takeValue True v'
 {# fun list_iter_entry as list_iter_entry
  { withListIter* `ListIter a'
  , alloca-       `ValuePtr' peek*
@@ -317,8 +314,7 @@ getDict :: ValueGet a => Value -> IO (Dict a)
 getDict val = Map.fromList <$> do
   iter <- getDictIter val
   while (dictIterValid iter) $ do
-    (key, raw) <- dictIterPair iter
-    val        <- valueGet raw
+    (key, val) <- dictIterPair iter
     dictIterNext iter
     return (key, val)
 
@@ -346,7 +342,6 @@ withDictIter (DictIter p) f =
 
 getDictIter :: Value -> IO (DictIter a)
 getDictIter = get TypeDict get_dict_iter (takePtr DictIter finalize_dict_iter)
-
 {# fun xmms2hs_get_dict_iter as get_dict_iter
  { withValue* `Value'
  , alloca-    `DictIterPtr' peek*
@@ -356,14 +351,13 @@ foreign import ccall unsafe "&xmms2hs_finalize_dict_iter"
   finalize_dict_iter :: FinalizerPtr Di
 
 
-dictIterPair :: DictIter a -> IO (String, Value)
+dictIterPair :: ValueGet a => DictIter a -> IO (String, a)
 dictIterPair iter = do
   (ok, keyptr, valptr) <- dict_iter_pair iter
   unless ok $ throwIO $ InvalidIter
   key <- peekCString keyptr
-  val <- takeValue True valptr
+  val <- valueGet =<< takeValue True valptr
   return (key, val)
-
 {# fun dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter a'
  , alloca-       `CString'  peek*
@@ -391,7 +385,6 @@ dictForeach f d = do
           f s' v'
   dict_foreach d f' nullPtr
   freeHaskellFunPtr f'
-
 {# fun dict_foreach as dict_foreach
  { withValue* `Value'
  , id         `DictForeachPtr a'
@@ -408,7 +401,6 @@ propdictToDict v p = propdict_to_dict v p >>= takeValue False
  { withValue*         `Value'
  , withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
-
 
 
 get t f c v = do
