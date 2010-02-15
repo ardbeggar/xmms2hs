@@ -17,7 +17,7 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Playlist
+module XMMS2.Client.Bindings.Playlist
   ( PlaylistPosition
   , playlistAddURL
   , playlistAddId
@@ -49,128 +49,112 @@ import XMMS2.Utils
 import XMMS2.Client.Types
 
 {# import XMMS2.Client.Bindings.Types.Value #}
-{# import XMMS2.Client.Connection #}
-{# import XMMS2.Client.Result #}
-{# import XMMS2.Client.Coll #}
+{# import XMMS2.Client.Bindings.Types.Coll #}
+{# import XMMS2.Client.Bindings.Connection #}
+{# import XMMS2.Client.Bindings.Result #}
+{# import XMMS2.Client.Bindings.Coll #}
 
 
 type PlaylistPosition = (Int32, String)
-
-instance ValueGet PlaylistPosition where
-  valueGet v = do
-    dict <- valueGet v
-    maybe (fail "not a playlist position") return $ do
-      pv <- lookupInt32 "position" dict
-      nv <- lookupString "name" dict
-      return (pv, nv)
 
 
 {# fun playlist_add_url as playlistAddURL
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_add_id as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int32'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_add_encoded as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_add_idlist as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , withColl*         `Coll'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
-playlistAddCollection
-  :: Connection
-  -> Maybe String
-  -> Coll
-  -> [String]
-  -> IO (Result ())
-playlistAddCollection xmmsc pls coll order = do
-  list <- newList order
-  playlist_add_collection xmmsc pls coll list
-{# fun playlist_add_collection as playlist_add_collection
+{# fun playlist_add_collection as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , withColl*         `Coll'
  , withValue*        `Value'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_remove_entry as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_clear as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_list_entries as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
- } -> `Result [Int32]' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_set_next as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_set_next_rel as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_move_entry as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int'
  , cIntConv          `Int'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_current_pos as ^
  { withConnection*   `Connection' ,
    withMaybeCString* `Maybe String'
- } -> `Result PlaylistPosition' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_insert_id as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int'
  , cIntConv          `Int32'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_radd as playlistRAdd
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun playlist_radd_encoded as playlistRAddEncoded
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 
 {# fun broadcast_playlist_changed as ^
  { withConnection*   `Connection'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun broadcast_playlist_current_pos as ^
  { withConnection*   `Connection'
- } -> `Result ()' takeResult* #}
+ } -> `Result' takeResult* #}
 
 {# fun broadcast_playlist_loaded as ^
  { withConnection*   `Connection'
- } -> `Result String' takeResult* #}
+ } -> `Result' takeResult* #}

@@ -22,8 +22,7 @@ module XMMS2.Client.Monad.Connection
   ) where
 
 import XMMS2.Client.Monad.Monad
-import qualified XMMS2.Client.Connection as XC
+import qualified XMMS2.Client.Bindings.Connection as XC
 
 
 connect path = liftXMMS $ \xmmsc -> XC.connect xmmsc path
-         

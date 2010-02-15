@@ -17,7 +17,7 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Connection
+module XMMS2.Client.Bindings.Connection
   ( Connection
   , withConnection
   , takeConnection
@@ -27,18 +27,22 @@ module XMMS2.Client.Connection
   ) where
 
 #include <xmmsclient/xmmsclient.h>
-#include <xmms2hs-client.h>         
+#include <xmms2hs-client.h>
 
 {# context prefix = "xmmsc" #}
 
-import Control.Monad
 import Prelude hiding (init)
-import XMMS2.Utils  
+
+import Control.Applicative
+import Control.Monad
+
+import XMMS2.Utils
 
 
 {# pointer *xmmsc_connection_t as Connection foreign newtype #}
 
-takeConnection p = liftM Connection $ newForeignPtr xmmsc_unref p
+takeConnection p = Connection <$> newForeignPtr xmmsc_unref p
+
 foreign import ccall unsafe "&xmmsc_unref"
   xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
 
@@ -55,11 +59,11 @@ foreign import ccall unsafe "&xmmsc_unref"
 
 type DisconnectFun = Ptr () -> IO ()
 type DisconnectPtr = FunPtr DisconnectFun
-  
+
 disconnectCallbackSet xmmsc fun = do
   ptr <- mkDisconnectPtr $ \_ -> fun
   disconnect_callback_set xmmsc ptr
-                          
+
 {# fun xmms2hs_disconnect_callback_set as disconnect_callback_set
  { withConnection* `Connection'
  , id              `DisconnectPtr'
@@ -68,7 +72,7 @@ disconnectCallbackSet xmmsc fun = do
 foreign import ccall "wrapper"
   mkDisconnectPtr :: DisconnectFun -> IO DisconnectPtr
 
-                     
+
 maybeConnection p
   | p == nullPtr = return Nothing
   | otherwise    = liftM Just $ takeConnection p

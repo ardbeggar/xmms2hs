@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 18 Oct. 2009
+--  Created: 15 Feb. 2010
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -17,29 +17,24 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Stats
-  ( PluginType (..)
-  , pluginList
+module XMMS2.Client.Coll
+  ( collIdlistFromPlaylistFile
+  , collSync
   ) where
 
-#include <xmmsclient/xmmsclient.h>
+import Control.Applicative
 
-{# context prefix = "xmmsc" #}
-
-import XMMS2.Utils
 import XMMS2.Client.Types
+import XMMS2.Client.Result
 
-{# import XMMS2.Client.Connection #}
-{# import XMMS2.Client.Result #}
-
-
-{# enum xmms_plugin_type_t as PluginType
- { underscoreToCase }
- with prefix = "XMMS_"
- deriving (Show) #}
+import XMMS2.Client.Bindings.Connection
+import qualified XMMS2.Client.Bindings.Coll as B
 
 
-{# fun plugin_list as ^
- { withConnection* `Connection'
- , cFromEnum       `PluginType'
- } -> `Result [Dict Data]' takeResult* #}
+collIdlistFromPlaylistFile :: Connection -> String -> IO (Result Coll)
+collIdlistFromPlaylistFile xmmsc file =
+  liftResult $ B.collIdlistFromPlaylistFile xmmsc file
+
+collSync :: Connection -> IO (Result ())
+collSync xmmsc =
+  liftResult $ B.collSync xmmsc

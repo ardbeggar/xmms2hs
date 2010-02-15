@@ -33,7 +33,7 @@ import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Result
 import XMMS2.Client.Monad.Utils
 import XMMS2.Client.Monad.Value
-import XMMS2.Client.Coll (Coll, CollType (..))
+import XMMS2.Client.Types (Coll)
 import qualified XMMS2.Client.Coll as XC
 import qualified XMMS2.Client.Types as XV
 
@@ -47,12 +47,12 @@ collIdlistFromPlaylistFile name =
 collSync = liftXMMS $ \xmmsc -> XC.collSync xmmsc
 
 
-collNew = liftIO . XC.collNew
+collNew = liftIO . XV.collNew
 
-collSetIdlist c list = liftIO $ XC.collSetIdlist c list
-
-
-collIdlistAppend c id = liftIO $ XC.collIdlistAppend c id
+collSetIdlist c list = liftIO $ XV.collSetIdlist c list
 
 
-collNewIdlist = liftIO . XC.collNewIdlist
+collIdlistAppend c id = liftIO $ XV.collIdlistAppend c id
+
+
+collNewIdlist = liftIO . XV.collNewIdlist

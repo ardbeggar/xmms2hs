@@ -23,14 +23,14 @@ module XMMS2.Client.Monad.XMMS
   ) where
 
 import Control.Monad.Reader
-import XMMS2.Client.Connection (Connection)
-import XMMS2.Client.Monad.Monad  
+import XMMS2.Client.Bindings.Connection (Connection)
+import XMMS2.Client.Monad.Monad
 
 
 type XMMS e m = ReaderT (Connection, e) m
 
 instance XMMSM m => XMMSM (ReaderT (Connection, e) m)
-  
+
 instance XMMSM m => XMMSCM e (ReaderT (Connection, e) m) where
   connection  = asks fst
   environment = asks snd

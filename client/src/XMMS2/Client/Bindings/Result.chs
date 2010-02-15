@@ -17,21 +17,16 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Result
+module XMMS2.Client.Bindings.Result
   ( Result
   , ResultPtr
   , withResult
   , takeResult
-  , resultGetValue
   , resultWait
+  , resultGetValue
   , ResultNotifier
   , resultNotifierSet
   , resultCallbackSet
-  , ResultM
-  , resultRawValue
-  , result
-  , resultLength
-  , (>>*)
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -54,7 +49,7 @@ import XMMS2.Client.Monad.Monad
 
 data T = T
 {# pointer *result_t as ResultPtr -> T #}
-data Result a = Result (ForeignPtr T)
+data Result = Result (ForeignPtr T)
 
 withResult (Result p) = withForeignPtr p
 
@@ -64,20 +59,20 @@ foreign import ccall unsafe "&xmmsc_result_unref"
   xmmsc_result_unref :: FunPtr (ResultPtr -> IO ())
 
 
-resultGetValue :: Result a -> IO Value
+resultGetValue :: Result -> IO Value
 resultGetValue r = result_get_value r >>= takeValue True
 {# fun result_get_value as result_get_value
- { withResult* `Result a'
+ { withResult* `Result'
  } -> `ValuePtr' id #}
 
 {# fun result_wait as ^
- { withResult* `Result a'
+ { withResult* `Result'
  } -> `()' #}
 
 
 type ResultNotifier = Value -> IO Bool
 
-resultNotifierSet :: Result a -> ResultNotifier -> IO ()
+resultNotifierSet :: Result -> ResultNotifier -> IO ()
 resultNotifierSet r f = do
   n <- mkNotifierPtr $ \p _ -> takeValue True p >>= liftM fromBool . f
   xmms2hs_result_notifier_set r n
@@ -91,34 +86,9 @@ type NotifierFun = ValuePtr -> Ptr () -> IO CInt
 type NotifierPtr = FunPtr NotifierFun
 
 {# fun xmms2hs_result_notifier_set as xmms2hs_result_notifier_set
- { withResult* `Result a'
+ { withResult* `Result'
  , id          `NotifierPtr'
  } -> `()' #}
 
 foreign import ccall "wrapper"
   mkNotifierPtr :: NotifierFun -> IO NotifierPtr
-
-
-newtype RVC a = RVC { value :: Value }
-
-type ResultM m a b = ReaderT (RVC a) m b
-
-runResultM :: XMMSM m => ResultM m a b -> Value -> m b
-runResultM f v = runReaderT f $ RVC v
-
-
-resultRawValue :: (ValueGet a, XMMSM m) => ResultM m a Value
-resultRawValue = value <$> ask
-
-result :: (ValueGet a, XMMSM m) => ResultM m a a
-result = resultRawValue >>= lift . valueGet
-
-resultLength :: (ValueGet a, ValueGet [a], XMMSM m) => ResultM m [a] Integer
-resultLength = resultRawValue >>= liftIO . listGetSize
-
-
-(>>*) :: (ValueGet a, XMMSM m) => m (Result a) -> ResultM m a Bool -> m ()
-f >>* h = do
-  result  <- f
-  wrapper <- toIO
-  liftIO $ resultNotifierSet result $ \v -> wrapper (runResultM h v)

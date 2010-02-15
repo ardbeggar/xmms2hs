@@ -17,24 +17,19 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Types
-  ( module XMMS2.Client.Types.Value
-  , module XMMS2.Client.Types.List
-  , module XMMS2.Client.Types.Dict
-  , module XMMS2.Client.Types.Property
-  , module XMMS2.Client.Types.Data
-  , module XMMS2.Client.Bindings.Types.Coll
+module XMMS2.Client.Stats
+  ( PluginType (..)
+  , pluginList
   ) where
 
-import XMMS2.Client.Types.Value
-import XMMS2.Client.Types.List
-import XMMS2.Client.Types.Dict
-import XMMS2.Client.Types.Property
-import XMMS2.Client.Types.Data
-import XMMS2.Client.Bindings.Types.Coll
-  ( Coll
-  , CollType (..)
-  , collNew
-  , collSetIdlist
-  , collIdlistAppend
-  , collNewIdlist )
+import XMMS2.Client.Types
+import XMMS2.Client.Result
+
+import XMMS2.Client.Bindings.Connection
+import XMMS2.Client.Bindings.Stats (PluginType (..))
+import qualified XMMS2.Client.Bindings.Stats as B
+
+
+pluginList :: Connection -> PluginType -> IO (Result [Dict Data])
+pluginList xmmsc ptype =
+  liftResult $ B.pluginList xmmsc ptype

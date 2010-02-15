@@ -23,17 +23,17 @@ module XMMS2.Client.Monad.Monad
   , module Control.Monad.CatchIO
   ) where
 
-import Control.Monad.Trans  
+import Control.Monad.Trans
 import Control.Monad.CatchIO
-import Control.Monad.ToIO  
-import XMMS2.Client.Connection (Connection)
+import Control.Monad.ToIO
+import XMMS2.Client.Bindings.Connection (Connection)
 
 
 class (MonadIO m, MonadCatchIO m, MonadToIO m) => XMMSM m
 
-instance XMMSM IO  
+instance XMMSM IO
 
-  
+
 class XMMSM m => XMMSCM e m | m -> e where
   connection  :: m Connection
   environment :: m e
