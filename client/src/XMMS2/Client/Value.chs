@@ -109,6 +109,7 @@ import XMMS2.Client.Monad.Monad
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Bindings.Types.Coll #}
+{# import XMMS2.Client.Bindings.Types.Bin #}
 
 
 class ValueGet a where
@@ -183,16 +184,6 @@ getError value = do
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
-
-
-data Bin = Bin (Maybe Value) CUInt (ForeignPtr CUChar)
-
-withBin (Bin _ len ptr) f =
-  withForeignPtr ptr $ (flip f) len . castPtr
-
-makeBin len =
-  takePtr (Bin Nothing len) finalizerFree
-    =<< mallocArray (fromIntegral len)
 
 
 instance ValueGet Bin where
