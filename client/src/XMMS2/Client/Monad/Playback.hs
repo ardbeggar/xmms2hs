@@ -46,10 +46,6 @@ import qualified XMMS2.Client.Playback as XP
 import Control.Monad
 
 
-instance ValueGet PlaybackStatus where
-  valueGet v = liftM (toEnum . fromIntegral) $ getInt v
-
-
 playbackStop = liftXMMS XP.playbackStop
 
 playbackTickle = liftXMMS XP.playbackTickle

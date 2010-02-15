@@ -39,6 +39,7 @@ module XMMS2.Client.Playback
   ) where
 
 import Control.Applicative
+import Control.Monad.Trans
 
 import XMMS2.Client.Types
 import XMMS2.Client.Result
@@ -46,6 +47,10 @@ import XMMS2.Client.Result
 import XMMS2.Client.Bindings.Connection
 import XMMS2.Client.Bindings.Playback (PlaybackStatus (..))
 import qualified XMMS2.Client.Bindings.Playback as B
+
+
+instance ValueGet PlaybackStatus where
+  valueGet v = liftIO $ (toEnum . fromIntegral) <$> getInt v
 
 
 playbackStop :: Connection -> IO (Result ())

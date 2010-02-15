@@ -52,7 +52,7 @@ import XMMS2.Client.Types
 {# enum xmms_playback_status_t as PlaybackStatus
  { underscoreToCase }
  with prefix = "XMMS_PLAYBACK_"
- deriving (Show, Eq) #}
+ deriving (Eq, Show) #}
 
 
 {# fun playback_stop as ^
