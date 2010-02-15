@@ -25,12 +25,8 @@ module XMMS2.Client.Medialib
   , medialibGetInfo
   , medialibGetId
   , medialibGetIdEncoded
-  , medialibEntryPropertySetInt
-  , medialibEntryPropertySetIntWithSource
-  , medialibEntryPropertySetStr
-  , medialibEntryPropertySetStrWithSource
+  , medialibEntryPropertySet
   , medialibEntryPropertyRemove
-  , medialibEntryPropertyRemoveWithSource
   , xformMediaBrowse
   , broadcastMedialibEntryChanged
   ) where
@@ -82,29 +78,32 @@ medialibGetIdEncoded :: Connection -> String -> IO (Result Int32)
 medialibGetIdEncoded xmmsc url =
   liftResult $ B.medialibGetIdEncoded xmmsc url
 
-medialibEntryPropertySetInt :: Connection -> Int32 -> String -> Int32 -> IO (Result ())
-medialibEntryPropertySetInt xmmsc id key val =
-  liftResult $ B.medialibEntryPropertySetInt xmmsc id key val
-
-medialibEntryPropertySetIntWithSource :: Connection -> Int32 -> String -> String -> Int32 -> IO (Result ())
-medialibEntryPropertySetIntWithSource xmmsc id src key val =
+medialibEntryPropertySet ::
+  Connection             ->
+  Int32                  ->
+  Maybe String           ->
+  String                 ->
+  Property               ->
+  IO (Result ())
+medialibEntryPropertySet xmmsc id (Just src) key (PropInt32 val) =
   liftResult $ B.medialibEntryPropertySetIntWithSource xmmsc id src key val
-
-medialibEntryPropertySetStr :: Connection -> Int32 -> String -> String -> IO (Result ())
-medialibEntryPropertySetStr xmmsc id key val =
+medialibEntryPropertySet xmmsc id Nothing key (PropInt32 val) =
+  liftResult $ B.medialibEntryPropertySetInt xmmsc id key val
+medialibEntryPropertySet xmmsc id (Just src) key (PropString val) =
+  liftResult $ B.medialibEntryPropertySetStrWithSource xmmsc id src key val
+medialibEntryPropertySet xmmsc id Nothing key (PropString val) =
   liftResult $ B.medialibEntryPropertySetStr xmmsc id key val
 
-medialibEntryPropertySetStrWithSource :: Connection -> Int32 -> String -> String -> String -> IO (Result ())
-medialibEntryPropertySetStrWithSource xmmsc id src key val =
-  liftResult $ B.medialibEntryPropertySetStrWithSource xmmsc id src key val
-
-medialibEntryPropertyRemove :: Connection -> Int32 -> String -> IO (Result ())
-medialibEntryPropertyRemove xmmsc id key =
-  liftResult $ B.medialibEntryPropertyRemove xmmsc id key
-
-medialibEntryPropertyRemoveWithSource :: Connection -> Int32 -> String -> String -> IO (Result ())
-medialibEntryPropertyRemoveWithSource xmmsc id src key =
+medialibEntryPropertyRemove ::
+  Connection                ->
+  Int32                     ->
+  Maybe String              ->
+  String                    ->
+  IO (Result ())
+medialibEntryPropertyRemove xmmsc id (Just src) key =
   liftResult $ B.medialibEntryPropertyRemoveWithSource xmmsc id src key
+medialibEntryPropertyRemove xmmsc id Nothing key =
+  liftResult $ B.medialibEntryPropertyRemove xmmsc id key
 
 xformMediaBrowse :: Connection -> String -> IO (Result [BrowseEntry])
 xformMediaBrowse xmmsc url =
