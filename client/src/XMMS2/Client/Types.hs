@@ -20,21 +20,18 @@
 module XMMS2.Client.Types
   ( module XMMS2.Client.Types.Value
   , module XMMS2.Client.Types.List
+  , module XMMS2.Client.Types.Coll
+  , module XMMS2.Client.Types.Bin
   , module XMMS2.Client.Types.Dict
   , module XMMS2.Client.Types.Property
   , module XMMS2.Client.Types.Data
-  , module XMMS2.Client.Bindings.Types.Coll
   ) where
 
 import XMMS2.Client.Types.Value
+import XMMS2.Client.Types.Coll
+import XMMS2.Client.Types.Bin
 import XMMS2.Client.Types.List
 import XMMS2.Client.Types.Dict
 import XMMS2.Client.Types.Property
 import XMMS2.Client.Types.Data
-import XMMS2.Client.Bindings.Types.Coll
-  ( Coll
-  , CollType (..)
-  , collNew
-  , collSetIdlist
-  , collIdlistAppend
-  , collNewIdlist )
+

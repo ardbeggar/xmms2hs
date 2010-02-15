@@ -18,9 +18,18 @@
 --
 
 module XMMS2.Client.Bindings.Types.Value
-  ( ValueType (..)
+  ( ValueType
+    ( TypeNone
+    , TypeError
+    , TypeInt32
+    , TypeString
+    , TypeColl
+    , TypeBin
+    , TypeList
+    , TypeDict )
   , ValuePtr
   , Value
+  , Int32
   , withValue
   , takeValue
   , refValue

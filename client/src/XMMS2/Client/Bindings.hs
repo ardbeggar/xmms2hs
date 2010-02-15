@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 14 Feb. 2010
+--  Created: 17 Sep. 2009
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -17,17 +17,20 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Bindings.Types
-  ( module XMMS2.Client.Bindings.Types.Value
-  , module XMMS2.Client.Bindings.Types.Coll
-  , module XMMS2.Client.Bindings.Types.Bin
-  , module XMMS2.Client.Bindings.Types.List
-  , module XMMS2.Client.Bindings.Types.Dict
+module XMMS2.Client.Bindings
+  ( module XMMS2.Client.Bindings.Types
+  , module XMMS2.Client.Bindings.Connection
+  , module XMMS2.Client.Bindings.Medialib
+  , module XMMS2.Client.Bindings.Playback
+  , module XMMS2.Client.Bindings.Playlist
+  , module XMMS2.Client.Bindings.Result
+  , module XMMS2.Client.Bindings.Stats
   ) where
 
-import XMMS2.Client.Bindings.Types.Value hiding (ValuePtr, get, raiseGetError)
-import XMMS2.Client.Bindings.Types.Coll hiding (CollPtr)
-import XMMS2.Client.Bindings.Types.Bin
-import XMMS2.Client.Bindings.Types.List
-import XMMS2.Client.Bindings.Types.Dict
-
+import XMMS2.Client.Bindings.Types
+import XMMS2.Client.Bindings.Connection
+import XMMS2.Client.Bindings.Medialib
+import XMMS2.Client.Bindings.Playback
+import XMMS2.Client.Bindings.Playlist
+import XMMS2.Client.Bindings.Result hiding (ResultPtr)
+import XMMS2.Client.Bindings.Stats

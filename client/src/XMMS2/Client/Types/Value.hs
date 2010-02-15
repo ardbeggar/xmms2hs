@@ -18,21 +18,19 @@
 --
 
 module XMMS2.Client.Types.Value
-  ( ValueType
-    ( TypeNone
-    , TypeError
-    , TypeInt32
-    , TypeString
-    , TypeColl
-    , TypeBin
-    , TypeList
-    , TypeDict )
-  , ValuePtr
-  , Value
+  ( module XMMS2.Client.Bindings.Types.Value
   , ValueGet (..)
   , ValueNew (..)
-  , withValue
-  , takeValue
+  ) where
+
+import Control.Monad.Trans
+
+import XMMS2.Client.Monad.Monad
+
+import XMMS2.Client.Bindings.Types.Value
+  ( Value
+  , ValueType (..)
+  , Int32
   , getType
   , getError
   , getNone
@@ -40,38 +38,7 @@ module XMMS2.Client.Types.Value
   , getInt
   , newInt
   , getString
-  , newString
-  , getColl
-  , newColl
-  , Bin
-  , withBin
-  , makeBin
-  , getBin
-  , newBin
-  , Int32
-  ) where
-
-import Control.Applicative
-import Control.Monad
-import Control.Monad.Trans
-import Control.Monad.CatchIO
-
-import Data.Int (Int32)
-import Data.Maybe
-import Data.Map (Map)
-import qualified Data.Map as Map
-
-import System.IO.Unsafe
-
-import XMMS2.Utils
-import XMMS2.Client.Exception
-import XMMS2.Client.Monad.Monad
-
-import XMMS2.Client.Bindings.Types.Value
-import XMMS2.Client.Bindings.Types.Coll
-import XMMS2.Client.Bindings.Types.Bin
-import qualified XMMS2.Client.Bindings.Types.List as L
-import qualified XMMS2.Client.Bindings.Types.Dict as D
+  , newString )
 
 
 class ValueGet a where
@@ -107,17 +74,3 @@ instance ValueGet String where
 
 instance ValueNew String where
   valueNew = liftIO . newString
-
-
-instance ValueGet Coll where
-  valueGet = liftIO . getColl
-
-instance ValueNew Coll where
-  valueNew = liftIO . newColl
-
-
-instance ValueGet Bin where
-  valueGet = liftIO . getBin
-
-instance ValueNew Bin where
-  valueNew = liftIO . newBin

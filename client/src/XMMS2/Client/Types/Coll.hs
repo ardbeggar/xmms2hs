@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 14 Feb. 2010
+--  Created: 15 Feb. 2010
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -17,17 +17,27 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Bindings.Types
-  ( module XMMS2.Client.Bindings.Types.Value
-  , module XMMS2.Client.Bindings.Types.Coll
-  , module XMMS2.Client.Bindings.Types.Bin
-  , module XMMS2.Client.Bindings.Types.List
-  , module XMMS2.Client.Bindings.Types.Dict
+module XMMS2.Client.Types.Coll
+  ( module XMMS2.Client.Bindings.Types.Coll
   ) where
 
-import XMMS2.Client.Bindings.Types.Value hiding (ValuePtr, get, raiseGetError)
-import XMMS2.Client.Bindings.Types.Coll hiding (CollPtr)
-import XMMS2.Client.Bindings.Types.Bin
-import XMMS2.Client.Bindings.Types.List
-import XMMS2.Client.Bindings.Types.Dict
+import Control.Monad.Trans
 
+import XMMS2.Client.Types.Value
+
+import XMMS2.Client.Bindings.Types.Coll
+  ( Coll
+  , CollType (..)
+  , getColl
+  , newColl
+  , collNew
+  , collSetIdlist
+  , collIdlistAppend
+  , collNewIdlist )
+
+
+instance ValueGet Coll where
+  valueGet = liftIO . getColl
+
+instance ValueNew Coll where
+  valueNew = liftIO . newColl

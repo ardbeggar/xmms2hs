@@ -18,7 +18,7 @@
 --
 
 module XMMS2.Client.Bindings.Types.Bin
-  ( Bin (..)
+  ( Bin
   , withBin
   , makeBin
   , getBin
