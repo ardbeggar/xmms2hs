@@ -25,7 +25,6 @@ module XMMS2.Client.Types.Dict
   ) where
 
 import Control.Applicative
-import Control.Monad.Trans
 
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -39,10 +38,10 @@ import qualified XMMS2.Client.Bindings.Types as B
 type Dict a = Map String a
 
 instance ValueGet a => ValueGet (Dict a) where
-  valueGet = liftIO . getDict
+  valueGet = getDict
 
 instance ValueNew a => ValueNew (Dict a) where
-  valueNew = liftIO . newDict
+  valueNew = newDict
 
 getDict :: ValueGet a => Value -> IO (Dict a)
 getDict val = Map.fromList <$> getAssocs val

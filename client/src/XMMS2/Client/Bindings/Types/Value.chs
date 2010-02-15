@@ -57,7 +57,6 @@ import Data.Maybe
 
 import XMMS2.Utils
 import XMMS2.Client.Exception
-import XMMS2.Client.Monad.Monad
 
 
 data T = T

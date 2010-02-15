@@ -23,7 +23,6 @@ module XMMS2.Client.Types.Property
   ) where
 
 import Control.Applicative
-import Control.Monad.Trans
 
 import XMMS2.Utils
 
@@ -37,16 +36,15 @@ data Property
     deriving (Eq, Show, Read)
 
 instance ValueGet Property where
-  valueGet v =
-    liftIO $ do
-      t <- getType v
-      case t of
-        TypeInt32  -> PropInt32  <$> getInt v
-        TypeString -> PropString <$> getString v
-        _          -> fail $ "Property.valueGet: bad type " ++ show t
+  valueGet v = do
+    t <- getType v
+    case t of
+      TypeInt32  -> PropInt32  <$> getInt v
+      TypeString -> PropString <$> getString v
+      _          -> fail $ "Property.valueGet: bad type " ++ show t
 
 
 type PropDict = Dict [(String, Property)]
 
 instance ValueGet [(String, Property)] where
-  valueGet v = liftIO $ valueGet v >>= getAssocs
+  valueGet v = valueGet v >>= getAssocs

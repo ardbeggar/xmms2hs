@@ -21,6 +21,5 @@ AC_CONFIG_FILES(xmms2-client.buildinfo
 				src/XMMS2/Client/Makefile
                 src/XMMS2/Client/Types/Makefile
                 src/XMMS2/Client/Bindings/Makefile
-                src/XMMS2/Client/Bindings/Types/Makefile
-				src/XMMS2/Client/Monad/Makefile)
+                src/XMMS2/Client/Bindings/Types/Makefile)
 AC_OUTPUT

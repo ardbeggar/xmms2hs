@@ -34,17 +34,11 @@ module XMMS2.Client.Bindings.Result
 
 {# context prefix = "xmmsc" #}
 
-import Control.Applicative
 import Control.Monad
-import Control.Monad.Reader
-import Control.Monad.ToIO
 
 import XMMS2.Utils
-import XMMS2.Client.Types
-import XMMS2.Client.Monad.Monad
 
 {# import XMMS2.Client.Bindings.Types.Value #}
-{# import XMMS2.Client.Bindings.Types.List #}
 
 
 data T = T

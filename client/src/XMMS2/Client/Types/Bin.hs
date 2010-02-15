@@ -21,8 +21,6 @@ module XMMS2.Client.Types.Bin
   ( module XMMS2.Client.Bindings.Types.Bin
   ) where
 
-import Control.Monad.Trans
-
 import XMMS2.Client.Types.Value
 
 import XMMS2.Client.Bindings.Types.Bin
@@ -34,7 +32,7 @@ import XMMS2.Client.Bindings.Types.Bin
 
 
 instance ValueGet Bin where
-  valueGet = liftIO . getBin
+  valueGet = getBin
 
 instance ValueNew Bin where
-  valueNew = liftIO . newBin
+  valueNew = newBin

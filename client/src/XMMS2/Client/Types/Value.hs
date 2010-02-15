@@ -23,10 +23,6 @@ module XMMS2.Client.Types.Value
   , ValueNew (..)
   ) where
 
-import Control.Monad.Trans
-
-import XMMS2.Client.Monad.Monad
-
 import XMMS2.Client.Bindings.Types.Value
   ( Value
   , ValueType (..)
@@ -42,10 +38,10 @@ import XMMS2.Client.Bindings.Types.Value
 
 
 class ValueGet a where
-  valueGet :: XMMSM m => Value -> m a
+  valueGet :: Value -> IO a
 
 class ValueNew a where
-  valueNew :: XMMSM m => a -> m Value
+  valueNew :: a -> IO Value
 
 
 instance ValueGet Value where
@@ -56,21 +52,21 @@ instance ValueNew Value where
 
 
 instance ValueGet () where
-  valueGet = liftIO . getNone
+  valueGet = getNone
 
 instance ValueNew () where
-  valueNew () = liftIO newNone
+  valueNew = const newNone
 
 
 instance ValueGet Int32 where
-  valueGet = liftIO . getInt
+  valueGet = getInt
 
 instance ValueNew Int32 where
-  valueNew = liftIO . newInt
+  valueNew = newInt
 
 
 instance ValueGet String where
-  valueGet = liftIO . getString
+  valueGet = getString
 
 instance ValueNew String where
-  valueNew = liftIO . newString
+  valueNew = newString

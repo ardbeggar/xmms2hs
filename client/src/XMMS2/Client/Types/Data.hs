@@ -35,7 +35,7 @@ module XMMS2.Client.Types.Data
   ) where
 
 import Control.Applicative
-import Control.Monad.Trans
+--import Control.Monad.Trans
 
 import Data.Maybe
 import qualified Data.Map as Map
@@ -88,7 +88,7 @@ instance ValuePrim (Dict Data) where
 data Data = forall a. ValuePrim a => Data a
 
 instance ValueGet Data where
-  valueGet v = liftIO $ do
+  valueGet v = do
     t <- getType v
     case t of
       TypeNone   -> Data <$> getNone v

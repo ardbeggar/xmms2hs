@@ -23,8 +23,6 @@ module XMMS2.Client.Types.List
   , strictGetList
   ) where
 
-import Control.Monad.Trans
-
 import XMMS2.Utils
 
 import XMMS2.Client.Types.Value
@@ -32,10 +30,10 @@ import qualified XMMS2.Client.Bindings.Types as B
 
 
 instance ValueGet a => ValueGet [a] where
-  valueGet = liftIO . getList
+  valueGet = getList
 
 instance ValueNew a => ValueNew [a] where
-  valueNew = liftIO . newList
+  valueNew = newList
 
 getList :: ValueGet a => Value -> IO [a]
 getList = getList' lazyWhile

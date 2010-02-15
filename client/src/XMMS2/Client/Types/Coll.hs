@@ -21,8 +21,6 @@ module XMMS2.Client.Types.Coll
   ( module XMMS2.Client.Bindings.Types.Coll
   ) where
 
-import Control.Monad.Trans
-
 import XMMS2.Client.Types.Value
 
 import XMMS2.Client.Bindings.Types.Coll
@@ -37,7 +35,7 @@ import XMMS2.Client.Bindings.Types.Coll
 
 
 instance ValueGet Coll where
-  valueGet = liftIO . getColl
+  valueGet = getColl
 
 instance ValueNew Coll where
-  valueNew = liftIO . newColl
+  valueNew = newColl

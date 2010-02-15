@@ -38,8 +38,6 @@ import XMMS2.Client.Types
 import XMMS2.Client.Bindings.Types
 import qualified XMMS2.Client.Bindings.Result as B
 
-import XMMS2.Client.Monad.Monad
-
 
 newtype Result a = Result B.Result
 
@@ -55,21 +53,21 @@ newtype RVC a = RVC { value :: Value }
 
 type ResultM m a b = ReaderT (RVC a) m b
 
-runResultM :: XMMSM m => ResultM m a b -> Value -> m b
+runResultM :: (MonadIO m, MonadToIO m) => ResultM m a b -> Value -> m b
 runResultM f v = runReaderT f $ RVC v
 
 
-resultRawValue :: (ValueGet a, XMMSM m) => ResultM m a Value
+resultRawValue :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m a Value
 resultRawValue = value <$> ask
 
-result :: (ValueGet a, XMMSM m) => ResultM m a a
-result = resultRawValue >>= lift . valueGet
+result :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m a a
+result = resultRawValue >>= liftIO . valueGet
 
-resultLength :: (ValueGet a, ValueGet [a], XMMSM m) => ResultM m [a] Integer
+resultLength :: (ValueGet a, ValueGet [a], MonadIO m, MonadToIO m) => ResultM m [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
 
-(>>*) :: (ValueGet a, XMMSM m) => m (Result a) -> ResultM m a Bool -> m ()
+(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result a) -> ResultM m a Bool -> m ()
 f >>* h = do
   (Result result)  <- f
   wrapper          <- toIO

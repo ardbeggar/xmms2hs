@@ -50,7 +50,7 @@ import qualified XMMS2.Client.Bindings.Playback as B
 
 
 instance ValueGet PlaybackStatus where
-  valueGet v = liftIO $ (toEnum . fromIntegral) <$> getInt v
+  valueGet v = (toEnum . fromIntegral) <$> getInt v
 
 
 playbackStop :: Connection -> IO (Result ())
