@@ -1,5 +1,5 @@
 name:               xmms2-client
-version:            0.0.1.0
+version:            0.0.2.0
 
 author:             Oleg Belozeorov
 maintainer:         Oleg Belozeorov <upwawet@gmail.com>
@@ -13,7 +13,7 @@ description:
   This package provides an interface to the X-platform Music Multiplexing
   System 2 (http://xmms2.xmms.se) client API, thus allowing to write XMMS2
   clients in Haskell. It contains (nearly) 1-to-1 bindings to the XMMS2
-  client API and a higher level monadic interface.
+  client API and a higher level interface.
 
 cabal-version:      >= 1.2
 build-type:         Simple
