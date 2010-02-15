@@ -24,6 +24,8 @@ module XMMS2.Client.Bindings.Types.Coll
   , Coll
   , withColl
   , takeColl
+  , getColl
+  , newColl
   , CollType
     ( TypeReference
     , TypeUnion
@@ -49,6 +51,8 @@ module XMMS2.Client.Bindings.Types.Coll
 
 import XMMS2.Utils
 
+{# import XMMS2.Client.Bindings.Types.Value #}
+
 
 data T = T
 {# pointer *coll_t as CollPtr -> T #}
@@ -66,6 +70,18 @@ takeColl ref p = do
 
 foreign import ccall unsafe "&xmmsv_coll_unref"
   coll_unref :: FinalizerPtr T
+
+
+getColl v = get TypeColl get_coll (takeColl True) v
+{# fun get_coll as get_coll
+ { withValue* `Value'
+ , alloca-    `CollPtr' peek*
+ } -> `Bool' #}
+
+newColl v = new_coll v >>= takeValue False
+{# fun new_coll as new_coll
+ { withColl* `Coll'
+ } -> `ValuePtr' id #}
 
 
 {# enum coll_type_t as CollType

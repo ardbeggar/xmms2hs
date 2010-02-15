@@ -21,6 +21,8 @@ module XMMS2.Client.Bindings.Types.Bin
   ( Bin (..)
   , withBin
   , makeBin
+  , getBin
+  , newBin
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -40,3 +42,21 @@ withBin (Bin _ len ptr) f =
 makeBin len =
   takePtr (Bin Nothing len) finalizerFree
     =<< mallocArray (fromIntegral len)
+
+
+getBin v = do
+  (ok, ptr, len) <- get_bin v
+  if ok
+     then takePtr_ (Bin (Just v) len) ptr
+     else raiseGetError TypeBin v
+{# fun get_bin as get_bin
+ { withValue* `Value'
+ , alloca-    `Ptr CUChar' peek*
+ , alloca-    `CUInt'      peek*
+ } -> `Bool' #}
+
+newBin = (flip withBin) (\ptr len -> new_bin ptr len >>= takeValue True)
+{# fun new_bin as new_bin
+ { id `Ptr CUChar'
+ , id `CUInt'
+ } -> `ValuePtr' id #}

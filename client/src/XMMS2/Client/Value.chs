@@ -132,29 +132,12 @@ instance ValueGet () where
 instance ValueNew () where
   valueNew () = liftIO newNone
 
-getNone = get TypeNone (const $ return (True, ())) return
-
-newNone = new_none >>= takeValue False
-{# fun new_none as new_none
- {} -> `ValuePtr' id #}
-
 
 instance ValueGet Int32 where
   valueGet = liftIO . getInt
 
 instance ValueNew Int32 where
   valueNew = liftIO . newInt
-
-getInt = get TypeInt32 get_int return
-{# fun get_int as get_int
- { withValue* `Value'
- , alloca-    `Int32' peekIntConv*
- } -> `Bool' #}
-
-newInt val = new_int val >>= takeValue False
-{# fun new_int as new_int
- { cIntConv `Int32'
- } -> `ValuePtr' id #}
 
 
 instance ValueGet String where
@@ -163,52 +146,6 @@ instance ValueGet String where
 instance ValueNew String where
   valueNew = liftIO . newString
 
-getString = get TypeString get_string peekCString
-{# fun get_string as get_string
- { withValue* `Value'
- , alloca-    `CString' peek*
- } -> `Bool' #}
-
-newString val = new_string val >>= takeValue False
-{# fun new_string as new_string
- { withCString* `String'
- } -> `ValuePtr' id #}
-
-
-getError value = do
-  (ok, err) <- get_error value
-  if ok
-     then Just <$> peekCString err
-     else return Nothing
-{# fun get_error as get_error
- { withValue* `Value'
- , alloca-    `CString' peek*
- } -> `Bool' #}
-
-
-instance ValueGet Bin where
-  valueGet = liftIO . getBin
-
-instance ValueNew Bin where
-  valueNew = liftIO . newBin
-
-getBin v = do
-  (ok, ptr, len) <- get_bin v
-  if ok
-     then takePtr_ (Bin (Just v) len) ptr
-     else raiseGetError TypeBin v
-{# fun get_bin as get_bin
- { withValue* `Value'
- , alloca-    `Ptr CUChar' peek*
- , alloca-    `CUInt'      peek*
- } -> `Bool' #}
-
-newBin = (flip withBin) (\ptr len -> new_bin ptr len >>= takeValue True)
-{# fun new_bin as new_bin
- { id `Ptr CUChar'
- , id `CUInt'
- } -> `ValuePtr' id #}
-
 
 instance ValueGet Coll where
   valueGet = liftIO . getColl
@@ -216,16 +153,12 @@ instance ValueGet Coll where
 instance ValueNew Coll where
   valueNew = liftIO . newColl
 
-getColl v = get TypeColl get_coll (takeColl True) v
-{# fun get_coll as get_coll
- { withValue* `Value'
- , alloca-    `CollPtr' peek*
- } -> `Bool' #}
 
-newColl v = new_coll v >>= takeValue False
-{# fun new_coll as new_coll
- { withColl* `Coll'
- } -> `ValuePtr' id #}
+instance ValueGet Bin where
+  valueGet = liftIO . getBin
+
+instance ValueNew Bin where
+  valueNew = liftIO . newBin
 
 
 instance ValueGet a => ValueGet [a] where
@@ -407,21 +340,6 @@ propdictToDict v p = propdict_to_dict v p >>= takeValue False
  { withValue*         `Value'
  , withCStringArray0* `[String]'
  } -> `ValuePtr' id #}
-
-
-get t f c v = do
-  (ok, v') <- f v
-  if ok then c v' else raiseGetError t v
-
-raiseGetError t v = do
-  t' <- getType v
-  case t' of
-    TypeError -> do
-      (_, p) <- get_error v
-      s <- peekCString p
-      throwIO $ XMMSError s
-    _         ->
-      throwIO $ TypeMismatch t t'
 
 
 data Property

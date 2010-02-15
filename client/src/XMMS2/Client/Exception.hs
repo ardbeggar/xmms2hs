@@ -24,12 +24,11 @@ module XMMS2.Client.Exception
 
 import Control.Exception
 import Data.Typeable
-import XMMS2.Client.Bindings.Types
+--import XMMS2.Client.Bindings.Types
 
 
 data XMMSException
   = XMMSError String
-  | TypeMismatch ValueType ValueType
   | InvalidIter
     deriving (Typeable, Show)
 
