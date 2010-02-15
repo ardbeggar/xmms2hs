@@ -20,7 +20,14 @@
 module XMMS2.Client.Bindings.Types
   ( module XMMS2.Client.Bindings.Types.Value
   , module XMMS2.Client.Bindings.Types.Coll
+  , module XMMS2.Client.Bindings.Types.Bin
+  , module XMMS2.Client.Bindings.Types.List
+  , module XMMS2.Client.Bindings.Types.Dict
   ) where
 
 import XMMS2.Client.Bindings.Types.Value
 import XMMS2.Client.Bindings.Types.Coll
+import XMMS2.Client.Bindings.Types.Bin
+import XMMS2.Client.Bindings.Types.List
+import XMMS2.Client.Bindings.Types.Dict
+

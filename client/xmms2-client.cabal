@@ -27,6 +27,8 @@ library
                     XMMS2.Client.Bindings.Types.Value,
                     XMMS2.Client.Bindings.Types.Coll,
                     XMMS2.Client.Bindings.Types.Bin,
+                    XMMS2.Client.Bindings.Types.List,
+                    XMMS2.Client.Bindings.Types.Dict,
                     XMMS2.Client.Exception,
                     XMMS2.Client.Value,
                     XMMS2.Client.Result,
@@ -67,4 +69,5 @@ library
                     EmptyDataDecls,
                     FlexibleContexts,
                     ScopedTypeVariables,
-                    OverlappingInstances
+                    OverlappingInstances,
+                    TupleSections

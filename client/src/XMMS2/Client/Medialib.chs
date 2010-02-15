@@ -44,11 +44,11 @@ import Control.Monad
 import Control.Monad.Trans
 
 import XMMS2.Utils
+import XMMS2.Client.Value
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
-{# import XMMS2.Client.Value #}
 
 
 {# fun medialib_add_entry as ^

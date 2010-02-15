@@ -23,8 +23,6 @@ module XMMS2.Client.Monad.Value
   , ValueGet (..)
   , ValueNew (..)
   , Int32
-  , listGetSize
-  , listGet
   , getInt
   , getString
   , getList
@@ -54,10 +52,6 @@ import XMMS2.Client.Value
 import qualified XMMS2.Client.Value as XV
 
 
-listGetSize = liftIO . XV.listGetSize
-
-listGet val = liftIO . XV.listGet val
-
 getInt = liftIO . XV.getInt
 
 getString = liftIO . XV.getString
@@ -66,21 +60,5 @@ getList = liftIO . XV.getList
 
 newList = liftIO . XV.newList
 
-getListIter = liftIO . XV.getListIter
-
-listIterValid = liftIO . XV.listIterValid
-
-listIterEntry = liftIO . XV.listIterEntry
-
-listIterNext = liftIO . XV.listIterNext
-
 getDict = liftIO . XV.getDict
-
-getDictIter = liftIO . XV.getDictIter
-
-dictIterValid = liftIO . XV.dictIterValid
-
-dictIterPair = liftIO . XV.dictIterPair
-
-dictIterNext = liftIO . XV.dictIterNext
 

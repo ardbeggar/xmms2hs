@@ -51,22 +51,8 @@ module XMMS2.Client.Value
   , getDict
   , newDict
   , strictGetList
-  , listGetSize
-  , listGet
-  , ListIter
-  , getListIter
-  , listIterValid
-  , listIterEntry
-  , listIterNext
   , Int32
   , Dict
-  , propdictToDict
-  , dictForeach
-  , DictIter
-  , getDictIter
-  , dictIterValid
-  , dictIterPair
-  , dictIterNext
   , Property (..)
   , PropDict
   , ValuePrim (..)
@@ -86,11 +72,6 @@ module XMMS2.Client.Value
   , lookupDict
   ) where
 
-#include <xmmsclient/xmmsclient.h>
-#include <xmms2hs-client.h>
-
-{# context prefix = "xmmsv" #}
-
 import Control.Applicative
 import Control.Monad
 import Control.Monad.Trans
@@ -107,9 +88,11 @@ import XMMS2.Utils
 import XMMS2.Client.Exception
 import XMMS2.Client.Monad.Monad
 
-{# import XMMS2.Client.Bindings.Types.Value #}
-{# import XMMS2.Client.Bindings.Types.Coll #}
-{# import XMMS2.Client.Bindings.Types.Bin #}
+import XMMS2.Client.Bindings.Types.Value
+import XMMS2.Client.Bindings.Types.Coll
+import XMMS2.Client.Bindings.Types.Bin
+import qualified XMMS2.Client.Bindings.Types.List as L
+import qualified XMMS2.Client.Bindings.Types.Dict as D
 
 
 class ValueGet a where
@@ -174,71 +157,16 @@ strictGetList :: ValueGet a => Value -> IO [a]
 strictGetList = getList' while
 
 getList' while val = do
-  iter <- getListIter val
-  while (listIterValid iter) $ do
-    entry <- listIterEntry iter
-    listIterNext iter
-    return entry
+  iter <- L.getListIter val
+  while (L.listIterValid iter) $ do
+    entry <- L.listIterEntry iter
+    L.listIterNext iter
+    valueGet entry
 
 newList list = do
-  val <- new_list >>= takeValue False
-  mapM_ (listAppend val) list
+  val <- L.newList
+  mapM_ (\v -> valueNew v >>= L.listAppend val) list
   return val
-{# fun new_list as new_list
- {} -> `ValuePtr' id #}
-
-{# fun list_get_size as ^
- { withValue* `Value'
- } -> `Integer' cIntConv #}
-
-listGet l p = get TypeList ((flip list_get) p) (takeValue True) l
-{# fun list_get as list_get
- { withValue* `Value'
- , cIntConv   `Integer'
- , alloca-    `ValuePtr' peek*
- } -> `Bool' #}
-
-listAppend list val = valueNew val >>= list_append list
-{#fun list_append as list_append
- { withValue* `Value'
- , withValue* `Value'
- } -> `Int' #}
-
-
-data Li = Li
-{# pointer *list_iter_t as ListIterPtr -> Li #}
-data ListIter a = ListIter (ForeignPtr Li)
-
-withListIter (ListIter p) = withForeignPtr p
-
-getListIter :: Value -> IO (ListIter a)
-getListIter = get TypeList get_list_iter (takePtr ListIter finalize_list_iter)
-{# fun xmms2hs_get_list_iter as get_list_iter
- { withValue* `Value'
- , alloca-    `ListIterPtr' peek*
- } -> `Bool' #}
-
-foreign import ccall unsafe "&xmms2hs_finalize_list_iter"
-  finalize_list_iter :: FinalizerPtr Li
-
-
-listIterEntry :: ValueGet a => ListIter a -> IO a
-listIterEntry iter = do
-  (ok, v') <- list_iter_entry iter
-  unless ok $ throwIO InvalidIter
-  valueGet =<< takeValue True v'
-{# fun list_iter_entry as list_iter_entry
- { withListIter* `ListIter a'
- , alloca-       `ValuePtr' peek*
- } -> `Bool' #}
-
-{# fun list_iter_valid as ^
- { withListIter* `ListIter a'
- } -> `Bool' #}
-
-{# fun list_iter_next as ^
- { withListIter* `ListIter a'
- } -> `()' #}
 
 
 type Dict a = Map String a
@@ -251,95 +179,17 @@ instance ValueNew a => ValueNew (Dict a) where
 
 getDict :: ValueGet a => Value -> IO (Dict a)
 getDict val = Map.fromList <$> do
-  iter <- getDictIter val
-  while (dictIterValid iter) $ do
-    (key, val) <- dictIterPair iter
-    dictIterNext iter
-    return (key, val)
+  iter <- D.getDictIter val
+  while (D.dictIterValid iter) $ do
+    (key, val) <- D.dictIterPair iter
+    D.dictIterNext iter
+    (key, ) <$> valueGet val
 
 newDict dict = do
-  val <- new_dict >>= takeValue False
-  mapM_ (uncurry (dictSet val)) $ Map.toList dict
+  val <- D.newDict
+  mapM_ (\(k, v) -> valueNew v >>= D.dictSet val k) $ Map.toList dict
   return val
-{# fun new_dict as new_dict
- {} -> `ValuePtr' id #}
 
-dictSet dict key val = valueNew val >>= dict_set dict key
-{# fun dict_set as dict_set
- { withValue*   `Value'
- , withCString* `String'
- , withValue*   `Value'
- } -> `Int' #}
-
-
-data Di = Di
-{# pointer *xmms2hs_dict_iter_t as DictIterPtr -> Di #}
-data DictIter a = DictIter (ForeignPtr Di)
-
-withDictIter (DictIter p) f =
-  withForeignPtr p $ \p -> {# get xmms2hs_dict_iter_t->iter #} p >>= f
-
-getDictIter :: Value -> IO (DictIter a)
-getDictIter = get TypeDict get_dict_iter (takePtr DictIter finalize_dict_iter)
-{# fun xmms2hs_get_dict_iter as get_dict_iter
- { withValue* `Value'
- , alloca-    `DictIterPtr' peek*
- } -> `Bool' #}
-
-foreign import ccall unsafe "&xmms2hs_finalize_dict_iter"
-  finalize_dict_iter :: FinalizerPtr Di
-
-
-dictIterPair :: ValueGet a => DictIter a -> IO (String, a)
-dictIterPair iter = do
-  (ok, keyptr, valptr) <- dict_iter_pair iter
-  unless ok $ throwIO $ InvalidIter
-  key <- peekCString keyptr
-  val <- valueGet =<< takeValue True valptr
-  return (key, val)
-{# fun dict_iter_pair as dict_iter_pair
- { withDictIter* `DictIter a'
- , alloca-       `CString'  peek*
- , alloca-       `ValuePtr' peek*
- } -> `Bool' #}
-
-{# fun dict_iter_valid as ^
- { withDictIter* `DictIter a'
- } -> `Bool' #}
-
-{# fun dict_iter_next as ^
- { withDictIter* `DictIter a'
- } -> `()' #}
-
-
-type DictForeachFun a = CString -> ValuePtr -> Ptr () -> IO ()
-type DictForeachPtr a = FunPtr (DictForeachFun a)
-
-dictForeach :: (String -> Value -> IO ()) -> Value -> IO ()
-dictForeach f d = do
-  f' <- mkDictForeachPtr $
-        \s v _ -> do
-          s' <- peekCString s
-          v' <- takeValue True v
-          f s' v'
-  dict_foreach d f' nullPtr
-  freeHaskellFunPtr f'
-{# fun dict_foreach as dict_foreach
- { withValue* `Value'
- , id         `DictForeachPtr a'
- , id         `Ptr ()'
- } -> `()' #}
-
-foreign import ccall "wrapper"
-  mkDictForeachPtr :: DictForeachFun a -> IO (DictForeachPtr a)
-
-
-propdictToDict :: Value -> [String] -> IO (Value)
-propdictToDict v p = propdict_to_dict v p >>= takeValue False
-{# fun propdict_to_dict as propdict_to_dict
- { withValue*         `Value'
- , withCStringArray0* `[String]'
- } -> `ValuePtr' id #}
 
 
 data Property
@@ -362,12 +212,11 @@ instance ValueGet [(String, Property)] where
   valueGet v =
     liftIO $ do
       dict <- valueGet v
-      iter <- getDictIter dict
-      while (dictIterValid iter) $ do
-        (key, raw) <- dictIterPair iter
-        val        <- valueGet raw
-        dictIterNext iter
-        return (key, val)
+      iter <- D.getDictIter dict
+      while (D.dictIterValid iter) $ do
+        (key, val) <- D.dictIterPair iter
+        D.dictIterNext iter
+        (key, ) <$> valueGet val
 
 
 class (ValueGet a, ValueNew a) => ValuePrim a where

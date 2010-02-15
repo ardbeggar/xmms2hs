@@ -42,9 +42,10 @@ module XMMS2.Client.Playback
 
 {# context prefix = "xmmsc" #}
 
-import XMMS2.Utils         
-{# import XMMS2.Client.Connection #}  
-{# import XMMS2.Client.Value #}  
+import XMMS2.Utils
+import XMMS2.Client.Value
+
+{# import XMMS2.Client.Connection #}
 {# import XMMS2.Client.Result #}
 
 
