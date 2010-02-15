@@ -25,6 +25,8 @@ module XMMS2.Client.Bindings.Types.Dict
   , dictIterValid
   , dictIterPair
   , dictIterNext
+  , dictForeach
+  , propdictToDict
   ) where
 
 #include <xmmsclient/xmmsclient.h>

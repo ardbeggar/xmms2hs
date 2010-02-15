@@ -40,7 +40,7 @@ import Data.Map (Map, fromList)
 import XMMS2.Client.Monad.Monad
 import XMMS2.Client.Monad.Utils
 
-import XMMS2.Client.Value
+import XMMS2.Client.Types
   ( Value
   , ValueType
   , ValueGet
@@ -49,7 +49,7 @@ import XMMS2.Client.Value
   , Dict
   , Property
   , PropDict )
-import qualified XMMS2.Client.Value as XV
+import qualified XMMS2.Client.Types as XV
 
 
 getInt = liftIO . XV.getInt

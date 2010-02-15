@@ -46,7 +46,7 @@ module XMMS2.Client.Playlist
 import Data.Maybe
 
 import XMMS2.Utils
-import XMMS2.Client.Value
+import XMMS2.Client.Types
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Connection #}

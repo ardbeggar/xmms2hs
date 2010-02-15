@@ -35,7 +35,7 @@ import XMMS2.Client.Monad.Utils
 import XMMS2.Client.Monad.Value
 import XMMS2.Client.Coll (Coll, CollType (..))
 import qualified XMMS2.Client.Coll as XC
-import qualified XMMS2.Client.Value as XV
+import qualified XMMS2.Client.Types as XV
 
 
 getColl = liftIO . XV.getColl
