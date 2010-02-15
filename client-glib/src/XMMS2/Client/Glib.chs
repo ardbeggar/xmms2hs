@@ -23,8 +23,8 @@ module XMMS2.Client.Glib
 
 #include <xmmsclient/xmmsclient-glib.h>
 
-import C2HS         
-import XMMS2.Client.Connection
+import C2HS
+import XMMS2.Client.Bindings.Connection
 
 mainLoopGMainInit c = withConnection c xmmsc_mainloop_gmain_init
 
