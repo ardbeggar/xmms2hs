@@ -63,8 +63,8 @@ library
                     XMMS2.Client.Monad.Stats
   other-modules:    C2HS,
                     XMMS2.Utils
-  c-sources:		src/XMMS2/Client/xmms2hs-client.c
-  include-dirs:		src/XMMS2/Client
+  c-sources:		src/c/xmms2hs-client.c
+  include-dirs:		src/c
   build-depends:	base, haskell98, utf8-string, mtl, containers,
                     MonadCatchIO-mtl
   build-tools:		c2hs
