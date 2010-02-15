@@ -2,7 +2,7 @@
 --  XMMS2 client library.
 --
 --  Author:  Oleg Belozeorov
---  Created: 17 Sep. 2009
+--  Created: 15 Feb. 2010
 --
 --  Copyright (C) 2009-2010 Oleg Belozeorov
 --
@@ -17,22 +17,8 @@
 --  Lesser General Public License for more details.
 --
 
-module XMMS2.Client.Bindings
-  ( module XMMS2.Client.Exception
-  , module XMMS2.Client.Bindings.Types
-  , module XMMS2.Client.Bindings.Connection
-  , module XMMS2.Client.Bindings.Medialib
-  , module XMMS2.Client.Bindings.Playback
-  , module XMMS2.Client.Bindings.Playlist
-  , module XMMS2.Client.Bindings.Result
-  , module XMMS2.Client.Bindings.Stats
+module XMMS2.Client.Connection
+  ( module XMMS2.Client.Bindings.Connection
   ) where
 
-import XMMS2.Client.Exception
-import XMMS2.Client.Bindings.Types
 import XMMS2.Client.Bindings.Connection
-import XMMS2.Client.Bindings.Medialib
-import XMMS2.Client.Bindings.Playback
-import XMMS2.Client.Bindings.Playlist
-import XMMS2.Client.Bindings.Result hiding (ResultPtr)
-import XMMS2.Client.Bindings.Stats
