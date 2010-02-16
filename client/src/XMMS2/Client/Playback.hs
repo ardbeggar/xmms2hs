@@ -39,7 +39,6 @@ module XMMS2.Client.Playback
   ) where
 
 import Control.Applicative
-import Control.Monad.Trans
 
 import XMMS2.Client.Types
 import XMMS2.Client.Result

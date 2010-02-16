@@ -36,5 +36,5 @@ import XMMS2.Client.Coll
 import XMMS2.Client.Medialib
 import XMMS2.Client.Playback
 import XMMS2.Client.Playlist
-import XMMS2.Client.Result
+import XMMS2.Client.Result hiding (liftResult)
 import XMMS2.Client.Stats

@@ -22,8 +22,6 @@ module XMMS2.Client.Coll
   , collSync
   ) where
 
-import Control.Applicative
-
 import XMMS2.Client.Types
 import XMMS2.Client.Result
 

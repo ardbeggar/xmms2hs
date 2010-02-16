@@ -35,6 +35,7 @@ import Control.Monad.Reader
 import Control.Monad.ToIO
 
 import XMMS2.Client.Types
+
 import XMMS2.Client.Bindings.Types
 import qualified XMMS2.Client.Bindings.Result as B
 
