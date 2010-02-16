@@ -58,8 +58,7 @@ library
                     XMMS2.Utils
   c-sources:		src/c/xmms2hs-client.c
   include-dirs:		src/c
-  build-depends:	base, haskell98, utf8-string, mtl, containers,
-                    MonadCatchIO-mtl
+  build-depends:	base, haskell98, utf8-string, mtl, containers
   build-tools:		c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface,
