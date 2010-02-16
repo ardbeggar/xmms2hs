@@ -1,4 +1,4 @@
-AC_INIT(xmms2-client, [0.0.1.0], [upwawet@gmail.com])
+AC_INIT(xmms2-client, [0.0.2.0], [upwawet@gmail.com])
 AC_CONFIG_SRCDIR([xmms2-client.cabal])
 
 AC_ARG_WITH(compiler, [])
