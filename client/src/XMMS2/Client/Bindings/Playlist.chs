@@ -18,8 +18,7 @@
 --
 
 module XMMS2.Client.Bindings.Playlist
-  ( PlaylistPosition
-  , playlistAddURL
+  ( playlistAddURL
   , playlistAddId
   , playlistAddEncoded
   , playlistAddIdlist
@@ -43,19 +42,13 @@ module XMMS2.Client.Bindings.Playlist
 
 {# context prefix = "xmmsc" #}
 
-import Data.Maybe
-
 import XMMS2.Utils
-import XMMS2.Client.Types
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Bindings.Types.Coll #}
 {# import XMMS2.Client.Bindings.Connection #}
 {# import XMMS2.Client.Bindings.Result #}
 {# import XMMS2.Client.Bindings.Coll #}
-
-
-type PlaylistPosition = (Int32, String)
 
 
 {# fun playlist_add_url as playlistAddURL

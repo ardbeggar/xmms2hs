@@ -38,12 +38,7 @@ module XMMS2.Client.Bindings.Medialib
 
 {# context prefix = "xmmsc" #}
 
-import Control.Applicative
-import Control.Monad
-import Control.Monad.Trans
-
 import XMMS2.Utils
-import XMMS2.Client.Types
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Bindings.Connection #}

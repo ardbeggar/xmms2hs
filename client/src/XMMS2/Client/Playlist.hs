@@ -45,9 +45,10 @@ import XMMS2.Client.Types
 import XMMS2.Client.Result
 
 import XMMS2.Client.Bindings.Connection
-import XMMS2.Client.Bindings.Playlist (PlaylistPosition (..))
 import qualified XMMS2.Client.Bindings.Playlist as B
 
+
+type PlaylistPosition = (Int32, String)
 
 instance ValueGet PlaylistPosition where
   valueGet v = do

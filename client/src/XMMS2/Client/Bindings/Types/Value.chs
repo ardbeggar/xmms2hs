@@ -50,8 +50,6 @@ module XMMS2.Client.Bindings.Types.Value
 {# context prefix = "xmmsv" #}
 
 import Control.Applicative
-import Control.Monad
-import Control.Monad.Trans
 
 import Data.Maybe
 
@@ -92,8 +90,8 @@ refValue val = withValue val $ takeValue True
 getError value = do
   (ok, err) <- get_error value
   if ok
-     then Just <$> peekCString err
-     else return Nothing
+    then Just <$> peekCString err
+    else return Nothing
 {# fun get_error as get_error
  { withValue* `Value'
  , alloca-    `CString' peek*
@@ -130,7 +128,9 @@ newString val = new_string val >>= takeValue False
 
 get t f c v = do
   (ok, v') <- f v
-  if ok then c v' else raiseGetError t v
+  if ok
+    then c v'
+    else raiseGetError t v
 
 raiseGetError t v = do
   t' <- getType v

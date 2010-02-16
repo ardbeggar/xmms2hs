@@ -20,7 +20,6 @@
 module XMMS2.Client.Bindings.Connection
   ( Connection
   , withConnection
-  , takeConnection
   , init
   , connect
   , disconnectCallbackSet
@@ -38,10 +37,14 @@ import Control.Monad
 
 import XMMS2.Utils
 
+import XMMS2.Client.Exception
+
 
 {# pointer *xmmsc_connection_t as Connection foreign newtype #}
 
-takeConnection p = Connection <$> newForeignPtr xmmsc_unref p
+takeConnection p
+  | p == nullPtr = throwIO ConnectionInitFailed
+  | otherwise    = takePtr Connection xmmsc_unref p
 
 foreign import ccall unsafe "&xmmsc_unref"
   xmmsc_unref :: FunPtr (Ptr Connection -> IO ())
@@ -49,20 +52,19 @@ foreign import ccall unsafe "&xmmsc_unref"
 
 {# fun init as ^
  { withCString* `String'
- } -> `Maybe Connection' maybeConnection* #}
+ } -> `Connection' takeConnection* #}
 
 {# fun xmmsc_connect as connect
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  } -> `Bool' #}
 
+disconnectCallbackSet xmmsc fun = do
+  ptr <- mkDisconnectPtr $ const fun
+  disconnect_callback_set xmmsc ptr
 
 type DisconnectFun = Ptr () -> IO ()
 type DisconnectPtr = FunPtr DisconnectFun
-
-disconnectCallbackSet xmmsc fun = do
-  ptr <- mkDisconnectPtr $ \_ -> fun
-  disconnect_callback_set xmmsc ptr
 
 {# fun xmms2hs_disconnect_callback_set as disconnect_callback_set
  { withConnection* `Connection'
@@ -71,8 +73,3 @@ disconnectCallbackSet xmmsc fun = do
 
 foreign import ccall "wrapper"
   mkDisconnectPtr :: DisconnectFun -> IO DisconnectPtr
-
-
-maybeConnection p
-  | p == nullPtr = return Nothing
-  | otherwise    = liftM Just $ takeConnection p

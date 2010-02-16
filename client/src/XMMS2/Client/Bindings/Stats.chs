@@ -27,7 +27,6 @@ module XMMS2.Client.Bindings.Stats
 {# context prefix = "xmmsc" #}
 
 import XMMS2.Utils
-import XMMS2.Client.Types
 
 {# import XMMS2.Client.Bindings.Connection #}
 {# import XMMS2.Client.Bindings.Result #}

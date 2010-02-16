@@ -24,7 +24,6 @@ module XMMS2.Client.Bindings.Result
   , takeResult
   , resultWait
   , resultGetValue
-  , ResultNotifier
   , resultNotifierSet
   , resultCallbackSet
   ) where
@@ -34,7 +33,7 @@ module XMMS2.Client.Bindings.Result
 
 {# context prefix = "xmmsc" #}
 
-import Control.Monad
+import Control.Applicative
 
 import XMMS2.Utils
 
@@ -63,18 +62,15 @@ resultGetValue r = result_get_value r >>= takeValue True
  { withResult* `Result'
  } -> `()' #}
 
+resultNotifierSet :: Result -> (Value -> IO Bool) -> IO ()
+resultNotifierSet r f =
+  xmms2hs_result_notifier_set r
+    =<< (mkNotifierPtr $ \p _ ->
+          fromBool <$> (f =<< takeValue True p))
 
-type ResultNotifier = Value -> IO Bool
-
-resultNotifierSet :: Result -> ResultNotifier -> IO ()
-resultNotifierSet r f = do
-  n <- mkNotifierPtr $ \p _ -> takeValue True p >>= liftM fromBool . f
-  xmms2hs_result_notifier_set r n
-
-resultCallbackSet o f = do
-  r <- o
-  resultNotifierSet r f
-
+resultCallbackSet :: IO Result -> (Value -> IO Bool) -> IO ()
+resultCallbackSet r f =
+  (flip resultNotifierSet) f =<< r
 
 type NotifierFun = ValuePtr -> Ptr () -> IO CInt
 type NotifierPtr = FunPtr NotifierFun
