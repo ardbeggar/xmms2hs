@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Bindings.Playback
   ( PlaybackStatus (..)
+  , SeekMode (..)
   , playbackStop
   , playbackTickle
   , playbackStart
@@ -53,6 +54,11 @@ import XMMS2.Utils
  with prefix = "XMMS_PLAYBACK_"
  deriving (Eq, Show) #}
 
+{# enum xmms_playback_seek_mode_t as SeekMode
+ { underscoreToCase }
+ with prefix = "XMMS_PLAYBACK_"
+ deriving (Eq, Show) #}
+
 
 {# fun playback_stop as ^
  { withConnection* `Connection'
@@ -77,8 +83,10 @@ import XMMS2.Utils
 {# fun playback_seek_ms as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
+ , cFromEnum       `SeekMode'
  } -> `Result' takeResult* #}
 
+{-# DEPRECATED playbackSeekMsRel "use playbackSeekMs ... SeekCur" #-}
 {# fun playback_seek_ms_rel as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
@@ -87,8 +95,10 @@ import XMMS2.Utils
 {# fun playback_seek_samples as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
+ , cFromEnum       `SeekMode'
  } -> `Result' takeResult* #}
 
+{-# DEPRECATED playbackSeekSamplesRel "Use playbackSeekSamples ... SeekCur" #-}
 {# fun playback_seek_samples_rel as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'

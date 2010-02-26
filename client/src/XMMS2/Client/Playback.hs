@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Playback
   ( PlaybackStatus (..)
+  , SeekMode (..)
   , playbackStop
   , playbackTickle
   , playbackStart
@@ -44,7 +45,7 @@ import XMMS2.Client.Types
 import XMMS2.Client.Result
 
 import XMMS2.Client.Bindings.Connection
-import XMMS2.Client.Bindings.Playback (PlaybackStatus (..))
+import XMMS2.Client.Bindings.Playback (PlaybackStatus (..), SeekMode (..))
 import qualified XMMS2.Client.Bindings.Playback as B
 
 
@@ -72,18 +73,20 @@ playbackCurrentId :: Connection -> IO (Result Int32)
 playbackCurrentId xmmsc =
   liftResult $ B.playbackCurrentId xmmsc
 
-playbackSeekMs :: Connection -> Int32 -> IO (Result ())
-playbackSeekMs xmmsc pos
-  = liftResult $ B.playbackSeekMs xmmsc pos
+playbackSeekMs :: Connection -> Int32 -> SeekMode -> IO (Result ())
+playbackSeekMs xmmsc pos whence
+  = liftResult $ B.playbackSeekMs xmmsc pos whence
 
+{-# DEPRECATED playbackSeekMsRel "use playbackSeekMs ... SeekCur" #-}
 playbackSeekMsRel :: Connection -> Int32 -> IO (Result ())
 playbackSeekMsRel xmmsc pos =
   liftResult $ B.playbackSeekMsRel xmmsc pos
 
-playbackSeekSamples :: Connection -> Int32 -> IO (Result ())
-playbackSeekSamples xmmsc pos =
-  liftResult $ B.playbackSeekSamples xmmsc pos
+playbackSeekSamples :: Connection -> Int32 -> SeekMode -> IO (Result ())
+playbackSeekSamples xmmsc pos whence =
+  liftResult $ B.playbackSeekSamples xmmsc pos whence
 
+{-# DEPRECATED playbackSeekSamplesRel "Use playbackSeekSamples ... SeekCur" #-}
 playbackSeekSamplesRel :: Connection -> Int32 -> IO (Result ())
 playbackSeekSamplesRel xmmsc pos =
   liftResult $ B.playbackSeekSamplesRel xmmsc pos
