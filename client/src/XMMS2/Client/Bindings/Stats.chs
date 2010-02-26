@@ -20,6 +20,7 @@
 module XMMS2.Client.Bindings.Stats
   ( PluginType (..)
   , pluginList
+  , mainListPlugins
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -38,7 +39,10 @@ import XMMS2.Utils
  deriving (Show) #}
 
 
-{# fun plugin_list as ^
+{-# DEPRECATED pluginList "Use mainListPlugins" #-}
+pluginList = mainListPlugins
+
+{# fun main_list_plugins as ^
  { withConnection* `Connection'
  , cFromEnum       `PluginType'
  } -> `Result' takeResult* #}

@@ -20,6 +20,7 @@
 module XMMS2.Client.Stats
   ( PluginType (..)
   , pluginList
+  , mainListPlugins
   ) where
 
 import XMMS2.Client.Types
@@ -30,6 +31,9 @@ import XMMS2.Client.Bindings.Stats (PluginType (..))
 import qualified XMMS2.Client.Bindings.Stats as B
 
 
-pluginList :: Connection -> PluginType -> IO (Result [Dict Data])
-pluginList xmmsc ptype =
-  liftResult $ B.pluginList xmmsc ptype
+{-# DEPRECATED pluginList "Use mainListPlugins" #-}
+pluginList = mainListPlugins
+
+mainListPlugins :: Connection -> PluginType -> IO (Result [Dict Data])
+mainListPlugins xmmsc ptype =
+  liftResult $ B.mainListPlugins xmmsc ptype
