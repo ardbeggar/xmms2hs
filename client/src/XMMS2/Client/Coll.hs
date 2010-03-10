@@ -18,18 +18,64 @@
 --
 
 module XMMS2.Client.Coll
-  ( collGet
+  ( CollectionChangedActions (..)
+  , CollectionChange (..)
+  , collGet
   , collList
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
+  , broadcastCollectionChanged
   ) where
+
+import Control.Applicative
 
 import XMMS2.Client.Types
 import XMMS2.Client.Result
 
 import XMMS2.Client.Bindings.Connection
+import XMMS2.Client.Bindings.Coll (CollectionChangedActions (..))
 import qualified XMMS2.Client.Bindings.Coll as B
+
+
+data CollectionChange
+  = CollectionAdd
+    { namespace :: String
+    , name      :: String }
+  | CollectionUpdate
+    { namespace :: String
+    , name      :: String }
+  | CollectionRename
+    { namespace :: String
+    , name      :: String
+    , newName   :: String }
+  | CollectionRemove
+    { namespace :: String
+    , name      :: String }
+  deriving (Show)
+
+instance ValueGet CollectionChange where
+  valueGet v = do
+    dict <- valueGet v
+    maybe (fail "not a collection change notification") return $ do
+      namespace <- lookupString "namespace" dict
+      name      <- lookupString "name" dict
+      action    <- (toEnum . fromIntegral) <$> lookupInt32 "type" dict
+      case action of
+        CollectionChangedAdd    ->
+          return CollectionAdd { namespace = namespace
+                               , name      = name }
+        CollectionChangedUpdate ->
+          return CollectionUpdate { namespace = namespace
+                                  , name      = name }
+        CollectionChangedRename -> do
+          newName <- lookupString "newname" dict
+          return CollectionRename { namespace = namespace
+                                  , name      = name
+                                  , newName   = newName }
+        CollectionChangedRemove ->
+          return CollectionRemove { namespace = namespace
+                                  , name      = name }
 
 
 collGet :: Connection -> String -> String -> IO (Result Coll)
@@ -58,3 +104,7 @@ collQueryIds ::
 collQueryIds xmmsc coll order start len = do
   order' <- valueNew order
   liftResult $ B.collQueryIds xmmsc coll order' start len
+
+
+broadcastCollectionChanged :: Connection -> IO (Result CollectionChange)
+broadcastCollectionChanged = liftResult . B.broadcastCollectionChanged

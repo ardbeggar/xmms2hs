@@ -18,11 +18,13 @@
 --
 
 module XMMS2.Client.Bindings.Coll
-  ( collGet
+  ( CollectionChangedActions (..)
+  , collGet
   , collList
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
+  , broadcastCollectionChanged
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -35,6 +37,12 @@ import XMMS2.Utils
 {# import XMMS2.Client.Bindings.Result #}
 {# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Bindings.Types.Coll #}
+
+
+{# enum xmms_collection_changed_actions_t as CollectionChangedActions
+ { underscoreToCase
+ } with prefix = "XMMS_"
+ deriving (Eq, Show) #}
 
 
 {# fun coll_get as ^
@@ -63,4 +71,9 @@ import XMMS2.Utils
  , withValue*      `Value'
  , cIntConv        `Int'
  , cIntConv        `Int'
+ } -> `Result' takeResult* #}
+
+
+{# fun broadcast_collection_changed as ^
+ { withConnection* `Connection'
  } -> `Result' takeResult* #}
