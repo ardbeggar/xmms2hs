@@ -22,6 +22,7 @@ module XMMS2.Client.Bindings.Coll
   , collList
   , collIdlistFromPlaylistFile
   , collSync
+  , collQueryIds
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -32,6 +33,7 @@ import XMMS2.Utils
 
 {# import XMMS2.Client.Bindings.Connection #}
 {# import XMMS2.Client.Bindings.Result #}
+{# import XMMS2.Client.Bindings.Types.Value #}
 {# import XMMS2.Client.Bindings.Types.Coll #}
 
 
@@ -53,4 +55,12 @@ import XMMS2.Utils
 
 {# fun coll_sync as ^
  { withConnection* `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun coll_query_ids as ^
+ { withConnection* `Connection'
+ , withColl*       `Coll'
+ , withValue*      `Value'
+ , cIntConv        `Int'
+ , cIntConv        `Int'
  } -> `Result' takeResult* #}

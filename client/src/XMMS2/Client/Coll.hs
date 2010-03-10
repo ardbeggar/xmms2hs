@@ -22,6 +22,7 @@ module XMMS2.Client.Coll
   , collList
   , collIdlistFromPlaylistFile
   , collSync
+  , collQueryIds
   ) where
 
 import XMMS2.Client.Types
@@ -46,3 +47,14 @@ collIdlistFromPlaylistFile xmmsc file =
 collSync :: Connection -> IO (Result ())
 collSync xmmsc =
   liftResult $ B.collSync xmmsc
+
+collQueryIds ::
+  Connection ->
+  Coll       ->
+  [String]   ->
+  Int        ->
+  Int        ->
+  IO (Result [Int32])
+collQueryIds xmmsc coll order start len = do
+  order' <- valueNew order
+  liftResult $ B.collQueryIds xmmsc coll order' start len
