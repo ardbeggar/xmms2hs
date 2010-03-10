@@ -18,7 +18,8 @@
 --
 
 module XMMS2.Client.Coll
-  ( collIdlistFromPlaylistFile
+  ( collGet
+  , collIdlistFromPlaylistFile
   , collSync
   ) where
 
@@ -28,6 +29,10 @@ import XMMS2.Client.Result
 import XMMS2.Client.Bindings.Connection
 import qualified XMMS2.Client.Bindings.Coll as B
 
+
+collGet :: Connection -> String -> String -> IO (Result Coll)
+collGet xmmsc name ns =
+  liftResult $ B.collGet xmmsc name ns
 
 collIdlistFromPlaylistFile :: Connection -> String -> IO (Result Coll)
 collIdlistFromPlaylistFile xmmsc file =

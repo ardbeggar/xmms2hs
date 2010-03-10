@@ -18,7 +18,8 @@
 --
 
 module XMMS2.Client.Bindings.Coll
-  ( collIdlistFromPlaylistFile
+  ( collGet
+  , collIdlistFromPlaylistFile
   , collSync
   ) where
 
@@ -32,6 +33,12 @@ import XMMS2.Utils
 {# import XMMS2.Client.Bindings.Result #}
 {# import XMMS2.Client.Bindings.Types.Coll #}
 
+
+{# fun coll_get as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
 
 {# fun coll_idlist_from_playlist_file as ^
  { withConnection* `Connection'
