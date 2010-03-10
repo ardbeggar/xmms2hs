@@ -19,6 +19,7 @@
 
 module XMMS2.Client.Bindings.Coll
   ( collGet
+  , collList
   , collIdlistFromPlaylistFile
   , collSync
   ) where
@@ -37,6 +38,11 @@ import XMMS2.Utils
 {# fun coll_get as ^
  { withConnection* `Connection'
  , withCString*    `String'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun coll_list as ^
+ { withConnection* `Connection'
  , withCString*    `String'
  } -> `Result' takeResult* #}
 
