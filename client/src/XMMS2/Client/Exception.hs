@@ -30,6 +30,7 @@ data XMMSException
   = XMMSError String
   | ConnectionInitFailed
   | InvalidIter
+  | ParseError
     deriving (Typeable, Show)
 
 instance Exception XMMSException
