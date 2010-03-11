@@ -41,7 +41,9 @@ module XMMS2.Client.Bindings.Types.Coll
     , TypePartyshuffle )
   , collNew
   , collSetIdlist
+  , collAddOperand
   , collIdlistAppend
+  , collParse
   , collNewIdlist
   ) where
 
@@ -50,6 +52,7 @@ module XMMS2.Client.Bindings.Types.Coll
 {# context prefix = "xmmsv" #}
 
 import XMMS2.Utils
+import XMMS2.Client.Exception
 
 {# import XMMS2.Client.Bindings.Types.Value #}
 
@@ -103,6 +106,11 @@ collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
  , withZTArray* `[CUInt]'
  } -> `()' #}
 
+{# fun coll_add_operand as ^
+ { withColl* `Coll'
+ , withColl* `Coll'
+ } -> `()' #}
+
 
 collIdlistAppend :: Coll -> Int32 -> IO ()
 collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
@@ -110,6 +118,18 @@ collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
  { withColl* `Coll'
  , cIntConv  `CUInt'
  } -> `()' #}
+
+
+collParse s = do
+  (ok, coll) <- coll_parse s
+  if ok
+    then takeColl False coll
+    else throwIO ParseError
+{# fun coll_parse as coll_parse
+ { withCString* `String'
+ , alloca-      `CollPtr' peek*
+ } -> `Bool' #}
+
 
 
 collNewIdlist list = do
