@@ -43,6 +43,7 @@ module XMMS2.Client.Bindings.Types.Coll
   , collSetIdlist
   , collAddOperand
   , collIdlistAppend
+  , collUniverse
   , collParse
   , collNewIdlist
   ) where
@@ -111,7 +112,6 @@ collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
  , withColl* `Coll'
  } -> `()' #}
 
-
 collIdlistAppend :: Coll -> Int32 -> IO ()
 collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
 {# fun coll_idlist_append as coll_idlist_append
@@ -119,7 +119,13 @@ collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
  , cIntConv  `CUInt'
  } -> `()' #}
 
+collUniverse :: IO Coll
+collUniverse = coll_universe >>= takeColl True
+{# fun coll_universe as coll_universe
+ {} -> `CollPtr' id #}
 
+
+collParse :: String -> IO Coll
 collParse s = do
   (ok, coll) <- coll_parse s
   if ok

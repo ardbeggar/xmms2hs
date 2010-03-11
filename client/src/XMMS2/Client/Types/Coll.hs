@@ -32,6 +32,7 @@ import XMMS2.Client.Bindings.Types.Coll
   , collSetIdlist
   , collAddOperand
   , collIdlistAppend
+  , collUniverse
   , collParse
   , collNewIdlist )
 
