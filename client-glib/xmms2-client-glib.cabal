@@ -1,5 +1,5 @@
 name:               xmms2-client-glib
-version:            0.0.3.5
+version:            0.0.3.6
 
 author:             Oleg Belozeorov
 maintainer:         Oleg Belozeorov <upwawet@gmail.com>
@@ -21,7 +21,7 @@ extra-tmp-files:    config.status, config.log,
 library
   exposed-modules:  XMMS2.Client.Glib
   other-modules:    C2HS
-  build-depends:    base, haskell98, xmms2-client == 0.0.3.5
+  build-depends:    base, haskell98, xmms2-client == 0.0.3.6
   build-tools:      c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface
