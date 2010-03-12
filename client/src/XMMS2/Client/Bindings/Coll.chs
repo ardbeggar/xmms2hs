@@ -21,6 +21,9 @@ module XMMS2.Client.Bindings.Coll
   ( CollectionChangedActions (..)
   , collGet
   , collList
+  , collSave
+  , collRemove
+  , collRename
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
@@ -53,6 +56,26 @@ import XMMS2.Utils
 
 {# fun coll_list as ^
  { withConnection* `Connection'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun coll_save as ^
+ { withConnection* `Connection'
+ , withColl*       `Coll'
+ , withCString*    `String'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun coll_remove as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun coll_rename as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ , withCString*    `String'
  , withCString*    `String'
  } -> `Result' takeResult* #}
 

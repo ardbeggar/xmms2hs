@@ -22,6 +22,9 @@ module XMMS2.Client.Coll
   , CollectionChange (..)
   , collGet
   , collList
+  , collSave
+  , collRemove
+  , collRename
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
@@ -85,6 +88,18 @@ collGet xmmsc name ns =
 collList :: Connection -> String -> IO (Result [String])
 collList xmmsc ns =
   liftResult $ B.collList xmmsc ns
+
+collSave :: Connection -> Coll -> String -> String -> IO (Result ())
+collSave xmmsc coll name ns =
+  liftResult $ B.collSave xmmsc coll name ns
+
+collRemove :: Connection -> String -> String -> IO (Result ())
+collRemove xmmsc name ns =
+  liftResult $ B.collRemove xmmsc name ns
+
+collRename :: Connection -> String -> String -> String -> IO (Result ())
+collRename xmmsc from to ns =
+  liftResult $ B.collRename xmmsc from to ns
 
 collIdlistFromPlaylistFile :: Connection -> String -> IO (Result Coll)
 collIdlistFromPlaylistFile xmmsc file =
