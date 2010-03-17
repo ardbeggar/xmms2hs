@@ -18,7 +18,8 @@
 --
 
 module XMMS2.Client.Bindings.Playlist
-  ( playlistAddURL
+  ( PlaylistChangedActions (..)
+  , playlistAddURL
   , playlistAddId
   , playlistAddEncoded
   , playlistAddIdlist
@@ -49,6 +50,12 @@ import XMMS2.Utils
 {# import XMMS2.Client.Bindings.Connection #}
 {# import XMMS2.Client.Bindings.Result #}
 {# import XMMS2.Client.Bindings.Coll #}
+
+
+{# enum xmms_playlist_changed_actions_t as PlaylistChangedActions
+ { underscoreToCase
+ } with prefix = "XMMS_"
+ deriving (Eq, Show) #}
 
 
 {# fun playlist_add_url as playlistAddURL
