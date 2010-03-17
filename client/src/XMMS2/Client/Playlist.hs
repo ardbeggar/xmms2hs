@@ -18,7 +18,9 @@
 --
 
 module XMMS2.Client.Playlist
-  ( PlaylistPosition
+  ( PlaylistChangedActions (..)
+  , PlaylistChange (..)
+  , PlaylistPosition
   , playlistAddURL
   , playlistAddId
   , playlistAddEncoded
@@ -45,7 +47,79 @@ import XMMS2.Client.Types
 import XMMS2.Client.Result
 
 import XMMS2.Client.Bindings.Connection
+import XMMS2.Client.Bindings.Playlist (PlaylistChangedActions (..))
 import qualified XMMS2.Client.Bindings.Playlist as B
+
+
+data PlaylistChange
+  = PlaylistAdd
+    { playlist    :: String
+    , mlibId      :: Int32
+    , position    :: Int }
+  | PlaylistInsert
+    { playlist    :: String
+    , mlibId      :: Int32
+    , position    :: Int }
+  | PlaylistShuffle
+    { playlist    :: String }
+  | PlaylistRemove
+    { playlist    :: String
+    , position    :: Int }
+  | PlaylistClear
+    { playlist    :: String }
+  | PlaylistMove
+    { playlist    :: String
+    , mlibId      :: Int32
+    , position    :: Int
+    , newPosition :: Int }
+  | PlaylistSort
+    { playlist    :: String }
+  | PlaylistUpdate
+    { playlist    :: String }
+  deriving (Show)
+
+instance ValueGet PlaylistChange where
+  valueGet v = do
+    dict <- valueGet v
+    let getMlibId      = lookupInt32 "id" dict
+        getPosition    = fromIntegral <$> lookupInt32 "position" dict
+        getNewPosition = fromIntegral <$> lookupInt32 "newposition" dict
+    maybe (fail "not a playlist change notification") return $ do
+      playlist <- lookupString "name" dict
+      action   <- (toEnum . fromIntegral) <$> lookupInt32 "type" dict
+      case action of
+        PlaylistChangedAdd -> do
+          mlibId   <- getMlibId
+          position <- getPosition
+          return PlaylistAdd { playlist = playlist
+                             , mlibId   = mlibId
+                             , position = position }
+        PlaylistChangedInsert -> do
+          mlibId   <- getMlibId
+          position <- getPosition
+          return PlaylistInsert { playlist = playlist
+                                , mlibId   = mlibId
+                                , position = position }
+        PlaylistChangedShuffle ->
+          return PlaylistShuffle { playlist = playlist }
+        PlaylistChangedRemove -> do
+          position <- getPosition
+          return PlaylistRemove { playlist = playlist
+                                , position = position }
+        PlaylistChangedClear ->
+          return PlaylistClear { playlist = playlist }
+        PlaylistChangedMove -> do
+          mlibId      <- getMlibId
+          position    <- getPosition
+          newPosition <- getNewPosition
+          return PlaylistMove { playlist    = playlist
+                              , mlibId      = mlibId
+                              , position    = position
+                              , newPosition = newPosition }
+        PlaylistChangedSort ->
+          return PlaylistSort { playlist = playlist }
+        PlaylistChangedUpdate ->
+          return PlaylistUpdate { playlist = playlist }
 
 
 type PlaylistPosition = (Int32, String)
