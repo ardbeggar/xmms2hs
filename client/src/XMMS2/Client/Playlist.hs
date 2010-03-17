@@ -131,80 +131,139 @@ instance ValueGet PlaylistPosition where
       (,) <$> lookupInt32 "position" dict <*> lookupString "name" dict
 
 
-playlistAddURL :: Connection -> Maybe String -> String -> IO (Result ())
+playlistAddURL ::
+  Connection   ->
+  Maybe String ->
+  String       ->
+  IO (Result ())
 playlistAddURL xmmsc pls url =
   liftResult $ B.playlistAddURL xmmsc pls url
 
-playlistAddId :: Connection -> Maybe String -> Int32 -> IO (Result ())
+playlistAddId  ::
+  Connection   ->
+  Maybe String ->
+  Int32        ->
+  IO (Result ())
 playlistAddId xmmsc pls id =
   liftResult $ B.playlistAddId xmmsc pls id
 
-playlistAddEncoded :: Connection -> Maybe String -> String -> IO (Result ())
+playlistAddEncoded ::
+  Connection       ->
+  Maybe String     ->
+  String           ->
+  IO (Result ())
 playlistAddEncoded xmmsc pls url =
   liftResult $ B.playlistAddEncoded xmmsc pls url
 
-playlistAddIdlist :: Connection -> Maybe String -> Coll -> IO (Result ())
+playlistAddIdlist ::
+  Connection      ->
+  Maybe String    ->
+  Coll            ->
+  IO (Result ())
 playlistAddIdlist xmmsc pls idlist =
   liftResult $ B.playlistAddIdlist xmmsc pls idlist
 
-playlistAddCollection
-  :: Connection
-  -> Maybe String
-  -> Coll
-  -> [String]
-  -> IO (Result ())
+playlistAddCollection ::
+  Connection          ->
+  Maybe String        ->
+  Coll                ->
+  [String]            ->
+  IO (Result ())
 playlistAddCollection xmmsc pls coll order = do
   liftResult $ B.playlistAddCollection xmmsc pls coll =<< newList order
 
-playlistRemoveEntry :: Connection -> Maybe String -> Int -> IO (Result ())
+playlistRemoveEntry ::
+  Connection        ->
+  Maybe String      ->
+  Int               ->
+  IO (Result ())
 playlistRemoveEntry xmmsc pls num =
   liftResult $ B.playlistRemoveEntry xmmsc pls num
 
-playlistClear :: Connection -> Maybe String -> IO (Result ())
+playlistClear  ::
+  Connection   ->
+  Maybe String ->
+  IO (Result ())
 playlistClear xmmsc pls =
   liftResult $ B.playlistClear xmmsc pls
 
-playlistListEntries :: Connection -> Maybe String -> IO (Result [Int32])
+playlistListEntries ::
+  Connection        ->
+  Maybe String      ->
+  IO (Result [Int32])
 playlistListEntries xmmsc pls =
   liftResult $ B.playlistListEntries xmmsc pls
 
-playlistSetNext :: Connection -> Int32 -> IO (Result ())
+playlistSetNext ::
+  Connection    ->
+  Int32         ->
+  IO (Result ())
 playlistSetNext xmmsc num =
   liftResult $ B.playlistSetNext xmmsc num
 
-playlistSetNextRel :: Connection -> Int32 -> IO (Result ())
+playlistSetNextRel ::
+  Connection       ->
+  Int32            ->
+  IO (Result ())
 playlistSetNextRel xmmsc num =
   liftResult $ B.playlistSetNextRel xmmsc num
 
-playlistMoveEntry :: Connection -> Maybe String -> Int -> Int -> IO (Result ())
+playlistMoveEntry ::
+  Connection      ->
+  Maybe String    ->
+  Int             ->
+  Int             ->
+  IO (Result ())
 playlistMoveEntry xmmsc pls from to =
   liftResult $ B.playlistMoveEntry xmmsc pls from to
 
-playlistCurrentPos :: Connection -> Maybe String -> IO (Result PlaylistPosition)
+playlistCurrentPos ::
+  Connection       ->
+  Maybe String     ->
+  IO (Result PlaylistPosition)
 playlistCurrentPos xmmsc pls =
   liftResult $ B.playlistCurrentPos xmmsc pls
 
-playlistInsertId :: Connection -> Maybe String -> Int -> Int32 -> IO (Result ())
+playlistInsertId ::
+  Connection     ->
+  Maybe String   ->
+  Int            ->
+  Int32          ->
+  IO (Result ())
 playlistInsertId xmmsc pls pos id =
   liftResult $ B.playlistInsertId xmmsc pls pos id
 
-playlistRAdd :: Connection -> Maybe String -> String -> IO (Result ())
+playlistRAdd   ::
+  Connection   ->
+  Maybe String ->
+  String       ->
+  IO (Result ())
 playlistRAdd xmmsc pls url =
   liftResult $ B.playlistRAdd xmmsc pls url
 
-playlistRAddEncoded :: Connection -> Maybe String -> String -> IO (Result ())
+playlistRAddEncoded ::
+  Connection        ->
+  Maybe String      ->
+  String            ->
+  IO (Result ())
 playlistRAddEncoded xmmsc pls url =
   liftResult $ B.playlistRAddEncoded xmmsc pls url
 
 
-broadcastPlaylistChanged :: Connection -> IO (Result PlaylistChange)
+broadcastPlaylistChanged ::
+  Connection             ->
+  IO (Result PlaylistChange)
 broadcastPlaylistChanged =
   liftResult . B.broadcastPlaylistChanged
 
-broadcastPlaylistCurrentPos :: Connection -> IO (Result ())
+broadcastPlaylistCurrentPos ::
+  Connection                ->
+  IO (Result ())
 broadcastPlaylistCurrentPos =
   liftResult . B.broadcastPlaylistCurrentPos
 
-broadcastPlaylistLoaded :: Connection -> IO (Result String)
+broadcastPlaylistLoaded ::
+  Connection            ->
+  IO (Result String)
 broadcastPlaylistLoaded =
   liftResult . B.broadcastPlaylistLoaded
