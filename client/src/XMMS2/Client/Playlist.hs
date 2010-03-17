@@ -197,7 +197,7 @@ playlistRAddEncoded xmmsc pls url =
   liftResult $ B.playlistRAddEncoded xmmsc pls url
 
 
-broadcastPlaylistChanged :: Connection -> IO (Result ())
+broadcastPlaylistChanged :: Connection -> IO (Result PlaylistChange)
 broadcastPlaylistChanged =
   liftResult . B.broadcastPlaylistChanged
 
