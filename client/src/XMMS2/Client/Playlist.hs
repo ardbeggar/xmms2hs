@@ -23,7 +23,7 @@ module XMMS2.Client.Playlist
   , PlaylistChange (..)
   , PlaylistPosition
 
-    -- * Requests
+    -- * Commands
     -- $playlist-name
   , playlistAddURL
   , playlistAddId
@@ -142,7 +142,7 @@ instance ValueGet PlaylistPosition where
 
 
 -----------
--- Requests
+-- Commands
 -- $playlist-name
 -- Pass Nothing for playlist name to operate on the active playlist.
 
@@ -151,32 +151,32 @@ playlistAddURL ::
   Maybe String ->
   String       ->
   IO (Result ())
-playlistAddURL xmmsc pls url =
-  liftResult $ B.playlistAddURL xmmsc pls url
+playlistAddURL xmmsc name url =
+  liftResult $ B.playlistAddURL xmmsc name url
 
 playlistAddId  ::
   Connection   ->
   Maybe String ->
   Int32        ->
   IO (Result ())
-playlistAddId xmmsc pls id =
-  liftResult $ B.playlistAddId xmmsc pls id
+playlistAddId xmmsc name id =
+  liftResult $ B.playlistAddId xmmsc name id
 
 playlistAddEncoded ::
   Connection       ->
   Maybe String     ->
   String           ->
   IO (Result ())
-playlistAddEncoded xmmsc pls url =
-  liftResult $ B.playlistAddEncoded xmmsc pls url
+playlistAddEncoded xmmsc name url =
+  liftResult $ B.playlistAddEncoded xmmsc name url
 
 playlistAddIdlist ::
   Connection      ->
   Maybe String    ->
   Coll            ->
   IO (Result ())
-playlistAddIdlist xmmsc pls idlist =
-  liftResult $ B.playlistAddIdlist xmmsc pls idlist
+playlistAddIdlist xmmsc name idlist =
+  liftResult $ B.playlistAddIdlist xmmsc name idlist
 
 playlistAddCollection ::
   Connection          ->
@@ -184,30 +184,30 @@ playlistAddCollection ::
   Coll                ->
   [String]            ->
   IO (Result ())
-playlistAddCollection xmmsc pls coll order = do
-  liftResult $ B.playlistAddCollection xmmsc pls coll =<< newList order
+playlistAddCollection xmmsc name coll order = do
+  liftResult $ B.playlistAddCollection xmmsc name coll =<< newList order
 
 playlistRemoveEntry ::
   Connection        ->
   Maybe String      ->
   Int               ->
   IO (Result ())
-playlistRemoveEntry xmmsc pls num =
-  liftResult $ B.playlistRemoveEntry xmmsc pls num
+playlistRemoveEntry xmmsc name num =
+  liftResult $ B.playlistRemoveEntry xmmsc name num
 
 playlistClear  ::
   Connection   ->
   Maybe String ->
   IO (Result ())
-playlistClear xmmsc pls =
-  liftResult $ B.playlistClear xmmsc pls
+playlistClear xmmsc name =
+  liftResult $ B.playlistClear xmmsc name
 
 playlistListEntries ::
   Connection        ->
   Maybe String      ->
   IO (Result [Int32])
-playlistListEntries xmmsc pls =
-  liftResult $ B.playlistListEntries xmmsc pls
+playlistListEntries xmmsc name =
+  liftResult $ B.playlistListEntries xmmsc name
 
 playlistSetNext ::
   Connection    ->
@@ -229,15 +229,15 @@ playlistMoveEntry ::
   Int             ->
   Int             ->
   IO (Result ())
-playlistMoveEntry xmmsc pls from to =
-  liftResult $ B.playlistMoveEntry xmmsc pls from to
+playlistMoveEntry xmmsc name from to =
+  liftResult $ B.playlistMoveEntry xmmsc name from to
 
 playlistCurrentPos ::
   Connection       ->
   Maybe String     ->
   IO (Result PlaylistPosition)
-playlistCurrentPos xmmsc pls =
-  liftResult $ B.playlistCurrentPos xmmsc pls
+playlistCurrentPos xmmsc name =
+  liftResult $ B.playlistCurrentPos xmmsc name
 
 -- | Retrieve the name of the active playlist.
 playlistCurrentActive ::
@@ -252,24 +252,24 @@ playlistInsertId ::
   Int            ->
   Int32          ->
   IO (Result ())
-playlistInsertId xmmsc pls pos id =
-  liftResult $ B.playlistInsertId xmmsc pls pos id
+playlistInsertId xmmsc name pos id =
+  liftResult $ B.playlistInsertId xmmsc name pos id
 
 playlistRAdd   ::
   Connection   ->
   Maybe String ->
   String       ->
   IO (Result ())
-playlistRAdd xmmsc pls url =
-  liftResult $ B.playlistRAdd xmmsc pls url
+playlistRAdd xmmsc name url =
+  liftResult $ B.playlistRAdd xmmsc name url
 
 playlistRAddEncoded ::
   Connection        ->
   Maybe String      ->
   String            ->
   IO (Result ())
-playlistRAddEncoded xmmsc pls url =
-  liftResult $ B.playlistRAddEncoded xmmsc pls url
+playlistRAddEncoded xmmsc name url =
+  liftResult $ B.playlistRAddEncoded xmmsc name url
 
 
 -------------
