@@ -31,6 +31,7 @@ module XMMS2.Client.Bindings.Playlist
   , playlistSetNextRel
   , playlistMoveEntry
   , playlistCurrentPos
+  , playlistCurrentActive
   , playlistInsertId
   , playlistRAdd
   , playlistRAddEncoded
@@ -125,6 +126,10 @@ import XMMS2.Utils
 {# fun playlist_current_pos as ^
  { withConnection*   `Connection' ,
    withMaybeCString* `Maybe String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_current_active as ^
+ { withConnection*   `Connection'
  } -> `Result' takeResult* #}
 
 {# fun playlist_insert_id as ^

@@ -33,6 +33,7 @@ module XMMS2.Client.Playlist
   , playlistSetNextRel
   , playlistMoveEntry
   , playlistCurrentPos
+  , playlistCurrentActive
   , playlistInsertId
   , playlistRAdd
   , playlistRAddEncoded
@@ -223,6 +224,13 @@ playlistCurrentPos ::
   IO (Result PlaylistPosition)
 playlistCurrentPos xmmsc pls =
   liftResult $ B.playlistCurrentPos xmmsc pls
+
+-- | Retrieve the name of the active playlist.
+playlistCurrentActive
+  :: Connection -- ^ The connection.
+  -> IO (Result String)
+playlistCurrentActive xmmsc =
+  liftResult $ B.playlistCurrentActive xmmsc
 
 playlistInsertId ::
   Connection     ->
