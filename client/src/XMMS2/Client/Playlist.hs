@@ -18,9 +18,12 @@
 --
 
 module XMMS2.Client.Playlist
-  ( PlaylistChangedActions (..)
+  ( -- * Types
+    PlaylistChangedActions (..)
   , PlaylistChange (..)
   , PlaylistPosition
+
+    -- * Requests
   , playlistAddURL
   , playlistAddId
   , playlistAddEncoded
@@ -37,6 +40,8 @@ module XMMS2.Client.Playlist
   , playlistInsertId
   , playlistRAdd
   , playlistRAddEncoded
+
+    -- * Broadcasts
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   , broadcastPlaylistLoaded
@@ -51,6 +56,9 @@ import XMMS2.Client.Bindings.Connection
 import XMMS2.Client.Bindings.Playlist (PlaylistChangedActions (..))
 import qualified XMMS2.Client.Bindings.Playlist as B
 
+
+--------
+-- Types
 
 data PlaylistChange
   = PlaylistAdd
@@ -131,6 +139,9 @@ instance ValueGet PlaylistPosition where
     maybe (fail "not a playlist position") return $
       (,) <$> lookupInt32 "position" dict <*> lookupString "name" dict
 
+
+-----------
+-- Requests
 
 playlistAddURL ::
   Connection   ->
@@ -226,9 +237,9 @@ playlistCurrentPos xmmsc pls =
   liftResult $ B.playlistCurrentPos xmmsc pls
 
 -- | Retrieve the name of the active playlist.
-playlistCurrentActive
-  :: Connection -- ^ The connection.
-  -> IO (Result String)
+playlistCurrentActive ::
+  Connection          ->
+  IO (Result String)
 playlistCurrentActive xmmsc =
   liftResult $ B.playlistCurrentActive xmmsc
 
@@ -257,6 +268,9 @@ playlistRAddEncoded ::
 playlistRAddEncoded xmmsc pls url =
   liftResult $ B.playlistRAddEncoded xmmsc pls url
 
+
+-------------
+-- Broadcasts
 
 broadcastPlaylistChanged ::
   Connection             ->
