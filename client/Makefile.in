@@ -17,16 +17,22 @@ config.status: xmms2-client.cabal configure
 configure: configure.ac
 	autoconf
 
+doc:
+	./Setup.hs haddock
+
 clean:
 	./Setup.hs clean
 
-.PHONY: all-dev build configure-dev register-inplace clean
+.PHONY: all-dev build configure-dev register-inplace doc clean
 else
 all-dev:
 	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
 
+doc:
+	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
+
 clean:
 	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
 
-.PHONY: all-dev clean
+.PHONY: all-dev doc clean
 endif

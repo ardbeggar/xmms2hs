@@ -24,6 +24,7 @@ module XMMS2.Client.Playlist
   , PlaylistPosition
 
     -- * Requests
+    -- $playlist-name
   , playlistAddURL
   , playlistAddId
   , playlistAddEncoded
@@ -142,6 +143,8 @@ instance ValueGet PlaylistPosition where
 
 -----------
 -- Requests
+-- $playlist-name
+-- Pass Nothing for playlist name to operate on the active playlist.
 
 playlistAddURL ::
   Connection   ->
