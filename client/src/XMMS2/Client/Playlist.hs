@@ -144,7 +144,7 @@ instance ValueGet PlaylistPosition where
 -----------
 -- Commands
 -- $playlist-name
--- Pass Nothing for playlist name to operate on the active playlist.
+-- Pass 'Nothing' for playlist name to operate on the active playlist.
 
 playlistAddURL ::
   Connection   ->
