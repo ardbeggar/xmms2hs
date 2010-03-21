@@ -24,7 +24,6 @@ module XMMS2.Client.Playlist
   , PlaylistPosition
 
     -- * Commands
-    -- $playlist-name
   , playlistAddURL
   , playlistAddId
   , playlistAddEncoded
@@ -64,11 +63,11 @@ import qualified XMMS2.Client.Bindings.Playlist as B
 data PlaylistChange
   = PlaylistAdd
     { playlist    :: String
-    , mlibId      :: Int32
+    , mlibId      :: MediaId
     , position    :: Int }
   | PlaylistInsert
     { playlist    :: String
-    , mlibId      :: Int32
+    , mlibId      :: MediaId
     , position    :: Int }
   | PlaylistShuffle
     { playlist    :: String }
@@ -79,7 +78,7 @@ data PlaylistChange
     { playlist    :: String }
   | PlaylistMove
     { playlist    :: String
-    , mlibId      :: Int32
+    , mlibId      :: MediaId
     , position    :: Int
     , newPosition :: Int }
   | PlaylistSort
@@ -143,21 +142,19 @@ instance ValueGet PlaylistPosition where
 
 -----------
 -- Commands
--- $playlist-name
--- Pass 'Nothing' for playlist name to operate on the active playlist.
 
-playlistAddURL ::
-  Connection   ->
-  Maybe String ->
-  String       ->
-  IO (Result ())
+playlistAddURL
+  :: Connection
+  -> Maybe String
+  -> URL
+  -> IO (Result ())
 playlistAddURL xmmsc name url =
   liftResult $ B.playlistAddURL xmmsc name url
 
 playlistAddId  ::
   Connection   ->
   Maybe String ->
-  Int32        ->
+  MediaId      ->
   IO (Result ())
 playlistAddId xmmsc name id =
   liftResult $ B.playlistAddId xmmsc name id
@@ -165,7 +162,7 @@ playlistAddId xmmsc name id =
 playlistAddEncoded ::
   Connection       ->
   Maybe String     ->
-  String           ->
+  EncodedURL       ->
   IO (Result ())
 playlistAddEncoded xmmsc name url =
   liftResult $ B.playlistAddEncoded xmmsc name url
@@ -205,7 +202,7 @@ playlistClear xmmsc name =
 playlistListEntries ::
   Connection        ->
   Maybe String      ->
-  IO (Result [Int32])
+  IO (Result [MediaId])
 playlistListEntries xmmsc name =
   liftResult $ B.playlistListEntries xmmsc name
 
@@ -223,12 +220,14 @@ playlistSetNextRel ::
 playlistSetNextRel xmmsc num =
   liftResult $ B.playlistSetNextRel xmmsc num
 
-playlistMoveEntry ::
-  Connection      ->
-  Maybe String    ->
-  Int             ->
-  Int             ->
-  IO (Result ())
+-- | Move a playlist entry to a new position. Both positions are
+-- absolute.
+playlistMoveEntry
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> Int
+  -> IO (Result ())
 playlistMoveEntry xmmsc name from to =
   liftResult $ B.playlistMoveEntry xmmsc name from to
 
@@ -250,7 +249,7 @@ playlistInsertId ::
   Connection     ->
   Maybe String   ->
   Int            ->
-  Int32          ->
+  MediaId        ->
   IO (Result ())
 playlistInsertId xmmsc name pos id =
   liftResult $ B.playlistInsertId xmmsc name pos id
@@ -258,7 +257,7 @@ playlistInsertId xmmsc name pos id =
 playlistRAdd   ::
   Connection   ->
   Maybe String ->
-  String       ->
+  URL          ->
   IO (Result ())
 playlistRAdd xmmsc name url =
   liftResult $ B.playlistRAdd xmmsc name url
@@ -266,7 +265,7 @@ playlistRAdd xmmsc name url =
 playlistRAddEncoded ::
   Connection        ->
   Maybe String      ->
-  String            ->
+  EncodedURL        ->
   IO (Result ())
 playlistRAddEncoded xmmsc name url =
   liftResult $ B.playlistRAddEncoded xmmsc name url
