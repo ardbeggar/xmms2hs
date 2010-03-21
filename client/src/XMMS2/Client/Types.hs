@@ -25,6 +25,10 @@ module XMMS2.Client.Types
   , module XMMS2.Client.Types.Dict
   , module XMMS2.Client.Types.Property
   , module XMMS2.Client.Types.Data
+    -- * Types
+  , MediaId
+  , URL
+  , EncodedURL
   ) where
 
 import XMMS2.Client.Types.Value
@@ -35,3 +39,16 @@ import XMMS2.Client.Types.Dict
 import XMMS2.Client.Types.Property
 import XMMS2.Client.Types.Data
 
+
+--------
+-- Types
+
+-- | A Medialib entry identifier.
+type MediaId = Int32
+
+-- | A 'String' identifying a resource (media file, playlist etc.)
+-- from XMMS2 daemon's point of view.
+type URL = String
+
+-- | Same as 'URL', but encoded in XMMS2 specific format.
+type EncodedURL = String
