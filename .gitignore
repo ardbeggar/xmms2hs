@@ -1,0 +1,8 @@
+*~
+
+client*/dist
+config.log
+config.status
+*.buildinfo
+Makefile
+C2HS.hs
