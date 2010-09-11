@@ -17,6 +17,8 @@
 --  Lesser General Public License for more details.
 --
 
+{-# LANGUAGE TupleSections #-}
+
 module XMMS2.Client.Types.Dict
   ( Dict
   , getDict
