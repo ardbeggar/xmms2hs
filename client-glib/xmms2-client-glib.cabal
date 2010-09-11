@@ -15,6 +15,14 @@ description:
 
 cabal-version:      >= 1.6
 build-type:         Simple
+extra-source-files: xmms2-client-glib.buildinfo.in,
+                    configure.ac,
+                    configure,
+                    aclocal.m4,
+                    src/Makefile.in,
+                    src/XMMS2/Makefile.in,
+                    src/XMMS2/Client/Makefile.in,
+                    Makefile.in
 extra-tmp-files:    config.status, config.log,
                     xmms2-client-glib.buildinfo, C2HS.hs,
                     hlint.out
