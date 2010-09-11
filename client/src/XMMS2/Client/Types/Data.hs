@@ -96,8 +96,8 @@ instance ValueGet Data where
       TypeString -> Data <$> getString v
       TypeColl   -> Data <$> getColl v
       TypeBin    -> Data <$> getBin v
-      TypeList   -> Data <$> ((getList v) :: IO [Data])
-      TypeDict   -> Data <$> ((getDict v) :: IO (Dict Data))
+      TypeList   -> Data <$> (getList v :: IO [Data])
+      TypeDict   -> Data <$> (getDict v :: IO (Dict Data))
       TypeError  -> throwIO . XMMSError . fromJust =<< getError v
 
 instance ValueNew Data where

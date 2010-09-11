@@ -181,7 +181,7 @@ playlistAddCollection ::
   Coll                ->
   [String]            ->
   IO (Result ())
-playlistAddCollection xmmsc name coll order = do
+playlistAddCollection xmmsc name coll order =
   liftResult $ B.playlistAddCollection xmmsc name coll =<< newList order
 
 playlistRemoveEntry ::
