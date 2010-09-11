@@ -1,5 +1,5 @@
 name:               xmms2-client
-version:            0.0.3.7
+version:            0.0.3.8
 
 author:             Oleg Belozeorov
 maintainer:         Oleg Belozeorov <upwawet@gmail.com>
@@ -75,3 +75,15 @@ library
                     ScopedTypeVariables,
                     OverlappingInstances,
                     TupleSections
+
+
+source-repository head
+  type:             git
+  location:         git://github.com/upwawet/xmms2hs.git
+  subdir:           client
+
+source-repository this
+  type:             git
+  location:         git://github.com/upwawet/xmms2hs.git
+  subdir:           client
+  tag:              v0.0.3.8

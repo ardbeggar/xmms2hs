@@ -1,5 +1,5 @@
 name:               xmms2-client-glib
-version:            0.0.3.7
+version:            0.0.3.8
 
 author:             Oleg Belozeorov
 maintainer:         Oleg Belozeorov <upwawet@gmail.com>
@@ -22,7 +22,19 @@ extra-tmp-files:    config.status, config.log,
 library
   exposed-modules:  XMMS2.Client.Glib
   other-modules:    C2HS
-  build-depends:    base, haskell98, xmms2-client == 0.0.3.7
+  build-depends:    base, haskell98, xmms2-client == 0.0.3.8
   build-tools:      c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface
+
+
+source-repository head
+  type:             git
+  location:         git://github.com/upwawet/xmms2hs.git
+  subdir:           client-glib
+
+source-repository this
+  type:             git
+  location:         git://github.com/upwawet/xmms2hs.git
+  subdir:           client-glib
+  tag:              v0.0.3.8
