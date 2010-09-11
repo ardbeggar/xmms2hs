@@ -26,9 +26,7 @@ module XMMS2.Client.Playback
   , playbackPause
   , playbackCurrentId
   , playbackSeekMs
-  , playbackSeekMsRel
   , playbackSeekSamples
-  , playbackSeekSamplesRel
   , playbackPlaytime
   , playbackStatus
   , playbackVolumeSet
@@ -77,19 +75,9 @@ playbackSeekMs :: Connection -> Int32 -> SeekMode -> IO (Result ())
 playbackSeekMs xmmsc pos whence
   = liftResult $ B.playbackSeekMs xmmsc pos whence
 
-{-# DEPRECATED playbackSeekMsRel "use playbackSeekMs ... SeekCur" #-}
-playbackSeekMsRel :: Connection -> Int32 -> IO (Result ())
-playbackSeekMsRel xmmsc pos =
-  liftResult $ B.playbackSeekMsRel xmmsc pos
-
 playbackSeekSamples :: Connection -> Int32 -> SeekMode -> IO (Result ())
 playbackSeekSamples xmmsc pos whence =
   liftResult $ B.playbackSeekSamples xmmsc pos whence
-
-{-# DEPRECATED playbackSeekSamplesRel "Use playbackSeekSamples ... SeekCur" #-}
-playbackSeekSamplesRel :: Connection -> Int32 -> IO (Result ())
-playbackSeekSamplesRel xmmsc pos =
-  liftResult $ B.playbackSeekSamplesRel xmmsc pos
 
 playbackPlaytime :: Connection -> IO (Result Int32)
 playbackPlaytime xmmsc =

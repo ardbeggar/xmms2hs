@@ -26,9 +26,7 @@ module XMMS2.Client.Bindings.Playback
   , playbackPause
   , playbackCurrentId
   , playbackSeekMs
-  , playbackSeekMsRel
   , playbackSeekSamples
-  , playbackSeekSamplesRel
   , playbackPlaytime
   , playbackStatus
   , playbackVolumeSet
@@ -86,22 +84,10 @@ import XMMS2.Utils
  , cFromEnum       `SeekMode'
  } -> `Result' takeResult* #}
 
-{-# DEPRECATED playbackSeekMsRel "use playbackSeekMs ... SeekCur" #-}
-{# fun playback_seek_ms_rel as ^
- { withConnection* `Connection'
- , cIntConv        `Int32'
- } -> `Result' takeResult* #}
-
 {# fun playback_seek_samples as ^
  { withConnection* `Connection'
  , cIntConv        `Int32'
  , cFromEnum       `SeekMode'
- } -> `Result' takeResult* #}
-
-{-# DEPRECATED playbackSeekSamplesRel "Use playbackSeekSamples ... SeekCur" #-}
-{# fun playback_seek_samples_rel as ^
- { withConnection* `Connection'
- , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
 {# fun playback_playtime as ^
