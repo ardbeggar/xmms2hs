@@ -1,5 +1,6 @@
-ABS_TOP_SRCDIR := @abs_top_srcdir@
+CABAL_FILE := xmms2-client.cabal
 
+ABS_TOP_SRCDIR := @abs_top_srcdir@
 ifeq ($(ABS_TOP_SRCDIR),$(shell pwd))
 all-dev: build register-inplace
 
@@ -11,7 +12,7 @@ register-inplace:
 
 configure-dev: config.status
 
-config.status: xmms2-client.cabal configure
+config.status: $(CABAL_FILE) configure
 	./Setup.hs configure --user
 
 configure: configure.ac
@@ -23,7 +24,12 @@ doc:
 clean:
 	./Setup.hs clean
 
-.PHONY: all-dev build configure-dev register-inplace doc clean
+lint:
+	rm -f hlint.out
+	-find ./src/ -type f -name "*.hs" -exec hlint {} \; | \
+		grep -v '^No suggestions$$' >> hlint.out
+
+.PHONY: all-dev build configure-dev register-inplace doc clean lint
 else
 all-dev:
 	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
@@ -34,5 +40,8 @@ doc:
 clean:
 	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
 
-.PHONY: all-dev doc clean
+lint:
+	$(MAKE) -C $(ABS_TOP_SRCDIR) $@
+
+.PHONY: all-dev doc clean lint
 endif
