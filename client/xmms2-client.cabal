@@ -37,8 +37,7 @@ extra-tmp-files:    config.status, config.log,
                     hlint.out
 
 library
-  exposed-modules:  Control.Monad.ToIO,
-                    XMMS2.Client,
+  exposed-modules:  XMMS2.Client,
                     XMMS2.Client.Types,
                     XMMS2.Client.Types.Value,
                     XMMS2.Client.Types.Coll,
