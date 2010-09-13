@@ -27,11 +27,13 @@ module XMMS2.Client.Result
   , result
   , resultLength
   , (>>*)
+  , persist
   ) where
 
 import Control.Applicative
 import Control.Monad.Trans
 import Control.Monad.Reader
+import Control.Monad.State
 import Control.Monad.ToIO
 
 import XMMS2.Client.Types
@@ -52,10 +54,10 @@ resultGetValue (Result r) = B.resultGetValue r
 
 newtype RVC a = RVC { value :: Value }
 
-type ResultM m a b = ReaderT (RVC a) m b
+type ResultM m a b = ReaderT (RVC a) (StateT Bool m) b
 
-runResultM :: (MonadIO m, MonadToIO m) => ResultM m a b -> Value -> m b
-runResultM f v = runReaderT f $ RVC v
+runResultM :: (MonadIO m, MonadToIO m) => ResultM m a b -> Value -> m Bool
+runResultM f v = execStateT (runReaderT f $ RVC v) False
 
 
 resultRawValue :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m a Value
@@ -67,9 +69,11 @@ result = resultRawValue >>= liftIO . valueGet
 resultLength :: (ValueGet a, ValueGet [a], MonadIO m, MonadToIO m) => ResultM m [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
-
-(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result a) -> ResultM m a Bool -> m ()
+(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result a) -> ResultM m a b -> m ()
 f >>* h = do
   (Result result)  <- f
   wrapper          <- toIO
   liftIO $ B.resultNotifierSet result $ \v -> wrapper (runResultM h v)
+
+persist :: Monad m => ResultM m a ()
+persist = put True
