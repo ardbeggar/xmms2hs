@@ -51,64 +51,64 @@ instance ValueGet PlaybackStatus where
   valueGet v = (toEnum . fromIntegral) <$> getInt v
 
 
-playbackStop :: Connection -> IO (Result ())
+playbackStop :: Connection -> IO (Result Default ())
 playbackStop xmmsc =
   liftResult $ B.playbackStop xmmsc
 
-playbackTickle :: Connection -> IO (Result ())
+playbackTickle :: Connection -> IO (Result Default ())
 playbackTickle xmmsc =
   liftResult $ B.playbackTickle xmmsc
 
-playbackStart :: Connection -> IO (Result ())
+playbackStart :: Connection -> IO (Result Default ())
 playbackStart xmmsc =
   liftResult $ B.playbackStart xmmsc
 
-playbackPause :: Connection -> IO (Result ())
+playbackPause :: Connection -> IO (Result Default ())
 playbackPause xmmsc =
   liftResult $ B.playbackPause xmmsc
 
-playbackCurrentId :: Connection -> IO (Result Int32)
+playbackCurrentId :: Connection -> IO (Result Default Int32)
 playbackCurrentId xmmsc =
   liftResult $ B.playbackCurrentId xmmsc
 
-playbackSeekMs :: Connection -> Int32 -> SeekMode -> IO (Result ())
+playbackSeekMs :: Connection -> Int32 -> SeekMode -> IO (Result Default ())
 playbackSeekMs xmmsc pos whence
   = liftResult $ B.playbackSeekMs xmmsc pos whence
 
-playbackSeekSamples :: Connection -> Int32 -> SeekMode -> IO (Result ())
+playbackSeekSamples :: Connection -> Int32 -> SeekMode -> IO (Result Default ())
 playbackSeekSamples xmmsc pos whence =
   liftResult $ B.playbackSeekSamples xmmsc pos whence
 
-playbackPlaytime :: Connection -> IO (Result Int32)
+playbackPlaytime :: Connection -> IO (Result Default Int32)
 playbackPlaytime xmmsc =
   liftResult $ B.playbackPlaytime xmmsc
 
-playbackStatus :: Connection -> IO (Result PlaybackStatus)
+playbackStatus :: Connection -> IO (Result Default PlaybackStatus)
 playbackStatus xmmsc =
   liftResult $ B.playbackStatus xmmsc
 
-playbackVolumeSet :: Connection -> String -> Int -> IO (Result ())
+playbackVolumeSet :: Connection -> String -> Int -> IO (Result Default ())
 playbackVolumeSet xmmsc chan vol =
   liftResult $ B.playbackVolumeSet xmmsc chan vol
 
-playbackVolumeGet :: Connection -> IO (Result (Dict Int32))
+playbackVolumeGet :: Connection -> IO (Result Default (Dict Int32))
 playbackVolumeGet xmmsc =
   liftResult $ B.playbackVolumeGet xmmsc
 
 
-broadcastPlaybackVolumeChanged :: Connection -> IO (Result (Dict Int32))
+broadcastPlaybackVolumeChanged :: Connection -> IO (Result Broadcast (Dict Int32))
 broadcastPlaybackVolumeChanged =
   liftResult . B.broadcastPlaybackVolumeChanged
 
-broadcastPlaybackStatus :: Connection -> IO (Result PlaybackStatus)
+broadcastPlaybackStatus :: Connection -> IO (Result Broadcast PlaybackStatus)
 broadcastPlaybackStatus =
   liftResult . B.broadcastPlaybackStatus
 
-broadcastPlaybackCurrentId :: Connection -> IO (Result Int32)
+broadcastPlaybackCurrentId :: Connection -> IO (Result Broadcast Int32)
 broadcastPlaybackCurrentId =
   liftResult . B.broadcastPlaybackCurrentId
 
 
-signalPlaybackPlaytime :: Connection -> IO (Result Int32)
+signalPlaybackPlaytime :: Connection -> IO (Result Signal Int32)
 signalPlaybackPlaytime =
   liftResult . B.signalPlaybackPlaytime

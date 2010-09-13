@@ -28,6 +28,9 @@ module XMMS2.Client.Result
   , resultLength
   , (>>*)
   , persist
+  , Default
+  , Signal
+  , Broadcast
   ) where
 
 import Control.Applicative
@@ -42,7 +45,18 @@ import XMMS2.Client.Bindings.Types
 import qualified XMMS2.Client.Bindings.Result as B
 
 
-newtype Result a = Result B.Result
+class PersistentResultClass c where
+
+data Default
+
+data Signal
+instance PersistentResultClass Signal
+
+data Broadcast
+instance PersistentResultClass Broadcast
+
+
+newtype Result c a = Result B.Result
 
 liftResult = liftM Result
 
@@ -52,28 +66,28 @@ resultWait (Result r) = B.resultWait r
 resultGetValue (Result r) = B.resultGetValue r
 
 
-newtype RVC a = RVC { value :: Value }
+newtype RVC c a = RVC { value :: Value }
 
-type ResultM m a b = ReaderT (RVC a) (StateT Bool m) b
+type ResultM m c a b = ReaderT (RVC c a) (StateT Bool m) b
 
-runResultM :: (MonadIO m, MonadToIO m) => ResultM m a b -> Value -> m Bool
+runResultM :: (MonadIO m, MonadToIO m) => ResultM m c a b -> Value -> m Bool
 runResultM f v = execStateT (runReaderT f $ RVC v) False
 
 
-resultRawValue :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m a Value
+resultRawValue :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m c a Value
 resultRawValue = value <$> ask
 
-result :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m a a
+result :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m c a a
 result = resultRawValue >>= liftIO . valueGet
 
-resultLength :: (ValueGet a, ValueGet [a], MonadIO m, MonadToIO m) => ResultM m [a] Integer
+resultLength :: (ValueGet a, ValueGet [a], MonadIO m, MonadToIO m) => ResultM m c [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
-(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result a) -> ResultM m a b -> m ()
+(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result c a) -> ResultM m c a b -> m ()
 f >>* h = do
   (Result result)  <- f
   wrapper          <- toIO
   liftIO $ B.resultNotifierSet result $ \v -> wrapper (runResultM h v)
 
-persist :: Monad m => ResultM m a ()
+persist :: (Monad m, PersistentResultClass c) => ResultM m c a ()
 persist = put True

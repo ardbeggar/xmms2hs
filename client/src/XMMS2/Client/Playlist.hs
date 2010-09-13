@@ -147,7 +147,7 @@ playlistAddURL
   :: Connection
   -> Maybe String
   -> URL
-  -> IO (Result ())
+  -> IO (Result Default ())
 playlistAddURL xmmsc name url =
   liftResult $ B.playlistAddURL xmmsc name url
 
@@ -155,7 +155,7 @@ playlistAddId  ::
   Connection   ->
   Maybe String ->
   MediaId      ->
-  IO (Result ())
+  IO (Result Default ())
 playlistAddId xmmsc name id =
   liftResult $ B.playlistAddId xmmsc name id
 
@@ -163,7 +163,7 @@ playlistAddEncoded ::
   Connection       ->
   Maybe String     ->
   EncodedURL       ->
-  IO (Result ())
+  IO (Result Default ())
 playlistAddEncoded xmmsc name url =
   liftResult $ B.playlistAddEncoded xmmsc name url
 
@@ -171,7 +171,7 @@ playlistAddIdlist ::
   Connection      ->
   Maybe String    ->
   Coll            ->
-  IO (Result ())
+  IO (Result Default ())
 playlistAddIdlist xmmsc name idlist =
   liftResult $ B.playlistAddIdlist xmmsc name idlist
 
@@ -180,7 +180,7 @@ playlistAddCollection ::
   Maybe String        ->
   Coll                ->
   [String]            ->
-  IO (Result ())
+  IO (Result Default ())
 playlistAddCollection xmmsc name coll order =
   liftResult $ B.playlistAddCollection xmmsc name coll =<< newList order
 
@@ -188,35 +188,35 @@ playlistRemoveEntry ::
   Connection        ->
   Maybe String      ->
   Int               ->
-  IO (Result ())
+  IO (Result Default ())
 playlistRemoveEntry xmmsc name num =
   liftResult $ B.playlistRemoveEntry xmmsc name num
 
 playlistClear  ::
   Connection   ->
   Maybe String ->
-  IO (Result ())
+  IO (Result Default ())
 playlistClear xmmsc name =
   liftResult $ B.playlistClear xmmsc name
 
 playlistListEntries ::
   Connection        ->
   Maybe String      ->
-  IO (Result [MediaId])
+  IO (Result Default [MediaId])
 playlistListEntries xmmsc name =
   liftResult $ B.playlistListEntries xmmsc name
 
 playlistSetNext ::
   Connection    ->
   Int32         ->
-  IO (Result ())
+  IO (Result Default ())
 playlistSetNext xmmsc num =
   liftResult $ B.playlistSetNext xmmsc num
 
 playlistSetNextRel ::
   Connection       ->
   Int32            ->
-  IO (Result ())
+  IO (Result Default ())
 playlistSetNextRel xmmsc num =
   liftResult $ B.playlistSetNextRel xmmsc num
 
@@ -227,21 +227,21 @@ playlistMoveEntry
   -> Maybe String
   -> Int
   -> Int
-  -> IO (Result ())
+  -> IO (Result Default ())
 playlistMoveEntry xmmsc name from to =
   liftResult $ B.playlistMoveEntry xmmsc name from to
 
 playlistCurrentPos ::
   Connection       ->
   Maybe String     ->
-  IO (Result PlaylistPosition)
+  IO (Result Default PlaylistPosition)
 playlistCurrentPos xmmsc name =
   liftResult $ B.playlistCurrentPos xmmsc name
 
 -- | Retrieve the name of the active playlist.
 playlistCurrentActive ::
   Connection          ->
-  IO (Result String)
+  IO (Result Default String)
 playlistCurrentActive xmmsc =
   liftResult $ B.playlistCurrentActive xmmsc
 
@@ -250,7 +250,7 @@ playlistInsertId ::
   Maybe String   ->
   Int            ->
   MediaId        ->
-  IO (Result ())
+  IO (Result Default ())
 playlistInsertId xmmsc name pos id =
   liftResult $ B.playlistInsertId xmmsc name pos id
 
@@ -258,7 +258,7 @@ playlistRAdd   ::
   Connection   ->
   Maybe String ->
   URL          ->
-  IO (Result ())
+  IO (Result Default ())
 playlistRAdd xmmsc name url =
   liftResult $ B.playlistRAdd xmmsc name url
 
@@ -266,7 +266,7 @@ playlistRAddEncoded ::
   Connection        ->
   Maybe String      ->
   EncodedURL        ->
-  IO (Result ())
+  IO (Result Default ())
 playlistRAddEncoded xmmsc name url =
   liftResult $ B.playlistRAddEncoded xmmsc name url
 
@@ -276,18 +276,18 @@ playlistRAddEncoded xmmsc name url =
 
 broadcastPlaylistChanged ::
   Connection             ->
-  IO (Result PlaylistChange)
+  IO (Result Broadcast PlaylistChange)
 broadcastPlaylistChanged =
   liftResult . B.broadcastPlaylistChanged
 
 broadcastPlaylistCurrentPos ::
   Connection                ->
-  IO (Result ())
+  IO (Result Broadcast ())
 broadcastPlaylistCurrentPos =
   liftResult . B.broadcastPlaylistCurrentPos
 
 broadcastPlaylistLoaded ::
   Connection            ->
-  IO (Result String)
+  IO (Result Broadcast String)
 broadcastPlaylistLoaded =
   liftResult . B.broadcastPlaylistLoaded

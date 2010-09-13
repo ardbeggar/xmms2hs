@@ -81,31 +81,31 @@ instance ValueGet CollectionChange where
                                   , name      = name }
 
 
-collGet :: Connection -> String -> String -> IO (Result Coll)
+collGet :: Connection -> String -> String -> IO (Result Default Coll)
 collGet xmmsc name ns =
   liftResult $ B.collGet xmmsc name ns
 
-collList :: Connection -> String -> IO (Result [String])
+collList :: Connection -> String -> IO (Result Default [String])
 collList xmmsc ns =
   liftResult $ B.collList xmmsc ns
 
-collSave :: Connection -> Coll -> String -> String -> IO (Result ())
+collSave :: Connection -> Coll -> String -> String -> IO (Result Default ())
 collSave xmmsc coll name ns =
   liftResult $ B.collSave xmmsc coll name ns
 
-collRemove :: Connection -> String -> String -> IO (Result ())
+collRemove :: Connection -> String -> String -> IO (Result Default ())
 collRemove xmmsc name ns =
   liftResult $ B.collRemove xmmsc name ns
 
-collRename :: Connection -> String -> String -> String -> IO (Result ())
+collRename :: Connection -> String -> String -> String -> IO (Result Default ())
 collRename xmmsc from to ns =
   liftResult $ B.collRename xmmsc from to ns
 
-collIdlistFromPlaylistFile :: Connection -> String -> IO (Result Coll)
+collIdlistFromPlaylistFile :: Connection -> String -> IO (Result Default Coll)
 collIdlistFromPlaylistFile xmmsc file =
   liftResult $ B.collIdlistFromPlaylistFile xmmsc file
 
-collSync :: Connection -> IO (Result ())
+collSync :: Connection -> IO (Result Default ())
 collSync xmmsc =
   liftResult $ B.collSync xmmsc
 
@@ -115,11 +115,11 @@ collQueryIds ::
   [String]   ->
   Int        ->
   Int        ->
-  IO (Result [Int32])
+  IO (Result Default [Int32])
 collQueryIds xmmsc coll order start len = do
   order' <- valueNew order
   liftResult $ B.collQueryIds xmmsc coll order' start len
 
 
-broadcastCollectionChanged :: Connection -> IO (Result CollectionChange)
+broadcastCollectionChanged :: Connection -> IO (Result Broadcast CollectionChange)
 broadcastCollectionChanged = liftResult . B.broadcastCollectionChanged
