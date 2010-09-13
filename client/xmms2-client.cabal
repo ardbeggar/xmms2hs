@@ -28,8 +28,6 @@ extra-source-files: xmms2-client.buildinfo.in,
                     src/XMMS2/Client/Bindings/Types/Makefile.in,
                     src/XMMS2/Client/Makefile.in,
                     src/XMMS2/Client/Types/Makefile.in,
-                    src/Control/Makefile.in,
-                    src/Control/Monad/Makefile.in,
                     Makefile.in
 
 extra-tmp-files:    config.status, config.log,
