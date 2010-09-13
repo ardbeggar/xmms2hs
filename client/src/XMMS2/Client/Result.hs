@@ -22,22 +22,21 @@ module XMMS2.Client.Result
   , liftResult
   , resultWait
   , resultGetValue
-  , ResultM
+  , ResultM (..)
+  , (>>*)
   , resultRawValue
   , result
   , resultLength
-  , (>>*)
-  , persist
   , Default
   , Signal
   , Broadcast
+  , persist
   ) where
 
 import Control.Applicative
 import Control.Monad.Trans
 import Control.Monad.Reader
 import Control.Monad.State
-import Control.Monad.ToIO
 
 import XMMS2.Client.Types
 
@@ -45,7 +44,39 @@ import XMMS2.Client.Bindings.Types
 import qualified XMMS2.Client.Bindings.Result as B
 
 
-class PersistentResultClass c where
+newtype Result c a = Result B.Result
+
+liftResult = liftM Result
+
+resultWait (Result r) = B.resultWait r
+
+resultGetValue (Result r) = B.resultGetValue r
+
+
+newtype ResultM c a b
+  = ResultM { unResultM :: ReaderT Value (StateT Bool IO) b }
+  deriving (Functor, Monad, MonadIO)
+
+execResultM :: ResultM c a b -> Value -> IO Bool
+execResultM r v = execStateT (runReaderT (unResultM r) v) False
+
+
+(>>*) :: IO (Result c a) -> ResultM c a b -> IO ()
+f >>* h = do
+  (Result result) <- f
+  B.resultNotifierSet result $ execResultM h
+
+resultRawValue :: ResultM c a Value
+resultRawValue = ResultM ask
+
+result :: ValueGet a => ResultM c a a
+result = resultRawValue >>= liftIO . valueGet
+
+resultLength :: (ValueGet a, ValueGet [a]) => ResultM c [a] Integer
+resultLength = resultRawValue >>= liftIO . listGetSize
+
+
+class PersistentResultClass c
 
 data Default
 
@@ -55,39 +86,5 @@ instance PersistentResultClass Signal
 data Broadcast
 instance PersistentResultClass Broadcast
 
-
-newtype Result c a = Result B.Result
-
-liftResult = liftM Result
-
-
-resultWait (Result r) = B.resultWait r
-
-resultGetValue (Result r) = B.resultGetValue r
-
-
-newtype RVC c a = RVC { value :: Value }
-
-type ResultM m c a b = ReaderT (RVC c a) (StateT Bool m) b
-
-runResultM :: (MonadIO m, MonadToIO m) => ResultM m c a b -> Value -> m Bool
-runResultM f v = execStateT (runReaderT f $ RVC v) False
-
-
-resultRawValue :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m c a Value
-resultRawValue = value <$> ask
-
-result :: (ValueGet a, MonadIO m, MonadToIO m) => ResultM m c a a
-result = resultRawValue >>= liftIO . valueGet
-
-resultLength :: (ValueGet a, ValueGet [a], MonadIO m, MonadToIO m) => ResultM m c [a] Integer
-resultLength = resultRawValue >>= liftIO . listGetSize
-
-(>>*) :: (ValueGet a, MonadIO m, MonadToIO m) => m (Result c a) -> ResultM m c a b -> m ()
-f >>* h = do
-  (Result result)  <- f
-  wrapper          <- toIO
-  liftIO $ B.resultNotifierSet result $ \v -> wrapper (runResultM h v)
-
-persist :: (Monad m, PersistentResultClass c) => ResultM m c a ()
-persist = put True
+persist :: PersistentResultClass c => ResultM c a ()
+persist = ResultM $ put True

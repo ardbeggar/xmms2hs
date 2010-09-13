@@ -73,7 +73,8 @@ library
                     XMMS2.Utils
   c-sources:		src/c/xmms2hs-client.c
   include-dirs:		src/c
-  build-depends:	base >= 4 && < 5, haskell98, utf8-string, mtl, containers
+  build-depends:	base >= 4 && < 5, haskell98, utf8-string, mtl,
+                    containers
   build-tools:		c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface,
@@ -87,7 +88,8 @@ library
                     EmptyDataDecls,
                     FlexibleContexts,
                     ScopedTypeVariables,
-                    OverlappingInstances
+                    OverlappingInstances,
+                    GeneralizedNewtypeDeriving
 
 
 source-repository head
