@@ -42,7 +42,7 @@ import qualified XMMS2.Client.Bindings.Result as B
 
 newtype Result a = Result B.Result
 
-liftResult = (return . Result =<<)
+liftResult = liftM Result
 
 
 resultWait (Result r) = B.resultWait r
