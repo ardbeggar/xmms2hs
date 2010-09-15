@@ -32,6 +32,7 @@ module XMMS2.Client.Playlist
   , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
+  , playlistSort
   , playlistSetNext
   , playlistSetNextRel
   , playlistMoveEntry
@@ -205,6 +206,14 @@ playlistListEntries ::
   IO (Result Default [MediaId])
 playlistListEntries xmmsc name =
   liftResult $ B.playlistListEntries xmmsc name
+
+playlistSort
+  :: Connection
+  -> Maybe String
+  -> [String]
+  -> IO (Result Default ())
+playlistSort xmmsc name order =
+  liftResult $ B.playlistSort xmmsc name =<< newList order
 
 playlistSetNext ::
   Connection    ->

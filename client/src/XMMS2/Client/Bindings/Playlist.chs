@@ -27,6 +27,7 @@ module XMMS2.Client.Bindings.Playlist
   , playlistRemoveEntry
   , playlistClear
   , playlistListEntries
+  , playlistSort
   , playlistSetNext
   , playlistSetNextRel
   , playlistMoveEntry
@@ -104,6 +105,12 @@ import XMMS2.Utils
 {# fun playlist_list_entries as ^
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_sort as ^
+ { withConnection* `Connection'
+ , withMaybeCString* `Maybe String'
+ , withValue*      `Value'
  } -> `Result' takeResult* #}
 
 {# fun playlist_set_next as ^
