@@ -33,9 +33,14 @@ module XMMS2.Client.Bindings.Playlist
   , playlistMoveEntry
   , playlistCurrentPos
   , playlistCurrentActive
+  , playlistInsertURL
   , playlistInsertId
+  , playlistInsertEncoded
+  , playlistInsertCollection
   , playlistRAdd
   , playlistRAddEncoded
+  , playlistRInsert
+  , playlistRInsertEncoded
   , broadcastPlaylistChanged
   , broadcastPlaylistCurrentPos
   , broadcastPlaylistLoaded
@@ -139,11 +144,33 @@ import XMMS2.Utils
  { withConnection*   `Connection'
  } -> `Result' takeResult* #}
 
+{# fun playlist_insert_url as playlistInsertURL
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withCString*      `String'
+ } -> `Result' takeResult* #}
+
 {# fun playlist_insert_id as ^
  { withConnection*   `Connection'
  , withMaybeCString* `Maybe String'
  , cIntConv          `Int'
  , cIntConv          `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_insert_encoded as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withCString*      `String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_insert_collection as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withColl*         `Coll'
+ , withValue*        `Value'
  } -> `Result' takeResult* #}
 
 {# fun playlist_radd as playlistRAdd
@@ -156,6 +183,20 @@ import XMMS2.Utils
  { withConnection*   `Connection'   ,
    withMaybeCString* `Maybe String' ,
    withCString*      `String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_rinsert as playlistRInsert
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withCString*      `String'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_rinsert_encoded as playlistRInsertEncoded
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withCString*      `String'
  } -> `Result' takeResult* #}
 
 

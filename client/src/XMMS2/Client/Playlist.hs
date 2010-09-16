@@ -38,9 +38,14 @@ module XMMS2.Client.Playlist
   , playlistMoveEntry
   , playlistCurrentPos
   , playlistCurrentActive
+  , playlistInsertURL
   , playlistInsertId
+  , playlistInsertEncoded
+  , playlistInsertCollection
   , playlistRAdd
   , playlistRAddEncoded
+  , playlistRInsert
+  , playlistRInsertEncoded
 
     -- * Broadcasts
   , broadcastPlaylistChanged
@@ -254,6 +259,15 @@ playlistCurrentActive ::
 playlistCurrentActive xmmsc =
   liftResult $ B.playlistCurrentActive xmmsc
 
+playlistInsertURL
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> URL
+  -> IO (Result Default ())
+playlistInsertURL xmmsc name pos url =
+  liftResult $ B.playlistInsertURL xmmsc name pos url
+
 playlistInsertId ::
   Connection     ->
   Maybe String   ->
@@ -262,6 +276,26 @@ playlistInsertId ::
   IO (Result Default ())
 playlistInsertId xmmsc name pos id =
   liftResult $ B.playlistInsertId xmmsc name pos id
+
+playlistInsertEncoded
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> EncodedURL
+  -> IO (Result Default ())
+playlistInsertEncoded xmmsc name pos url =
+  liftResult $ B.playlistInsertEncoded xmmsc name pos url
+
+playlistInsertCollection
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> Coll
+  -> [String]
+  -> IO (Result Default ())
+playlistInsertCollection xmmsc name pos coll order =
+  liftResult $ B.playlistInsertCollection xmmsc name pos coll =<< newList order
+
 
 playlistRAdd   ::
   Connection   ->
@@ -278,6 +312,24 @@ playlistRAddEncoded ::
   IO (Result Default ())
 playlistRAddEncoded xmmsc name url =
   liftResult $ B.playlistRAddEncoded xmmsc name url
+
+playlistRInsert
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> URL
+  -> IO (Result Default ())
+playlistRInsert xmmsc name pos url =
+  liftResult $ B.playlistRInsert xmmsc name pos url
+
+playlistRInsertEncoded
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> EncodedURL
+  -> IO (Result Default ())
+playlistRInsertEncoded xmmsc name pos url =
+  liftResult $ B.playlistRInsertEncoded xmmsc name pos url
 
 
 -------------
