@@ -24,6 +24,7 @@ module XMMS2.Client.Bindings.Medialib
   , medialibGetInfo
   , medialibGetId
   , medialibGetIdEncoded
+  , medialibRemoveEntry
   , medialibEntryPropertySetInt
   , medialibEntryPropertySetIntWithSource
   , medialibEntryPropertySetStr
@@ -74,6 +75,11 @@ import XMMS2.Utils
 {# fun medialib_get_id_encoded as ^
  { withConnection* `Connection'
  , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun medialib_remove_entry as ^
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_int as ^
