@@ -33,6 +33,7 @@ module XMMS2.Client.Bindings.Playlist
   , playlistMoveEntry
   , playlistCurrentPos
   , playlistCurrentActive
+  , playlistInsertFull
   , playlistInsertURL
   , playlistInsertId
   , playlistInsertEncoded
@@ -142,6 +143,14 @@ import XMMS2.Utils
 
 {# fun playlist_current_active as ^
  { withConnection*   `Connection'
+ } -> `Result' takeResult* #}
+
+{# fun playlist_insert_full as ^
+ { withConnection*   `Connection'
+ , withMaybeCString* `Maybe String'
+ , cIntConv          `Int'
+ , withCString*      `String'
+ , withValue*        `Value'
  } -> `Result' takeResult* #}
 
 {# fun playlist_insert_url as playlistInsertURL

@@ -38,6 +38,7 @@ module XMMS2.Client.Playlist
   , playlistMoveEntry
   , playlistCurrentPos
   , playlistCurrentActive
+  , playlistInsertFull
   , playlistInsertURL
   , playlistInsertId
   , playlistInsertEncoded
@@ -258,6 +259,16 @@ playlistCurrentActive ::
   IO (Result Default String)
 playlistCurrentActive xmmsc =
   liftResult $ B.playlistCurrentActive xmmsc
+
+playlistInsertFull
+  :: Connection
+  -> Maybe String
+  -> Int
+  -> URL
+  -> Dict String
+  -> IO (Result Default ())
+playlistInsertFull xmmsc name pos url args =
+  liftResult $ B.playlistInsertFull xmmsc name pos url =<< newDict args
 
 playlistInsertURL
   :: Connection
