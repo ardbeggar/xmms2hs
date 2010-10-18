@@ -38,6 +38,7 @@ module XMMS2.Client.Bindings.Medialib
   , xformMediaBrowse
   , xformMediaBrowseEncoded
   , broadcastMedialibEntryChanged
+  , broadcastMedialibEntryAdded
   ) where
 
 #include <xmmsclient/xmmsclient.h>
@@ -166,3 +167,6 @@ import XMMS2.Utils
  { withConnection* `Connection'
  } -> `Result' takeResult* #}
 
+{# fun broadcast_medialib_entry_added as ^
+ { withConnection* `Connection'
+ } -> `Result' takeResult* #}

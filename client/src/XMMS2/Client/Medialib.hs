@@ -35,6 +35,7 @@ module XMMS2.Client.Medialib
   , xformMediaBrowse
   , xformMediaBrowseEncoded
   , broadcastMedialibEntryChanged
+  , broadcastMedialibEntryAdded
   ) where
 
 import Control.Applicative
@@ -162,3 +163,9 @@ xformMediaBrowseEncoded xmmsc url =
 broadcastMedialibEntryChanged :: Connection -> IO (Result Broadcast Int32)
 broadcastMedialibEntryChanged =
   liftResult . B.broadcastMedialibEntryChanged
+
+broadcastMedialibEntryAdded
+  :: Connection
+  -> IO (Result Broadcast MediaId)
+broadcastMedialibEntryAdded =
+  liftResult . B.broadcastMedialibEntryAdded
