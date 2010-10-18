@@ -29,6 +29,7 @@ module XMMS2.Client.Medialib
   , medialibGetId
   , medialibGetIdEncoded
   , medialibRemoveEntry
+  , medialibMoveEntry
   , medialibEntryPropertySet
   , medialibEntryPropertyRemove
   , xformMediaBrowse
@@ -109,6 +110,14 @@ medialibRemoveEntry
   -> IO (Result Default ())
 medialibRemoveEntry xmmsc id =
   liftResult $ B.medialibRemoveEntry xmmsc id
+
+medialibMoveEntry
+  :: Connection
+  -> MediaId
+  -> EncodedURL
+  -> IO (Result Default ())
+medialibMoveEntry xmmsc id url =
+  liftResult $ B.medialibMoveEntry xmmsc id url
 
 medialibEntryPropertySet ::
   Connection             ->
