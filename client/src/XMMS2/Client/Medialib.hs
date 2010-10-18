@@ -54,7 +54,7 @@ instance ValueGet BrowseEntry where
   valueGet v = do
     dict <- valueGet v
     maybe (fail "not a browse entry") return $ do
-      path <- lookupString "realpath" dict `mplus` lookupString "path" dict
+      path <- lookupString "realpath" dict <|> lookupString "path" dict
       dirp <- (1 ==) <$> lookupInt32 "isdir" dict
       return BrowseEntry { entryPath = path, entryIsDir = dirp }
 
