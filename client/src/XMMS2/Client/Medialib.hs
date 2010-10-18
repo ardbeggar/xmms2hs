@@ -63,19 +63,32 @@ instance ValueGet BrowseEntry where
       return BrowseEntry { entryPath = path, entryIsDir = dirp }
 
 
-medialibAddEntry :: Connection -> URL -> IO (Result Default ())
+medialibAddEntry
+  :: Connection
+  -> URL
+  -> IO (Result Default ())
 medialibAddEntry xmmsc url =
   liftResult $ B.medialibAddEntry xmmsc url
 
-medialibAddEntryFull :: Connection -> URL -> Dict String -> IO (Result Default ())
+medialibAddEntryFull
+  :: Connection
+  -> URL
+  -> Dict String
+  -> IO (Result Default ())
 medialibAddEntryFull xmmsc url args =
   liftResult $ B.medialibAddEntryFull xmmsc url =<< valueNew args
 
-medialibAddEntryEncoded :: Connection -> EncodedURL -> IO (Result Default ())
+medialibAddEntryEncoded
+  :: Connection
+  -> EncodedURL
+  -> IO (Result Default ())
 medialibAddEntryEncoded xmmsc url =
   liftResult $ B.medialibAddEntryEncoded xmmsc url
 
-medialibGetInfo :: Connection -> MediaId -> IO (Result Default PropDict)
+medialibGetInfo
+  :: Connection
+  -> MediaId
+  -> IO (Result Default PropDict)
 medialibGetInfo xmmsc id =
   liftResult $ B.medialibGetInfo xmmsc id
 
@@ -100,11 +113,17 @@ medialibRehash
 medialibRehash xmmsc id =
   liftResult $ B.medialibRehash xmmsc id
 
-medialibGetId :: Connection -> URL -> IO (Result Default MediaId)
+medialibGetId
+  :: Connection
+  -> URL
+  -> IO (Result Default MediaId)
 medialibGetId xmmsc url =
   liftResult $ B.medialibGetId xmmsc url
 
-medialibGetIdEncoded :: Connection -> EncodedURL -> IO (Result Default MediaId)
+medialibGetIdEncoded
+  :: Connection
+  -> EncodedURL
+  -> IO (Result Default MediaId)
 medialibGetIdEncoded xmmsc url =
   liftResult $ B.medialibGetIdEncoded xmmsc url
 
@@ -123,13 +142,13 @@ medialibMoveEntry
 medialibMoveEntry xmmsc id url =
   liftResult $ B.medialibMoveEntry xmmsc id url
 
-medialibEntryPropertySet ::
-  Connection             ->
-  MediaId                ->
-  Maybe String           ->
-  String                 ->
-  Property               ->
-  IO (Result Default ())
+medialibEntryPropertySet
+  :: Connection
+  -> MediaId
+  -> Maybe String
+  -> String
+  -> Property
+  -> IO (Result Default ())
 medialibEntryPropertySet xmmsc id (Just src) key (PropInt32 val) =
   liftResult $ B.medialibEntryPropertySetIntWithSource xmmsc id src key val
 medialibEntryPropertySet xmmsc id Nothing key (PropInt32 val) =
@@ -139,18 +158,21 @@ medialibEntryPropertySet xmmsc id (Just src) key (PropString val) =
 medialibEntryPropertySet xmmsc id Nothing key (PropString val) =
   liftResult $ B.medialibEntryPropertySetStr xmmsc id key val
 
-medialibEntryPropertyRemove ::
-  Connection                ->
-  MediaId                   ->
-  Maybe String              ->
-  String                    ->
-  IO (Result Default ())
+medialibEntryPropertyRemove
+  :: Connection
+  -> MediaId
+  -> Maybe String
+  -> String
+  -> IO (Result Default ())
 medialibEntryPropertyRemove xmmsc id (Just src) key =
   liftResult $ B.medialibEntryPropertyRemoveWithSource xmmsc id src key
 medialibEntryPropertyRemove xmmsc id Nothing key =
   liftResult $ B.medialibEntryPropertyRemove xmmsc id key
 
-xformMediaBrowse :: Connection -> URL -> IO (Result Default [BrowseEntry])
+xformMediaBrowse
+  :: Connection
+  -> URL
+  -> IO (Result Default [BrowseEntry])
 xformMediaBrowse xmmsc url =
   liftResult $ B.xformMediaBrowse xmmsc url
 
@@ -162,7 +184,9 @@ xformMediaBrowseEncoded xmmsc url =
   liftResult $ B.xformMediaBrowseEncoded xmmsc url
 
 
-broadcastMedialibEntryChanged :: Connection -> IO (Result Broadcast MediaId)
+broadcastMedialibEntryChanged
+  :: Connection
+  -> IO (Result Broadcast MediaId)
 broadcastMedialibEntryChanged =
   liftResult . B.broadcastMedialibEntryChanged
 
