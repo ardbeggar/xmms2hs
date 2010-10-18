@@ -49,8 +49,10 @@ import qualified XMMS2.Client.Bindings.Medialib as B
 
 
 data BrowseEntry
-  = BrowseEntry { entryPath  :: String
-                , entryIsDir :: Bool }
+  = BrowseEntry
+    { entryPath  :: EncodedURL
+    , entryIsDir :: Bool
+    }
 
 instance ValueGet BrowseEntry where
   valueGet v = do
