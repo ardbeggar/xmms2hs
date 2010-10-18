@@ -67,7 +67,7 @@ medialibAddEntry :: Connection -> String -> IO (Result Default ())
 medialibAddEntry xmmsc url =
   liftResult $ B.medialibAddEntry xmmsc url
 
-medialibAddEntryFull :: Connection -> String -> [String] -> IO (Result Default ())
+medialibAddEntryFull :: Connection -> String -> Dict String -> IO (Result Default ())
 medialibAddEntryFull xmmsc url args =
   liftResult $ B.medialibAddEntryFull xmmsc url =<< valueNew args
 
