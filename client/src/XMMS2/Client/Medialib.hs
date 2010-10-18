@@ -25,6 +25,7 @@ module XMMS2.Client.Medialib
   , medialibGetInfo
   , medialibImportPath
   , medialibImportPathEncoded
+  , medialibRehash
   , medialibGetId
   , medialibGetIdEncoded
   , medialibRemoveEntry
@@ -86,6 +87,13 @@ medialibImportPathEncoded
   -> IO (Result Default ())
 medialibImportPathEncoded xmmsc url =
   liftResult $ B.medialibImportPathEncoded xmmsc url
+
+medialibRehash
+  :: Connection
+  -> MediaId
+  -> IO (Result Default ())
+medialibRehash xmmsc id =
+  liftResult $ B.medialibRehash xmmsc id
 
 medialibGetId :: Connection -> String -> IO (Result Default Int32)
 medialibGetId xmmsc url =
