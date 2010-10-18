@@ -22,6 +22,8 @@ module XMMS2.Client.Bindings.Medialib
   , medialibAddEntryFull
   , medialibAddEntryEncoded
   , medialibGetInfo
+  , medialibImportPath
+  , medialibImportPathEncoded
   , medialibGetId
   , medialibGetIdEncoded
   , medialibRemoveEntry
@@ -65,6 +67,16 @@ import XMMS2.Utils
 {# fun medialib_get_info as ^
  { withConnection* `Connection' ,
    cIntConv        `Int32'
+ } -> `Result' takeResult* #}
+
+{# fun medialib_import_path as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
+ } -> `Result' takeResult* #}
+
+{# fun medialib_import_path_encoded as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
  } -> `Result' takeResult* #}
 
 {# fun medialib_get_id as ^
