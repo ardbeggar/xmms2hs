@@ -33,6 +33,7 @@ module XMMS2.Client.Medialib
   , medialibEntryPropertySet
   , medialibEntryPropertyRemove
   , xformMediaBrowse
+  , xformMediaBrowseEncoded
   , broadcastMedialibEntryChanged
   ) where
 
@@ -149,6 +150,13 @@ medialibEntryPropertyRemove xmmsc id Nothing key =
 xformMediaBrowse :: Connection -> String -> IO (Result Default [BrowseEntry])
 xformMediaBrowse xmmsc url =
   liftResult $ B.xformMediaBrowse xmmsc url
+
+xformMediaBrowseEncoded
+  :: Connection
+  -> EncodedURL
+  -> IO (Result Default [BrowseEntry])
+xformMediaBrowseEncoded xmmsc url =
+  liftResult $ B.xformMediaBrowseEncoded xmmsc url
 
 
 broadcastMedialibEntryChanged :: Connection -> IO (Result Broadcast Int32)

@@ -36,6 +36,7 @@ module XMMS2.Client.Bindings.Medialib
   , medialibEntryPropertyRemove
   , medialibEntryPropertyRemoveWithSource
   , xformMediaBrowse
+  , xformMediaBrowseEncoded
   , broadcastMedialibEntryChanged
   ) where
 
@@ -153,6 +154,11 @@ import XMMS2.Utils
 {# fun xform_media_browse as ^
  { withConnection* `Connection' ,
    withCString*    `String'
+ }  -> `Result' takeResult* #}
+
+{# fun xform_media_browse_encoded as ^
+ { withConnection* `Connection'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 
