@@ -69,8 +69,8 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun medialib_get_info as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
 {# fun medialib_import_path as ^
@@ -84,8 +84,8 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun medialib_rehash as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
  } -> `Result' takeResult* #}
 
 {# fun medialib_get_id as ^
@@ -110,51 +110,51 @@ import XMMS2.Utils
  } -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_int as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'     ,
-   cIntConv        `Int32'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
+ , cIntConv        `Int32'
  }  -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_int_with_source as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'     ,
-   withCString*    `String'     ,
-   cIntConv        `Int32'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
+ , withCString*    `String'
+ , cIntConv        `Int32'
  }  -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_str as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'     ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_set_str_with_source as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'     ,
-   withCString*    `String'     ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
+ , withCString*    `String'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_remove as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 {# fun medialib_entry_property_remove_with_source as ^
- { withConnection* `Connection' ,
-   cIntConv        `Int32'      ,
-   withCString*    `String'     ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , cIntConv        `Int32'
+ , withCString*    `String'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 {# fun xform_media_browse as ^
- { withConnection* `Connection' ,
-   withCString*    `String'
+ { withConnection* `Connection'
+ , withCString*    `String'
  }  -> `Result' takeResult* #}
 
 {# fun xform_media_browse_encoded as ^
