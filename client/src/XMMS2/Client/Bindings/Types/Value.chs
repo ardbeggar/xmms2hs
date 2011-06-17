@@ -67,7 +67,7 @@ takeValue ref p = do
   p' <- if ref then xmmsv_ref p else return p
   takePtr Value xmmsv_unref p'
 
-{# fun xmmsv_ref as xmmsv_ref
+{# fun unsafe xmmsv_ref as xmmsv_ref
  { id `ValuePtr'
  } -> `ValuePtr' id #}
 
@@ -82,7 +82,7 @@ refValue val = withValue val $ takeValue True
  { underscoreToCase }
  deriving (Show) #}
 
-{# fun get_type as ^
+{# fun unsafe get_type as ^
  { withValue* `Value'
  } -> `ValueType' cToEnum #}
 
@@ -92,7 +92,7 @@ getError value = do
   if ok
     then Just <$> peekCString err
     else return Nothing
-{# fun get_error as get_error
+{# fun unsafe get_error as get_error
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
@@ -100,28 +100,28 @@ getError value = do
 getNone = get TypeNone (const $ return (True, ())) return
 
 newNone = new_none >>= takeValue False
-{# fun new_none as new_none
+{# fun unsafe new_none as new_none
  {} -> `ValuePtr' id #}
 
 getInt = get TypeInt32 get_int return
-{# fun get_int as get_int
+{# fun unsafe get_int as get_int
  { withValue* `Value'
  , alloca-    `Int32' peekIntConv*
  } -> `Bool' #}
 
 newInt val = new_int val >>= takeValue False
-{# fun new_int as new_int
+{# fun unsafe new_int as new_int
  { cIntConv `Int32'
  } -> `ValuePtr' id #}
 
 getString = get TypeString get_string peekCString
-{# fun get_string as get_string
+{# fun unsafe get_string as get_string
  { withValue* `Value'
  , alloca-    `CString' peek*
  } -> `Bool' #}
 
 newString val = new_string val >>= takeValue False
-{# fun new_string as new_string
+{# fun unsafe new_string as new_string
  { withCString* `String'
  } -> `ValuePtr' id #}
 

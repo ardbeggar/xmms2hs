@@ -44,10 +44,10 @@ import XMMS2.Client.Exception
 
 
 newDict = new_dict >>= takeValue False
-{# fun new_dict as new_dict
+{# fun unsafe new_dict as new_dict
  {} -> `ValuePtr' id #}
 
-{# fun dict_set as ^
+{# fun unsafe dict_set as ^
  { withValue*   `Value'
  , withCString* `String'
  , withValue*   `Value'
@@ -63,7 +63,7 @@ withDictIter (DictIter p) f =
 
 getDictIter :: Value -> IO DictIter
 getDictIter = get TypeDict get_dict_iter (takePtr DictIter finalize_dict_iter)
-{# fun xmms2hs_get_dict_iter as get_dict_iter
+{# fun unsafe xmms2hs_get_dict_iter as get_dict_iter
  { withValue* `Value'
  , alloca-    `DictIterPtr' peek*
  } -> `Bool' #}
@@ -77,17 +77,17 @@ dictIterPair iter = do
   (ok, key, val) <- dict_iter_pair iter
   unless ok $ throwIO $ InvalidIter
   (,) <$> peekCString key <*> takeValue True val
-{# fun dict_iter_pair as dict_iter_pair
+{# fun unsafe dict_iter_pair as dict_iter_pair
  { withDictIter* `DictIter'
  , alloca-       `CString'  peek*
  , alloca-       `ValuePtr' peek*
  } -> `Bool' #}
 
-{# fun dict_iter_valid as ^
+{# fun unsafe dict_iter_valid as ^
  { withDictIter* `DictIter'
  } -> `Bool' #}
 
-{# fun dict_iter_next as ^
+{# fun unsafe dict_iter_next as ^
  { withDictIter* `DictIter'
  } -> `()' #}
 
@@ -116,7 +116,7 @@ foreign import ccall "wrapper"
 
 propdictToDict :: Value -> [String] -> IO Value
 propdictToDict v p = propdict_to_dict v p >>= takeValue False
-{# fun propdict_to_dict as propdict_to_dict
+{# fun unsafe propdict_to_dict as propdict_to_dict
  { withValue*         `Value'
  , withCStringArray0* `[String]'
  } -> `ValuePtr' id #}

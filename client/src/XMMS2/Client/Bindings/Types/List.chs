@@ -43,21 +43,21 @@ import XMMS2.Client.Exception
 
 
 newList = new_list >>= takeValue False
-{# fun new_list as new_list
+{# fun unsafe new_list as new_list
  {} -> `ValuePtr' id #}
 
-{# fun list_get_size as ^
+{# fun unsafe list_get_size as ^
  { withValue* `Value'
  } -> `Integer' cIntConv #}
 
 listGet l p = get TypeList ((flip list_get) p) (takeValue True) l
-{# fun list_get as list_get
+{# fun unsafe list_get as list_get
  { withValue* `Value'
  , cIntConv   `Integer'
  , alloca-    `ValuePtr' peek*
  } -> `Bool' #}
 
-{#fun list_append as ^
+{#fun unsafe list_append as ^
  { withValue* `Value'
  , withValue* `Value'
  } -> `Int' #}
@@ -71,7 +71,7 @@ withListIter (ListIter p) = withForeignPtr p
 
 getListIter :: Value -> IO ListIter
 getListIter = get TypeList get_list_iter (takePtr ListIter finalize_list_iter)
-{# fun xmms2hs_get_list_iter as get_list_iter
+{# fun unsafe xmms2hs_get_list_iter as get_list_iter
  { withValue* `Value'
  , alloca-    `ListIterPtr' peek*
  } -> `Bool' #}
@@ -84,15 +84,15 @@ listIterEntry iter = do
   (ok, v') <- list_iter_entry iter
   unless ok $ throwIO InvalidIter
   takeValue True v'
-{# fun list_iter_entry as list_iter_entry
+{# fun unsafe list_iter_entry as list_iter_entry
  { withListIter* `ListIter'
  , alloca-       `ValuePtr' peek*
  } -> `Bool' #}
 
-{# fun list_iter_valid as ^
+{# fun unsafe list_iter_valid as ^
  { withListIter* `ListIter'
  } -> `Bool' #}
 
-{# fun list_iter_next as ^
+{# fun unsafe list_iter_next as ^
  { withListIter* `ListIter'
  } -> `()' #}
