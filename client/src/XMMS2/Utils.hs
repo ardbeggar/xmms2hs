@@ -19,6 +19,9 @@
 
 module XMMS2.Utils
   ( module C2HS
+  , cIntConv
+  , cFromEnum
+  , cToEnum
   , withCString
   , withMaybeCString
   , withCStringArray0
@@ -40,8 +43,23 @@ import qualified Foreign.C.String as CS
 
 import Codec.Binary.UTF8.String
 
-import C2HS hiding (withCString, peekCString)
+import C2HS hiding
+  ( withCString
+  , peekCString
+  , cIntConv
+  , cFromEnum
+  , cToEnum
+  )
 
+
+cIntConv :: (Integral a, Integral b) => a -> b
+cIntConv = fromIntegral
+
+cFromEnum :: (Enum e, Integral i) => e -> i
+cFromEnum  = fromIntegral . fromEnum
+
+cToEnum :: (Integral i, Enum e) => i -> e
+cToEnum  = toEnum . fromIntegral
 
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
@@ -58,7 +76,6 @@ withCStringArray0 sl f =
     doIt (x:xs) p f =
       withCString x $ \s -> poke p s >> doIt xs (advancePtr p 1) f
 
-
 peekCString = liftM decodeString . CS.peekCString
 
 while = while' id
@@ -70,9 +87,7 @@ while' w c a = w $ do
      then (:) <$> a <*> while' w c a
      else return []
 
-
 withZTArray = withArray0 0
-
 
 takePtr  con fin = liftM con . newForeignPtr fin
 takePtr_ con     = liftM con . newForeignPtr_
