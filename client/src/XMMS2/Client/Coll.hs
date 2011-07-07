@@ -28,6 +28,7 @@ module XMMS2.Client.Coll
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
+  , collQueryInfos
   , broadcastCollectionChanged
   ) where
 
@@ -119,6 +120,21 @@ collQueryIds ::
 collQueryIds xmmsc coll order start len = do
   order' <- valueNew order
   liftResult $ B.collQueryIds xmmsc coll order' start len
+
+collQueryInfos ::
+  Connection   ->
+  Coll         ->
+  [String]     ->
+  Int          ->
+  Int          ->
+  [String]     ->
+  [String]     ->
+  IO (Result Default [Dict Property])
+collQueryInfos xmmsc coll order start len fetch group = do
+  order' <- valueNew order
+  fetch' <- valueNew fetch
+  group' <- valueNew group
+  liftResult $ B.collQueryInfos xmmsc coll order' start len fetch' group'
 
 
 broadcastCollectionChanged :: Connection -> IO (Result Broadcast CollectionChange)

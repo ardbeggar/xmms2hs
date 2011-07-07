@@ -27,6 +27,7 @@ module XMMS2.Client.Bindings.Coll
   , collIdlistFromPlaylistFile
   , collSync
   , collQueryIds
+  , collQueryInfos
   , broadcastCollectionChanged
   ) where
 
@@ -94,6 +95,16 @@ import XMMS2.Utils
  , withValue*      `Value'
  , cIntConv        `Int'
  , cIntConv        `Int'
+ } -> `Result' takeResult* #}
+
+{# fun coll_query_infos as ^
+ { withConnection* `Connection'
+ , withColl*       `Coll'
+ , withValue*      `Value'
+ , cIntConv        `Int'
+ , cIntConv        `Int'
+ , withValue*      `Value'
+ , withValue*      `Value'
  } -> `Result' takeResult* #}
 
 
