@@ -1,5 +1,5 @@
 name:               xmms2-client
-version:            0.0.6.0
+version:            0.0.7.0
 
 author:             Oleg Belozeorov
 maintainer:         Oleg Belozeorov <upwawet@gmail.com>
@@ -98,4 +98,4 @@ source-repository this
   type:             git
   location:         git://github.com/upwawet/xmms2hs.git
   subdir:           client
-  tag:              v0.0.6.0
+  tag:              v0.0.7.0
