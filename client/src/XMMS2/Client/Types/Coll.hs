@@ -20,10 +20,12 @@
 module XMMS2.Client.Types.Coll
   ( module XMMS2.Client.Bindings.Types.Coll
   , collOperandsGet
+  , collAttributesGet
   ) where
 
 import XMMS2.Client.Types.Value
 import XMMS2.Client.Types.List
+import XMMS2.Client.Types.Dict
 
 import XMMS2.Client.Bindings.Types.Coll
   ( Coll
@@ -34,6 +36,7 @@ import XMMS2.Client.Bindings.Types.Coll
   , collSetIdlist
   , collAddOperand
   , collIdlistAppend
+  , collGetType
   , collAttributeSet
   , collUniverse
   , collParse
@@ -50,3 +53,6 @@ instance ValueNew Coll where
 
 collOperandsGet :: Coll -> IO [Coll]
 collOperandsGet coll = B.collOperandsGet coll >>= valueGet
+
+collAttributesGet :: Coll -> IO (Dict String)
+collAttributesGet coll = B.collAttributesGet coll >>= valueGet

@@ -44,7 +44,9 @@ module XMMS2.Client.Bindings.Types.Coll
   , collAddOperand
   , collOperandsGet
   , collIdlistAppend
+  , collGetType
   , collAttributeSet
+  , collAttributesGet
   , collUniverse
   , collParse
   , collNewIdlist
@@ -127,11 +129,21 @@ collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
  , cIntConv  `CUInt'
  } -> `()' #}
 
+{# fun coll_get_type as ^
+ { withColl* `Coll'
+ } -> `CollType' cToEnum #}
+
 {# fun coll_attribute_set as ^
  { withColl*    `Coll'
  , withCString* `String'
  , withCString* `String'
  } -> `()' #}
+
+collAttributesGet :: Coll -> IO Value
+collAttributesGet coll = coll_attributes_get coll >>= takeValue True
+{# fun coll_attributes_get as coll_attributes_get
+ { withColl* `Coll'
+ } -> `ValuePtr' castPtr #}
 
 collUniverse :: IO Coll
 collUniverse = coll_universe >>= takeColl True
