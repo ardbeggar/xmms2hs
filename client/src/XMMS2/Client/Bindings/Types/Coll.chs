@@ -42,6 +42,7 @@ module XMMS2.Client.Bindings.Types.Coll
   , collNew
   , collSetIdlist
   , collAddOperand
+  , collOperandsGet
   , collIdlistAppend
   , collAttributeSet
   , collUniverse
@@ -112,6 +113,12 @@ collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
  { withColl* `Coll'
  , withColl* `Coll'
  } -> `()' #}
+
+collOperandsGet :: Coll -> IO Value
+collOperandsGet coll = coll_operands_get coll >>= takeValue True
+{# fun coll_operands_get as coll_operands_get
+ { withColl* `Coll'
+ } -> `ValuePtr' castPtr #}
 
 collIdlistAppend :: Coll -> Int32 -> IO ()
 collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
