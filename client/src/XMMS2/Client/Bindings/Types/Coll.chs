@@ -4,7 +4,7 @@
 --  Author:  Oleg Belozeorov
 --  Created: 14 Feb. 2010
 --
---  Copyright (C) 2009-2010 Oleg Belozeorov
+--  Copyright (C) 2009-2011 Oleg Belozeorov
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -43,6 +43,7 @@ module XMMS2.Client.Bindings.Types.Coll
   , collSetIdlist
   , collAddOperand
   , collIdlistAppend
+  , collAttributeSet
   , collUniverse
   , collParse
   , collNewIdlist
@@ -117,6 +118,12 @@ collIdlistAppend coll id = coll_idlist_append coll $ fromIntegral id
 {# fun coll_idlist_append as coll_idlist_append
  { withColl* `Coll'
  , cIntConv  `CUInt'
+ } -> `()' #}
+
+{# fun coll_attribute_set as ^
+ { withColl*    `Coll'
+ , withCString* `String'
+ , withCString* `String'
  } -> `()' #}
 
 collUniverse :: IO Coll

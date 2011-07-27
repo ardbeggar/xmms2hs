@@ -4,7 +4,7 @@
 --  Author:  Oleg Belozeorov
 --  Created: 15 Feb. 2010
 --
---  Copyright (C) 2009-2010 Oleg Belozeorov
+--  Copyright (C) 2009-2011 Oleg Belozeorov
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import XMMS2.Client.Bindings.Types.Coll
   , collSetIdlist
   , collAddOperand
   , collIdlistAppend
+  , collAttributeSet
   , collUniverse
   , collParse
   , collNewIdlist )
