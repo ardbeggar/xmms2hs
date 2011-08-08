@@ -21,9 +21,12 @@ module XMMS2.Client.Types.Coll
   ( module XMMS2.Client.Bindings.Types.Coll
   , CollS (..)
   , collGetS
+  , collFromS
   , collOperandsGet
   , collAttributesGet
   ) where
+
+import Control.Monad (forM_)
 
 import qualified Data.Map as Map
 
@@ -56,35 +59,22 @@ instance ValueNew Coll where
 
 
 data CollS
-  = Union [CollS]
-  | Intersection [CollS]
-  | Complement CollS
-  | Equals String String
-  | CollS CollType [CollS] (Dict String)
+  = CollS CollType [CollS] (Dict String)
   deriving (Show)
 
+collGetS :: Coll -> IO CollS
 collGetS coll = do
-  t <- collGetType coll
-  case t of
-    -- TypeUnion -> do
-    --   ops <- collOperandsGet coll >>= mapM collGetS
-    --   return $ Union ops
-    -- TypeIntersection -> do
-    --   ops <- collOperandsGet coll >>= mapM collGetS
-    --   return $ Intersection ops
-    -- TypeComplement -> do
-    --   [op] <- collOperandsGet coll
-    --   op' <- collGetS op
-    --   return $ Complement op'
-    -- TypeEquals -> do
-    --   ats <- collAttributesGet coll
-    --   let Just field = Map.lookup "field" ats
-    --       Just value = Map.lookup "value" ats
-    --   return $ Equals field value
-    _ -> do
-      ops <- collOperandsGet coll >>= mapM collGetS
-      ats <- collAttributesGet coll
-      return $ CollS t ops ats
+  t   <- collGetType coll
+  ops <- collOperandsGet coll >>= mapM collGetS
+  ats <- collAttributesGet coll
+  return $ CollS t ops ats
+
+collFromS :: CollS -> IO Coll
+collFromS (CollS t os as) = do
+  coll <- collNew t
+  forM_ os $ \o -> collFromS o >>= collAddOperand coll
+  forM_ (Map.toList as) $ uncurry $ collAttributeSet coll
+  return coll
 
 collOperandsGet :: Coll -> IO [Coll]
 collOperandsGet coll = B.collOperandsGet coll >>= valueGet
