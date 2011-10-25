@@ -108,7 +108,7 @@ collSetIdlist :: Coll -> [Int32] -> IO ()
 collSetIdlist c i = coll_set_idlist c $ map fromIntegral i
 {# fun coll_set_idlist as coll_set_idlist
  { withColl*    `Coll'
- , withZTArray* `[CUInt]'
+ , withZTArray* `[CInt]'
  } -> `()' #}
 
 {# fun coll_add_operand as ^
