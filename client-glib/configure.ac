@@ -3,8 +3,6 @@ AC_CONFIG_SRCDIR([xmms2-client-glib.cabal])
 
 AC_ARG_WITH(compiler, [])
 
-c2hs --copy-library
-
 BUILD_PACKAGE_BOOL=True
 
 PKG_CHECK_MODULES(XMMS2_CLIENT_GLIB, xmms2-client-glib, , no_xmms2_client_glib=yes)

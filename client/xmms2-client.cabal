@@ -31,8 +31,7 @@ extra-source-files: xmms2-client.buildinfo.in,
                     Makefile.in
 
 extra-tmp-files:    config.status, config.log,
-                    xmms2-client.buildinfo, C2HS.hs,
-                    hlint.out
+                    xmms2-client.buildinfo, hlint.out
 
 library
   exposed-modules:  XMMS2.Client,
@@ -70,7 +69,7 @@ library
                     XMMS2.Utils
   c-sources:		src/c/xmms2hs-client.c
   include-dirs:		src/c
-  build-depends:	base >= 4 && < 5, haskell98, utf8-string, mtl,
+  build-depends:	base, utf8-string, mtl,
                     containers
   build-tools:		c2hs
   hs-source-dirs:   ., src

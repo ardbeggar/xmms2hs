@@ -3,8 +3,6 @@ AC_CONFIG_SRCDIR([xmms2-client.cabal])
 
 AC_ARG_WITH(compiler, [])
 
-c2hs --copy-library
-
 PKG_CHECK_MODULES(XMMS2_CLIENT, xmms2-client, , no_xmms2_client=yes)
 if test "$no_xmms2_client" = yes
 then BUILD_PACKAGE_BOOL=False
