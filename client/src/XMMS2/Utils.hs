@@ -39,9 +39,7 @@ import Control.Monad
 import System.IO.Unsafe
 
 import Foreign.Ptr
-import qualified Foreign.C.String as CS
-
-import Codec.Binary.UTF8.String
+import Foreign.C.String
 
 import C2HS hiding
   ( withCString
@@ -64,8 +62,6 @@ cToEnum  = toEnum . fromIntegral
 withMaybeCString (Just s) f = withCString s f
 withMaybeCString Nothing f  = f nullPtr
 
-withCString = CS.withCString . encodeString
-
 withCStringArray0 [] f =
   f nullPtr
 withCStringArray0 sl f =
@@ -75,8 +71,6 @@ withCStringArray0 sl f =
       poke p nullPtr >> f
     doIt (x:xs) p f =
       withCString x $ \s -> poke p s >> doIt xs (advancePtr p 1) f
-
-peekCString = liftM decodeString . CS.peekCString
 
 while = while' id
 lazyWhile = while' unsafeInterleaveIO

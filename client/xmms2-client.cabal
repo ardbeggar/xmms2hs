@@ -69,8 +69,7 @@ library
                     XMMS2.Utils
   c-sources:		src/c/xmms2hs-client.c
   include-dirs:		src/c
-  build-depends:	base, utf8-string, mtl,
-                    containers
+  build-depends:	base, mtl, containers
   build-tools:		c2hs
   hs-source-dirs:   ., src
   extensions:       ForeignFunctionInterface,
