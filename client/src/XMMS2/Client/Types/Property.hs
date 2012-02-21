@@ -47,4 +47,4 @@ instance ValueGet Property where
 type PropDict = Dict [(String, Property)]
 
 instance ValueGet [(String, Property)] where
-  valueGet v = valueGet v >>= getAssocs
+  valueGet = getAssocs
