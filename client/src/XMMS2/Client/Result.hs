@@ -30,19 +30,21 @@ module XMMS2.Client.Result
   , Default
   , Signal
   , Broadcast
-  , persist
   ) where
 
 import Control.Applicative
 import Control.Monad.Trans
 import Control.Monad.Reader
-import Control.Monad.State
 
 import XMMS2.Client.Types
 
 import XMMS2.Client.Bindings.Types
 import qualified XMMS2.Client.Bindings.Result as B
 
+
+data Default
+data Signal
+data Broadcast
 
 newtype Result c a = Result B.Result
 
@@ -54,17 +56,33 @@ resultGetValue (Result r) = B.resultGetValue r
 
 
 newtype ResultM c a b
-  = ResultM { unResultM :: ReaderT Value (StateT Bool IO) b }
+  = ResultM { unResultM :: ReaderT Value IO b }
   deriving (Functor, Monad, MonadIO)
 
-execResultM :: ResultM c a b -> Value -> IO Bool
-execResultM r v = execStateT (runReaderT (unResultM r) v) False
+runResultM :: ResultM c a b -> Value -> IO b
+runResultM h = runReaderT (unResultM h)
 
 
-(>>*) :: IO (Result c a) -> ResultM c a b -> IO ()
+class RRM r a m | r -> a m where
+  conv :: IO r -> m -> (a -> Bool)
+
+instance RRM (Result Default a) () (ResultM Default a ()) where
+  conv _ _ = const False
+
+instance RRM (Result Signal a) Bool (ResultM Signal a Bool) where
+  conv _ _ = id
+
+instance RRM (Result Broadcast a) Bool (ResultM Broadcast a Bool) where
+  conv _ _ = id
+
+
+(>>*)
+  :: RRM (Result c a) b (ResultM c a b) =>
+     IO (Result c a) -> ResultM c a b -> IO ()
 f >>* h = do
   (Result result) <- f
-  B.resultNotifierSet result $ execResultM h
+  B.resultNotifierSet result $ liftM (conv f h) . runResultM h
+
 
 resultRawValue :: ResultM c a Value
 resultRawValue = ResultM ask
@@ -74,17 +92,3 @@ result = resultRawValue >>= liftIO . valueGet
 
 resultLength :: (ValueGet a, ValueGet [a]) => ResultM c [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
-
-
-class PersistentResultClass c
-
-data Default
-
-data Signal
-instance PersistentResultClass Signal
-
-data Broadcast
-instance PersistentResultClass Broadcast
-
-persist :: PersistentResultClass c => ResultM c a ()
-persist = ResultM $ put True
