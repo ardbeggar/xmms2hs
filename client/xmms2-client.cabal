@@ -16,7 +16,7 @@ description:
   client API and a higher level interface.
 
 cabal-version:      >= 1.6
-build-type:         Simple
+build-type:         Configure
 extra-source-files: xmms2-client.buildinfo.in,
                     src/c/xmms2hs-client.h,
                     configure.ac,
