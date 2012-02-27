@@ -14,7 +14,7 @@ description:
   System 2 (http://xmms2.xmms.se) client GLib integration API.
 
 cabal-version:      >= 1.6
-build-type:         Simple
+build-type:         Configure
 extra-source-files: xmms2-client-glib.buildinfo.in,
                     configure.ac,
                     configure,
