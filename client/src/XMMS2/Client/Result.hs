@@ -29,7 +29,7 @@ module XMMS2.Client.Result
   , Default
   , Signal
   , Broadcast
-  , ResultType (..)
+  , ResultType
   ) where
 
 import Control.Applicative
