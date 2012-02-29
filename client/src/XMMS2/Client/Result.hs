@@ -23,6 +23,7 @@ module XMMS2.Client.Result
   , resultWait
   , resultGetValue
   , ResultM (..)
+  , ResultHandler
   , (>>*)
   , result
   , resultLength
@@ -63,22 +64,20 @@ runResultM :: ResultM c a b -> Value -> IO b
 runResultM h = runReaderT (unResultM h)
 
 
-class RRM r a m | r -> a m where
-  conv :: IO r -> m -> (a -> Bool)
+class ResultHandler c r | c -> r where
+  conv :: IO (Result c a) -> (ResultM c a r) -> (r -> Bool)
 
-instance RRM (Result Default a) () (ResultM Default a ()) where
+instance ResultHandler Default () where
   conv _ _ = const False
 
-instance RRM (Result Signal a) Bool (ResultM Signal a Bool) where
+instance ResultHandler Signal Bool where
   conv _ _ = id
 
-instance RRM (Result Broadcast a) Bool (ResultM Broadcast a Bool) where
+instance ResultHandler Broadcast Bool where
   conv _ _ = id
 
 
-(>>*)
-  :: RRM (Result c a) b (ResultM c a b) =>
-     IO (Result c a) -> ResultM c a b -> IO ()
+(>>*) :: ResultHandler c b => IO (Result c a) -> ResultM c a b -> IO ()
 f >>* h = do
   (Result result) <- f
   B.resultNotifierSet result $ liftM (conv f h) . runResultM h
