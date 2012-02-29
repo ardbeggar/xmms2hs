@@ -24,13 +24,12 @@ module XMMS2.Client.Result
   , resultGetValue
   , ResultM (..)
   , (>>*)
-  , resultRawValue
   , result
   , resultLength
   , Default
   , Signal
   , Broadcast
-  , FromRRV (..)
+  , ResultType (..)
   ) where
 
 import Control.Applicative
@@ -84,28 +83,26 @@ f >>* h = do
   (Result result) <- f
   B.resultNotifierSet result $ liftM (conv f h) . runResultM h
 
-
-resultRawValue :: ResultM c a Value
-resultRawValue = ResultM ask
-
---result :: ValueGet a => ResultM c a a
-result = rrv >>= liftIO . fromRRV
+result :: ResultType a b => ResultM c a b
+result = resultTypedValue >>= liftIO . fromTypedValue
 
 resultLength :: (ValueGet a, ValueGet [a]) => ResultM c [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
 
+resultRawValue :: ResultM c a Value
+resultRawValue = ResultM ask
 
-newtype RRV a = RRV { unRRV :: Value }
+newtype TypedValue a = TypedValue { value :: Value }
 
-rrv :: ResultM c a (RRV a)
-rrv = RRV <$> resultRawValue
+resultTypedValue :: ResultM c a (TypedValue a)
+resultTypedValue = TypedValue <$> resultRawValue
 
-class FromRRV r a where
-  fromRRV :: (RRV r) -> IO a
+class ResultType r a where
+  fromTypedValue :: (TypedValue r) -> IO a
 
-instance ValueGet a => FromRRV a a where
-  fromRRV = valueGet . unRRV
+instance ValueGet a => ResultType a a where
+  fromTypedValue = valueGet . value
 
-instance FromRRV a Value where
-  fromRRV = return . unRRV
+instance ResultType a Value where
+  fromTypedValue = return . value
 
