@@ -30,6 +30,7 @@ module XMMS2.Client.Result
   , Default
   , Signal
   , Broadcast
+  , FromRRV (..)
   ) where
 
 import Control.Applicative
@@ -87,8 +88,24 @@ f >>* h = do
 resultRawValue :: ResultM c a Value
 resultRawValue = ResultM ask
 
-result :: ValueGet a => ResultM c a a
-result = resultRawValue >>= liftIO . valueGet
+--result :: ValueGet a => ResultM c a a
+result = rrv >>= liftIO . fromRRV
 
 resultLength :: (ValueGet a, ValueGet [a]) => ResultM c [a] Integer
 resultLength = resultRawValue >>= liftIO . listGetSize
+
+
+newtype RRV a = RRV { unRRV :: Value }
+
+rrv :: ResultM c a (RRV a)
+rrv = RRV <$> resultRawValue
+
+class FromRRV r a where
+  fromRRV :: (RRV r) -> IO a
+
+instance ValueGet a => FromRRV a a where
+  fromRRV = valueGet . unRRV
+
+instance FromRRV a Value where
+  fromRRV = return . unRRV
+
