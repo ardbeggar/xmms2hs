@@ -91,12 +91,12 @@ playbackVolumeSet :: Connection -> String -> Int -> IO (Result Default ())
 playbackVolumeSet xmmsc chan vol =
   liftResult $ B.playbackVolumeSet xmmsc chan vol
 
-playbackVolumeGet :: Connection -> IO (Result Default (Dict Int32))
+playbackVolumeGet :: Connection -> IO (Result Default (Maybe (Dict Int32)))
 playbackVolumeGet xmmsc =
   liftResult $ B.playbackVolumeGet xmmsc
 
 
-broadcastPlaybackVolumeChanged :: Connection -> IO (Result Broadcast (Dict Int32))
+broadcastPlaybackVolumeChanged :: Connection -> IO (Result Broadcast (Maybe (Dict Int32)))
 broadcastPlaybackVolumeChanged =
   liftResult . B.broadcastPlaybackVolumeChanged
 
