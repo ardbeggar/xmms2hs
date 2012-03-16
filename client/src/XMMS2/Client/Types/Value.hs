@@ -23,6 +23,8 @@ module XMMS2.Client.Types.Value
   , ValueNew (..)
   ) where
 
+import Control.Applicative
+
 import XMMS2.Client.Bindings.Types.Value
   ( Value
   , ValueType (..)
@@ -70,3 +72,10 @@ instance ValueGet String where
 
 instance ValueNew String where
   valueNew = newString
+
+instance ValueGet a => ValueGet (Maybe a) where
+  valueGet v = do
+    t <- getType v
+    case t of
+      TypeNone -> return Nothing
+      _        -> Just <$> valueGet v
